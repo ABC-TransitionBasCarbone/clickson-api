@@ -1,0 +1,14 @@
+{
+  "name": "clickson-api",
+  "version": "1.0.0",
+  "description": "API du projet clickson",
+  "main": "index.js",
+  "author": "ABC Transition Bas Carbone",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7"
+  }
+}
