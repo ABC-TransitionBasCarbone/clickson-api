@@ -1,7 +1,12 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const { sql } = require("@vercel/postgres");
 const port = 4000
+
+app.use(cors({ origin: "http://localhost:3000" }));
+
+app.use("/translations", express.static(__dirname + "/public/translations"));
 
 app.get("/", async (req, res) => {
   const users = await sql`SELECT * FROM users;`;
