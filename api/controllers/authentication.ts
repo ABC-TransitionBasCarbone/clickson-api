@@ -4,9 +4,9 @@ export const signin = async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        const result = await signinHelper(username, password);
+        const token = await signinHelper(username, password);
 
-        res.status(200).send({ result });
+        res.status(200).send({ token });
     } catch (e) {
         console.error(e);
         res.status(500).send({ error: e })
