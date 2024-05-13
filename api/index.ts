@@ -5,7 +5,7 @@ import authentication from "./routes/authentication";
 import { authorization } from "./middleware/authorization";
 
 const app = express();
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: ["http://localhost:3000", "https://clickson-tau.vercel.app/"] }));
 
 app.use("/translations", express.static(__dirname + "/public/translations"));
 
