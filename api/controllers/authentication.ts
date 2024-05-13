@@ -2,9 +2,9 @@ import { forgotPasswordHelper, resetPasswordHelper, signinHelper } from "../help
 
 export const signin = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { username, password } = req.body;
 
-        const result = await signinHelper(email, password);
+        const result = await signinHelper(username, password);
 
         res.status(200).send({ result });
     } catch (e) {
@@ -15,9 +15,9 @@ export const signin = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
     try {
-        const { email, token, password } = req.body;
+        const { username, token, password } = req.body;
 
-        await resetPasswordHelper(email, token, password);
+        await resetPasswordHelper(username, token, password);
 
         res.status(200).send({ message: "password updated" });
     } catch (e) {
@@ -28,9 +28,9 @@ export const resetPassword = async (req, res) => {
 
 export const forgotPassword = async (req, res) => {
     try {
-        const { email } = req.body;
+        const { username } = req.body;
 
-        const resetToken = await forgotPasswordHelper(email);
+        const resetToken = await forgotPasswordHelper(username);
 
         res.status(200).send({ message: "token generated", token: resetToken });
     } catch (e) {
