@@ -2,7 +2,10 @@ import { forgotPasswordHelper, resetPasswordHelper, signinHelper } from "../help
 
 export const signin = async (req, res) => {
     try {
-        const { username, password } = req.body;
+        let body = req.body
+        typeof (req.body) === 'string' ?? (body = JSON.parse(body))
+        
+        const { username, password } = body;
 
         const token = await signinHelper(username, password);
 
