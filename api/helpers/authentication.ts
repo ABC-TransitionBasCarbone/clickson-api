@@ -9,8 +9,8 @@ export const signinHelper = async (username: string, password: string) => {
     if (rows.length != 1) throw Error("The username or password is not correct");
   
     const user = rows[0];
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
-    const isPasswordCorrect = bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) throw Error("The username or password is not correct");
 
     const token = jwt.sign(
