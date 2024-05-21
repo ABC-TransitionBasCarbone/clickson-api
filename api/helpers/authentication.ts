@@ -23,11 +23,12 @@ export const signinHelper = async (username: string, password: string) => {
 };
 
 export const resetPasswordHelper = async (username: string, token: string, newPassword: string) => {
-    const { rows } = await sql`SELECT reset_pwd_token FROM users WHERE username = ${username};`
+    const { rows: [user] } = await sql`SELECT reset_pwd_token, reset_pwd_expiration FROM users WHERE username = ${username};`
 
-    const isTokenValid = await bcrypt.compare(token, rows[0].reset_pwd_token);  
+    const isTokenValid = await bcrypt.compare(token, user.reset_pwd_token);
+    const isTokenExpired = user.reset_pwd_expiration < new Date();
 
-    if (!isTokenValid) throw Error("token is not valid");
+    if (!isTokenValid || isTokenExpired) throw Error("token is not valid");
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await sql`UPDATE users
@@ -41,8 +42,11 @@ export const forgotPasswordHelper = async (username: string) => {
 
     const resetToken = randomBytes(32).toString("hex");
     const hashedTokenForBdd = await bcrypt.hash(resetToken, 10);
+
+    const expirationDate = new Date();
+    expirationDate.setMinutes(expirationDate.getMinutes() + 1)
     
-    await sql`UPDATE users SET reset_pwd_token = ${hashedTokenForBdd} WHERE username = ${username}`
+    await sql`UPDATE users SET reset_pwd_token = ${hashedTokenForBdd}, reset_pwd_expiration = ${expirationDate.toISOString()} WHERE username = ${username}`
 
     return resetToken;
 };
