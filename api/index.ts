@@ -1,19 +1,14 @@
+
 const express = require("express");
 const app = express();
 const { sql } = require("@vercel/postgres");
 const port = 4000
 
-const WP_API_URL = process.env.WP_API_URL;
+const dotenv = require('dotenv');
+dotenv.config();
+const wordpressApiUrl = process.env.WORDPRESS_API_URL;
+const token = process.env.WORDPRESS_AUTH_REFRESH_TOKEN;
 
-
-type LoginRequest = {
-  username: string;
-  password: string;
-}
-
-type JwtResponse = {
-  token: string;
-}
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -25,65 +20,41 @@ app.get("/", async (req, res) => {
 
 
 app.post("/auth/signin", async (req, res) => {
-  const test = await sql`INSERT INTO public.users(
+  await sql`INSERT INTO public.users(
         name, password)
         VALUES (${req.body.name}, ${req.body.password});`;
-  console.log("🚀 ~ app.post ~ test:", test)
-
   return res.status(201);
 });
 
 app.post('/login', async (req, res) => {
-  console.log("🚀 ~ app.post ~ password:", req.body.password)
-  const { username, password } = req.body as LoginRequest;
-  // try {
+  const { username, password } = req.body
 
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", `Bearer ${token}`);
 
-  const raw = JSON.stringify({
-    "username": username,
-    "password": password
-  });
-
+  const graphql = JSON.stringify({
+    query: `mutation LoginUser($username: String!, $password: String!) {\r\n    login(input: {username: $username, password: $password\r\n    }) {\r\n      user {\r\n        email\r\n        }\r\n    }\r\n}`,
+    variables: { "username": username, "password": password }
+  })
   const requestOptions = {
     method: "POST",
     headers: myHeaders,
-    body: raw,
-    redirect: "error"
+    body: graphql,
+    redirect: "follow"
   } as RequestInit;
 
-  const response = fetch("http://localhost:3000/login", requestOptions)
-    .then((response) => response.json())
-    .then((result) => console.log(result))
-    .catch((error) => console.error(error));
-  console.log("🚀 ~ app.post ~ response:", response)
+  const result = await fetch(wordpressApiUrl, requestOptions)
+  const json = await result.json();
+  console.log("🚀 ~ app.post ~ json:", json)
 
-  return await response.then(r => r)
+  if (json.errors) {
+    console.error(json.errors);
+    throw new Error("Failed to fetch API");
+  }
+  console.log("🚀 ~ app.post ~ json.data.user:", json.data.login.user)
 
-
-
-  // const data = await response.json() as JwtResponse;
-  // if (data && data.token) {
-  //   return res.json({
-  //     success: true,
-  //     token: data.token
-  //   });
-  // } else {
-  //   return res.status(401).json({
-  //     success: false,
-  //     message: 'Invalid credentials'
-  //   });
-  // }
-
-  // } catch (error) {
-  //   return res.status(500).json({
-  //     success: false,
-  //     message: 'An error occurred',
-  //     error: (error as Error).message
-  //   });
-  // }
-
+  return json.data.login.user;
 });
 
 const PORT = 3000;
