@@ -12,15 +12,15 @@ const wordpressApiUrl = process.env.WORDPRESS_API_URL || "";
 const token = process.env.WORDPRESS_AUTH_REFRESH_TOKEN;
 
 
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-// app.use(cors({ origin: "http://localhost:3000" }));
+// app.use(express.urlencoded({ extended: false }));
+// app.use(express.json());
+app.use(cors({ origin: "http://localhost:3000" }));
 
 app.use("/translations", express.static(__dirname + "/public/translations"));
 
 app.get("/", async (req, res) => {
-  // const users = await sql`SELECT * FROM users;`;
-  // return res.status(200).json({ users: users.rows.map(u => u.name) });
+  const users = await sql`SELECT * FROM users;`;
+  return res.status(200).json({ users: users.rows.map(u => u.name) });
 });
 
 app.post("/auth/signin", async (req, res) => {
@@ -66,20 +66,14 @@ app.post('/login', async (req, res) => {
 
   const result = await fetch(wordpressApiUrl, requestOptions)
   const json = await result.json();
-  console.log("🚀 ~ app.post ~ json:", json)
 
   if (json.errors) {
     console.error(json.errors);
     throw new Error("Failed to fetch API");
   }
-  console.log("🚀 ~ app.post ~ json.data.user:", json.data.login.user)
-
-  return json.data.login.user;
+  const user = json.data.login.user
+  console.log("🚀 ~ app.post ~ user:", user)
+  return res.status(200).send({ user });
 });
-
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-
 
 module.exports = app;
