@@ -6,7 +6,7 @@
   "author": "ABC Transition Bas Carbone",
   "license": "MIT",
   "scripts": {
-    "start": "vercel dev"
+    "start": "vercel dev -l 4000"
   },
   "dependencies": {
     "@vercel/postgres": "^0.8.0",

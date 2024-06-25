@@ -77,9 +77,8 @@ app.post('/login', async (req, res) => {
   return json.data.login.user;
 });
 
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
 
 
