@@ -52,6 +52,7 @@ app.post('/login', async (req, res) => {
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
   myHeaders.append("Authorization", `Bearer ${token}`);
+  console.log("🚀 ~ app.post ~ wordpressApiUrl:", wordpressApiUrl)
 
   const graphql = JSON.stringify({
     query: `mutation LoginUser($username: String!, $password: String!) {\r\n    login(input: {username: $username, password: $password\r\n    }) {\r\n      user {\r\n        email\r\n        }\r\n    }\r\n}`,
