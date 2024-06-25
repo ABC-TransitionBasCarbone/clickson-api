@@ -6,14 +6,14 @@
   "author": "ABC Transition Bas Carbone",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node api/index.ts",
-    "build": "tsc"
+    "start": "vercel dev"
   },
   "dependencies": {
     "@vercel/postgres": "^0.8.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "vercel": "^34.2.7"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.5",
