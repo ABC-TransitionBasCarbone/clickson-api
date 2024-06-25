@@ -8,7 +8,7 @@ const port = 4000
 
 const dotenv = require('dotenv');
 dotenv.config();
-const wordpressApiUrl = process.env.WORDPRESS_API_URL;
+const wordpressApiUrl = process.env.WORDPRESS_API_URL || "";
 const token = process.env.WORDPRESS_AUTH_REFRESH_TOKEN;
 
 
