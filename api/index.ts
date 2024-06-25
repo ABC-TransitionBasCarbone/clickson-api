@@ -13,7 +13,7 @@ const token = process.env.WORDPRESS_AUTH_REFRESH_TOKEN;
 
 
 app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+// app.use(express.json());
 app.use(cors({ origin: ["http://localhost:3000", "https://clickson-tau.vercel.app/"] }));
 
 app.use("/translations", express.static(__dirname + "/public/translations"));
