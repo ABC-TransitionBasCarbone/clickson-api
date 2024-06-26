@@ -59,6 +59,7 @@ app.post('/login', async (req, res) => {
     query: `mutation LoginUser($username: String!, $password: String!) {\r\n    login(input: {username: $username, password: $password\r\n    }) {\r\n      user {\r\n        email\r\n        }\r\n    }\r\n}`,
     variables: { "username": username, "password": password }
   })
+  console.log("🚀 ~ app.post ~ graphql:", graphql)
   const requestOptions = {
     method: "POST",
     headers: myHeaders,
