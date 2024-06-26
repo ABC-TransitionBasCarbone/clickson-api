@@ -1,13 +1,14 @@
 
+require('dotenv').config();
+
+
 const express = require("express");
 const app = express();
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 const { sql } = require("@vercel/postgres");
-const port = 4000
 
-const dotenv = require('dotenv');
-dotenv.config();
+const PORT = process.env.PORT || 4000
 const wordpressApiUrl = process.env.WORDPRESS_API_URL || "";
 const token = process.env.WORDPRESS_AUTH_REFRESH_TOKEN;
 
