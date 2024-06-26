@@ -14,7 +14,7 @@ const token = process.env.WORDPRESS_AUTH_REFRESH_TOKEN;
 
 
 app.use(express.urlencoded({ extended: false }));
-// app.use(express.json());
+app.use(express.json());
 app.use(cors({ origin: ["http://localhost:3000", "https://clickson-tau.vercel.app/"] }));
 
 app.use("/translations", express.static(__dirname + "/public/translations"));
@@ -49,6 +49,8 @@ app.post("/auth/reset-password", async (req, res) => {
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body
+  console.log("🚀 ~ app.post ~ password:", password)
+  console.log("🚀 ~ app.post ~ username:", username)
 
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
@@ -60,6 +62,7 @@ app.post('/login', async (req, res) => {
     variables: { "username": username, "password": password }
   })
   console.log("🚀 ~ app.post ~ graphql:", graphql)
+
   const requestOptions = {
     method: "POST",
     headers: myHeaders,
