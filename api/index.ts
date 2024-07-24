@@ -113,7 +113,7 @@ app.post('/reset-password', async (req, res) => {
 
   const graphql = JSON.stringify({
     query: `
-    mutation ResetPassword {
+    mutation ResetPassword($username: String!) {
       sendPasswordResetEmail(input: {username: $username}) {
         clientMutationId
         success
