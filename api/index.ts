@@ -140,7 +140,7 @@ app.post('/reset-password', async (req, res) => {
  * @param mettre le refreshToken toutes les heures en entrée
  * TODO gérer la durée de validité du token dans le Wordpress
  */
-app.get('/new-token', async (req, res) => {
+app.post('/new-token', async (req, res) => {
   const { jwtRefreshToken } = req.body
 
   const graphql = JSON.stringify({
