@@ -1,4 +1,5 @@
 
+
 require('dotenv').config();
 
 
@@ -24,62 +25,212 @@ app.get("/", async (req, res) => {
   return res.status(200).json({ users: users.rows.map(u => u.name) });
 });
 
-app.post("/auth/signin", async (req, res) => {
-  await sql`INSERT INTO public.users(
-        name, password)
-        VALUES (${req.body.name}, ${req.body.password});`;
-  const bddInfos = await sql`SELECT password FROM users WHERE name = ${req.body.name};`
-  if (bddInfos.length > 1) return res.status(500);
+app.delete('/delete-user', async (req, res) => {
+  const user = await getUser(req, res)
+  console.log("🚀 ~ app.post ~ user:", user)
+  const graphql = JSON.stringify({
+    query: `
+    mutation DeleteUser($id: ID!) {
+      deleteUser(input: {id: $id}) {
+        clientMutationId
+        deletedId
+      }
+    }
+    `,
+    variables: { "id": user.id }
+  })
 
-  const signedIn = await bcrypt.compare(req.body.password, bddInfos.rows[0].password);
+  const requestOptions = getGraphQlOptions(graphql);
 
-  return res.status(201).send({ signedIn });
-})
+  try {
+    const json = await handleFetch(requestOptions, res)
 
-app.post("/auth/reset-password", async (req, res) => {
-  // TODO : creer une route forgot password qui créé un token à utiliser ici plutot que le mail
+    const user = json.data.deleteUser.deleteId;
+    console.log("🚀 ~ app.post ~ user:", user)
+    return res.status(200).json("L'utilisateur a bien été supprimé " + user ?? "");
+  } catch (error) {
+    return handle500errors(error, res);
+  }
+});
 
-  const hash = await bcrypt.hash(req.body.password, 10);
-  const test = await sql`UPDATE users
-        SET password = ${hash}
-        WHERE name = ${req.body.name};`;
-  console.log("🚀 ~ app.post ~ test:", test)
-  return res.status(201);
+app.post('/sign-up', async (req, res) => {
+  const { username } = req.body
+
+  const graphql = JSON.stringify({
+    query: `
+    mutation SignUp($login: String!) {
+      createUser(input: {username: $login}) {
+        clientMutationId
+      }
+    }
+    `,
+    variables: { "login": username }
+  })
+
+  const requestOptions = getGraphQlOptions(graphql);
+
+  try {
+    const json = await handleFetch(requestOptions, res)
+
+    const user = json.data.createUser.clientMutationId;
+    return res.status(200).json({ user });
+  } catch (error) {
+    return handle500errors(error, res);
+  }
 });
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body
-  console.log("🚀 ~ app.post ~ password:", password)
-  console.log("🚀 ~ app.post ~ username:", username)
 
+  const graphql = JSON.stringify({
+    query: `
+    mutation LoginUser($username: String!, $password: String!) {
+        login(input: {username: $username, password: $password
+        }) {
+          user {
+            email
+            }
+        }
+    }
+    `,
+    variables: { "username": username, "password": password }
+  })
+
+  const requestOptions = getGraphQlOptions(graphql);
+
+  try {
+    const json = await handleFetch(requestOptions, res)
+
+    const user = json.data.login.user;
+    return res.status(200).json({ user });
+  } catch (error) {
+    return handle500errors(error, res);
+  }
+});
+
+app.post('/reset-password', async (req, res) => {
+  const { username } = req.body
+
+  const graphql = JSON.stringify({
+    query: `
+    mutation ResetPassword {
+      sendPasswordResetEmail(input: {username: "romain.crevecoeur@lilo.org"}) {
+        clientMutationId
+        success
+      }
+    }
+    `,
+    variables: { "username": username }
+  })
+
+  const requestOptions = getGraphQlOptions(graphql);
+
+  try {
+    const json = await handleFetch(requestOptions, res)
+
+    const user = json.data.login.user;
+    return res.status(200).json({ user });
+  } catch (error) {
+    return handle500errors(error, res);
+  }
+});
+
+
+/**
+ * @param mettre le refreshToken toutes les heures en entrée
+ * TODO gérer la durée de validité du token dans le Wordpress
+ */
+app.get('/new-token', async (req, res) => {
+  const { jwtRefreshToken } = req.body
+
+  const graphql = JSON.stringify({
+    query: `
+    mutation NewToken($jwtRefreshToken: String!) {
+      refreshJwtAuthToken(input: {jwtRefreshToken: $jwtRefreshToken}) {
+        authToken
+      }
+    }`,
+    variables: { "jwtRefreshToken": jwtRefreshToken }
+  })
+
+  const requestOptions = getGraphQlOptions(graphql);
+
+  try {
+    const json = await handleFetch(requestOptions, res)
+    const refreshJwtAuthToken = json.data.refreshJwtAuthToken.authToken
+
+    return res.status(200).send(refreshJwtAuthToken);
+  } catch (error) {
+    return handle500errors(error, res);
+  }
+});
+
+
+async function getUser(req, res) {
+  const { username } = req.body
+
+  const graphql = JSON.stringify({
+    query: `
+    query GetUser($login: String!) {
+      users(where: {login: $login}, first: 1) {
+        edges {
+          node {
+            id
+          }
+        }
+      }
+    }
+    `,
+    variables: { "login": username }
+  })
+
+  const requestOptions = getGraphQlOptions(graphql);
+
+  try {
+    const json = await handleFetch(requestOptions, res)
+
+    return json.data.users.edges[0].node;
+  } catch (error) {
+    return handle500errors(error, res);
+  }
+}
+
+function handle500errors(error: any, res: any) {
+  console.error('Fetch error:', error);
+  return res.status(500).json({ error: 'Internal Server Error' });
+}
+
+function getGraphQlOptions(graphql: string) {
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
   myHeaders.append("Authorization", `Bearer ${token}`);
-  console.log("🚀 ~ app.post ~ wordpressApiUrl:", wordpressApiUrl)
 
-  const graphql = JSON.stringify({
-    query: `mutation LoginUser($username: String!, $password: String!) {\r\n    login(input: {username: $username, password: $password\r\n    }) {\r\n      user {\r\n        email\r\n        }\r\n    }\r\n}`,
-    variables: { "username": username, "password": password }
-  })
-  console.log("🚀 ~ app.post ~ graphql:", graphql)
-
-  const requestOptions = {
+  return {
     method: "POST",
     headers: myHeaders,
     body: graphql,
     redirect: "follow"
   } as RequestInit;
+}
 
-  const result = await fetch(wordpressApiUrl, requestOptions)
-  const json = await result.json();
+async function handleFetch(requestOptions, res) {
+  const response = await fetch(wordpressApiUrl, requestOptions);
+
+  // Check response status early to avoid unnecessary parsing
+  if (!response.ok) {
+    const errorBody = await response.json();
+    console.error('GraphQL errors:', errorBody.errors);
+    return res.status(response.status).json({ errors: errorBody.errors });
+  }
+
+  const json = await response.json();
 
   if (json.errors) {
-    console.error(json.errors);
-    throw new Error("Failed to fetch API");
+    console.error('GraphQL errors:', json.errors);
+    return res.status(400).json({ errors: json.errors });
   }
-  const user = json.data.login.user
-  console.log("🚀 ~ app.post ~ user:", user)
-  return res.status(200).send({ user });
-});
+
+  return json
+}
 
 module.exports = app;
