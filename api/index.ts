@@ -25,8 +25,8 @@ app.get("/", async (req, res) => {
   return res.status(200).json({ users: users.rows.map(u => u.name) });
 });
 
-app.delete('/delete-user', async (req, res) => {
-  const user = await getUser(req, res)
+app.delete('/delete-user', async (req, res, next) => {
+  const user = await getUser(req, res, next)
   console.log("🚀 ~ app.post ~ user:", user)
   const graphql = JSON.stringify({
     query: `
@@ -49,7 +49,8 @@ app.delete('/delete-user', async (req, res) => {
     console.log("🚀 ~ app.post ~ user:", user)
     return res.status(200).json("L'utilisateur a bien été supprimé " + user ?? "");
   } catch (error) {
-    return handle500errors(error, res);
+    // return handle500errors(error, res);
+    next(error)
   }
 });
 
@@ -82,7 +83,7 @@ app.post('/auth/login', async (req, res) => {
   }
 });
 
-app.post('/auth/reset-password', async (req, res) => {
+app.post('/reset-password', async (req, res, next) => {
   const { username } = req.body
 
   const graphql = JSON.stringify({
@@ -114,7 +115,7 @@ app.post('/auth/reset-password', async (req, res) => {
  * @param mettre le refreshToken toutes les heures en entrée
  * TODO gérer la durée de validité du token dans le Wordpress
  */
-app.post('/auth/new-token', async (req, res) => {
+app.post('/new-token', async (req, res, next) => {
   const { jwtRefreshToken } = req.body
 
   const graphql = JSON.stringify({
@@ -135,7 +136,8 @@ app.post('/auth/new-token', async (req, res) => {
 
     return res.status(200).send(refreshJwtAuthToken);
   } catch (error) {
-    return handle500errors(error, res);
+    // return handle500errors(error, res);
+    next(error)
   }
 });
 
@@ -193,17 +195,17 @@ app.post('/auth/signup', async (req, res) => {
       const message = json.errors[0].message;
       return res.status(500).send({ message });
     }
-    
+
     const user = json.data.registerUser.user
     return res.status(200).send({ user });
   } catch (error) {
     return handle500errors(error, res);
   }
-  
+
 });
 
 
-async function getUser(req, res) {
+async function getUser(req, res, next) {
   const { username } = req.body
 
   const graphql = JSON.stringify({
@@ -266,8 +268,7 @@ async function handleFetch(requestOptions, res) {
     console.error('GraphQL errors:', json.errors);
     return res.status(400).json({ errors: json.errors });
   }
-
-  return json
+  return json;
 }
 
 module.exports = app;
