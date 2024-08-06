@@ -165,6 +165,64 @@ app.post('/new-token', async (req, res) => {
   }
 });
 
+app.post('/auth/signup', async (req, res) => {
+  const { email, password, firstName, lastName, country, ecole } = req.body
+  const username = email.split("@")[0]
+
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", `Bearer ${token}`);
+
+  const graphql = JSON.stringify({
+    query: `
+    mutation registerUser(
+      $username: String!, 
+      $password: String!,
+      $email: String!, 
+      $firstName: String!,
+      $lastName: String!
+    ) {
+      registerUser(
+        input: {
+          username: $username
+          email: $email, 
+          firstName: $firstName, 
+          lastName: $lastName,
+          password: $password
+        }
+      ) {
+        clientMutationId
+        user {
+          id
+          name
+          email
+        }
+      }
+    }
+  `,
+    variables: { "username": username, "password": password, "email": email, "firstName": firstName, "lastName": lastName }
+  })
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: graphql,
+    redirect: "follow"
+  } as RequestInit;
+
+  const result = await fetch(wordpressApiUrl, requestOptions)
+  const json = await result.json();
+
+  if (json.errors) {
+    console.error(json.errors);
+    const message = json.errors[0].message;
+    return res.status(500).send({ message });
+  }
+  
+  const user = json.data.registerUser.user
+  return res.status(200).send({ user });
+});
+
 
 async function getUser(req, res) {
   const { username } = req.body
