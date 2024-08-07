@@ -53,33 +53,7 @@ app.delete('/delete-user', async (req, res) => {
   }
 });
 
-app.post('/sign-up', async (req, res) => {
-  const { username } = req.body
-
-  const graphql = JSON.stringify({
-    query: `
-    mutation SignUp($login: String!) {
-      createUser(input: {username: $login}) {
-        clientMutationId
-      }
-    }
-    `,
-    variables: { "login": username }
-  })
-
-  const requestOptions = getGraphQlOptions(graphql);
-
-  try {
-    const json = await handleFetch(requestOptions, res)
-
-    const user = json.data.createUser.clientMutationId;
-    return res.status(200).json({ user });
-  } catch (error) {
-    return handle500errors(error, res);
-  }
-});
-
-app.post('/login', async (req, res) => {
+app.post('/auth/login', async (req, res) => {
   const { username, password } = req.body
 
   const graphql = JSON.stringify({
@@ -108,7 +82,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.post('/reset-password', async (req, res) => {
+app.post('/auth/reset-password', async (req, res) => {
   const { username } = req.body
 
   const graphql = JSON.stringify({
@@ -140,7 +114,7 @@ app.post('/reset-password', async (req, res) => {
  * @param mettre le refreshToken toutes les heures en entrée
  * TODO gérer la durée de validité du token dans le Wordpress
  */
-app.post('/new-token', async (req, res) => {
+app.post('/auth/new-token', async (req, res) => {
   const { jwtRefreshToken } = req.body
 
   const graphql = JSON.stringify({
@@ -163,6 +137,69 @@ app.post('/new-token', async (req, res) => {
   } catch (error) {
     return handle500errors(error, res);
   }
+});
+
+app.post('/auth/signup', async (req, res) => {
+  const { email, password, firstName, lastName, country, ecole } = req.body
+  const username = email.split("@")[0]
+
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", `Bearer ${token}`);
+
+  const graphql = JSON.stringify({
+    query: `
+    mutation registerUser(
+      $username: String!, 
+      $password: String!,
+      $email: String!, 
+      $firstName: String!,
+      $lastName: String!
+    ) {
+      registerUser(
+        input: {
+          username: $username
+          email: $email, 
+          firstName: $firstName, 
+          lastName: $lastName,
+          password: $password
+        }
+      ) {
+        clientMutationId
+        user {
+          id
+          name
+          email
+        }
+      }
+    }
+  `,
+    variables: { "username": username, "password": password, "email": email, "firstName": firstName, "lastName": lastName }
+  })
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: graphql,
+    redirect: "follow"
+  } as RequestInit;
+
+  try {
+    const result = await fetch(wordpressApiUrl, requestOptions)
+    const json = await result.json();
+
+    if (json.errors) {
+      console.error(json.errors);
+      const message = json.errors[0].message;
+      return res.status(500).send({ message });
+    }
+    
+    const user = json.data.registerUser.user
+    return res.status(200).send({ user });
+  } catch (error) {
+    return handle500errors(error, res);
+  }
+  
 });
 
 
