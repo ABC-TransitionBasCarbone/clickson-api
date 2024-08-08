@@ -10,10 +10,8 @@
   },
   "dependencies": {
     "@vercel/postgres": "^0.8.0",
-    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "fastify": "^4.28.1"
+    "express": "^4.19.2"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.5",
