@@ -45,16 +45,15 @@ app.delete('/delete-user', async (req, res, next) => {
   try {
     const json = await handleFetch(requestOptions, res)
 
-    const user = json.data.deleteUser.deleteId;
+    const user = json.data?.deleteUser?.deleteId;
     console.log("🚀 ~ app.post ~ user:", user)
     return res.status(200).json("L'utilisateur a bien été supprimé " + user ?? "");
   } catch (error) {
-    // return handle500errors(error, res);
-    next(error)
+    return handleErrors(next, error);
   }
 });
 
-app.post('/auth/login', async (req, res) => {
+app.post('/auth/login', async (req, res, next) => {
   const { username, password } = req.body
 
   const graphql = JSON.stringify({
@@ -76,10 +75,10 @@ app.post('/auth/login', async (req, res) => {
   try {
     const json = await handleFetch(requestOptions, res)
 
-    const user = json.data.login.user;
+    const user = json.data?.login?.user;
     return res.status(200).json({ user });
   } catch (error) {
-    return handle500errors(error, res);
+    return handleErrors(next, error);
   }
 });
 
@@ -103,10 +102,10 @@ app.post('/reset-password', async (req, res, next) => {
   try {
     const json = await handleFetch(requestOptions, res)
 
-    const user = json.data.login.user;
+    const user = json.data?.login?.user;
     return res.status(200).json({ user });
   } catch (error) {
-    return handle500errors(error, res);
+    return handleErrors(next, error);
   }
 });
 
@@ -132,16 +131,15 @@ app.post('/new-token', async (req, res, next) => {
 
   try {
     const json = await handleFetch(requestOptions, res)
-    const refreshJwtAuthToken = json.data.refreshJwtAuthToken.authToken
+    const refreshJwtAuthToken = json.data?.refreshJwtAuthToken?.authToken
 
     return res.status(200).send(refreshJwtAuthToken);
   } catch (error) {
-    // return handle500errors(error, res);
-    next(error)
+    return handleErrors(next, error);
   }
 });
 
-app.post('/auth/signup', async (req, res) => {
+app.post('/auth/signup', async (req, res, next) => {
   const { email, password, firstName, lastName, country, ecole } = req.body
   const username = email.split("@")[0]
 
@@ -196,10 +194,10 @@ app.post('/auth/signup', async (req, res) => {
       return res.status(500).send({ message });
     }
 
-    const user = json.data.registerUser.user
+    const user = json.data?.registerUser?.user
     return res.status(200).send({ user });
   } catch (error) {
-    return handle500errors(error, res);
+    return handleErrors(next, error);
   }
 
 });
@@ -230,13 +228,13 @@ async function getUser(req, res, next) {
 
     return json.data.users.edges[0].node;
   } catch (error) {
-    return handle500errors(error, res);
+    return handleErrors(next, error);
   }
 }
 
-function handle500errors(error: any, res: any) {
+function handleErrors(next: any, error: any) {
   console.error('Fetch error:', error);
-  return res.status(500).json({ error: 'Internal Server Error' });
+  next(error)
 }
 
 function getGraphQlOptions(graphql: string) {
