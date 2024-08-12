@@ -31,8 +31,8 @@ app.get("/", async (req, res) => {
   return res.status(200).json({ users: users.rows.map(u => u.name) });
 });
 
-app.delete('/delete-user', async (req, res) => {
-  const user = await getUser(req, res)
+app.delete('/delete-user', async (req, res, next) => {
+  const user = await getUser(req, res, next)
   console.log("🚀 ~ app.post ~ user:", user)
   const graphql = JSON.stringify({
     query: `
@@ -51,15 +51,15 @@ app.delete('/delete-user', async (req, res) => {
   try {
     const json = await handleFetch(requestOptions, res)
 
-    const user = json.data.deleteUser.deleteId;
+    const user = json.data?.deleteUser?.deleteId;
     console.log("🚀 ~ app.post ~ user:", user)
     return res.status(200).json("L'utilisateur a bien été supprimé " + user ?? "");
   } catch (error) {
-    return handle500errors(error, res);
+    return handleErrors(next, error);
   }
 });
 
-app.post('/auth/login', async (req, res) => {
+app.post('/auth/login', async (req, res, next) => {
   const { username, password } = req.body
 
   const graphql = JSON.stringify({
@@ -81,14 +81,14 @@ app.post('/auth/login', async (req, res) => {
   try {
     const json = await handleFetch(requestOptions, res)
 
-    const user = json.data.login.user;
+    const user = json.data?.login?.user;
     return res.status(200).json({ user });
   } catch (error) {
-    return handle500errors(error, res);
+    return handleErrors(next, error);
   }
 });
 
-app.post('/auth/reset-password', async (req, res) => {
+app.post('/reset-password', async (req, res, next) => {
   const { username } = req.body
 
   const graphql = JSON.stringify({
@@ -108,10 +108,10 @@ app.post('/auth/reset-password', async (req, res) => {
   try {
     const json = await handleFetch(requestOptions, res)
 
-    const user = json.data.login.user;
+    const user = json.data?.login?.user;
     return res.status(200).json({ user });
   } catch (error) {
-    return handle500errors(error, res);
+    return handleErrors(next, error);
   }
 });
 
@@ -120,7 +120,7 @@ app.post('/auth/reset-password', async (req, res) => {
  * @param mettre le refreshToken toutes les heures en entrée
  * TODO gérer la durée de validité du token dans le Wordpress
  */
-app.post('/auth/new-token', async (req, res) => {
+app.post('/new-token', async (req, res, next) => {
   const { jwtRefreshToken } = req.body
 
   const graphql = JSON.stringify({
@@ -137,15 +137,15 @@ app.post('/auth/new-token', async (req, res) => {
 
   try {
     const json = await handleFetch(requestOptions, res)
-    const refreshJwtAuthToken = json.data.refreshJwtAuthToken.authToken
+    const refreshJwtAuthToken = json.data?.refreshJwtAuthToken?.authToken
 
     return res.status(200).send(refreshJwtAuthToken);
   } catch (error) {
-    return handle500errors(error, res);
+    return handleErrors(next, error);
   }
 });
 
-app.post('/auth/signup', async (req, res) => {
+app.post('/auth/signup', async (req, res, next) => {
   const { email, password, firstName, lastName, country, ecole } = req.body
   const username = email.split("@")[0]
 
@@ -199,17 +199,17 @@ app.post('/auth/signup', async (req, res) => {
       const message = json.errors[0].message;
       return res.status(500).send({ message });
     }
-    
-    const user = json.data.registerUser.user
+
+    const user = json.data?.registerUser?.user
     return res.status(200).send({ user });
   } catch (error) {
-    return handle500errors(error, res);
+    return handleErrors(next, error);
   }
-  
+
 });
 
 
-async function getUser(req, res) {
+async function getUser(req, res, next) {
   const { username } = req.body
 
   const graphql = JSON.stringify({
@@ -234,13 +234,13 @@ async function getUser(req, res) {
 
     return json.data.users.edges[0].node;
   } catch (error) {
-    return handle500errors(error, res);
+    return handleErrors(next, error);
   }
 }
 
-function handle500errors(error: any, res: any) {
+function handleErrors(next: any, error: any) {
   console.error('Fetch error:', error);
-  return res.status(500).json({ error: 'Internal Server Error' });
+  next(error)
 }
 
 function getGraphQlOptions(graphql: string) {
@@ -272,8 +272,7 @@ async function handleFetch(requestOptions, res) {
     console.error('GraphQL errors:', json.errors);
     return res.status(400).json({ errors: json.errors });
   }
-
-  return json
+  return json;
 }
 
 module.exports = app;
