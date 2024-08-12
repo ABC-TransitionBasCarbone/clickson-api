@@ -9,7 +9,23 @@ module.exports = function (app) {
     app.delete("/delete-user", async (req, res) => {
         const { username } = req.body
 
-        const urlGet = wordpressApiUrl + "/wp-json/wp/v2/users?slug=" + username
+        const { requestInit, users } = await getUser(username);
+
+        requestInit.method = "DELETE";
+        requestInit.body = JSON.stringify({ "reassign": "1" })
+
+        const urlDelete = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id + "?force=true"
+
+        const response = await fetch(urlDelete, requestInit);
+        const usersDeleted = await response.json()
+
+        return res.status(200).json(usersDeleted);
+
+    });
+
+    async function getUser(username: string) {
+        const urlGet = wordpressApiUrl + "/wp-json/wp/v2/users?slug=" + username;
+        console.log("🚀 ~ getUser ~ urlGet:", urlGet)
 
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -20,23 +36,14 @@ module.exports = function (app) {
         } as RequestInit;
 
         const responseGet = await fetch(urlGet, requestInit);
-        const users = await responseGet.json()
+        const users = await responseGet.json();
+        return { requestInit, users };
+    }
 
-        requestInit.method = "DELETE";
-        requestInit.body = JSON.stringify({ "reassign": "1" })
-
-        const urlDelete = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id + "?force=true"
-
-        const response = await fetch(urlDelete, requestInit);
-        const usersDeleted = await response.json()
-        console.log("🚀 ~ app.get ~ usersDeleted:", usersDeleted)
-
-        return res.status(200).json(usersDeleted);
-    });
 
     app.post('/auth/login', async (req, res) => {
         const { username, password } = req.body
-
+     
         const graphql = JSON.stringify({
             query: `
         mutation LoginUser($username: String!, $password: String!) {
