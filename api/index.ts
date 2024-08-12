@@ -13,12 +13,18 @@ const PORT = process.env.PORT || 4000
 const wordpressApiUrl = process.env.WORDPRESS_API_URL || "";
 const token = process.env.WORDPRESS_AUTH_REFRESH_TOKEN;
 
+const swaggerUi = require('swagger-ui-express')
+const swaggerFile = require('../swagger-output.json')
+
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors({ origin: ["http://localhost:3000", "https://clickson-tau.vercel.app"] }));
 
 app.use("/translations", express.static(__dirname + "/public/translations"));
+
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+
 
 app.get("/", async (req, res) => {
   const users = await sql`SELECT * FROM users;`;
