@@ -9,7 +9,6 @@
     "vercel": "npm run open-browser && vercel dev -l 4000",
     "swagger-gen": "node swagger.js",
     "open-browser": "start http://localhost:4000/doc"
-
   },
   "dependencies": {
     "@vercel/postgres": "^0.8.0",
@@ -26,6 +25,6 @@
     "swagger-autogen": "^2.23.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
-    "vercel": "^35.1.0"
+    "vercel": "^35.2.4"
   }
 }
