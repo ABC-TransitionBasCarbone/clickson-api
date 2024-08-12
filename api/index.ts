@@ -17,6 +17,8 @@ const swaggerUi = require('swagger-ui-express')
 const swaggerFile = require('../swagger-output.json')
 
 
+const fs = require('fs');
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors({ origin: ["http://localhost:3000", "https://clickson-tau.vercel.app"] }));
@@ -25,6 +27,15 @@ app.use("/translations", express.static(__dirname + "/public/translations"));
 
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
+app.get('/countries', (req, res) => {
+  fs.readFile(__dirname + "/public/countries/countries.json", 'utf8', (err, data) => {
+    if (err) {
+      res.status(500).json({ error: 'Failed to load data' });
+    } else {
+      res.json(JSON.parse(data));
+    }
+  });
+});
 
 app.get("/", async (req, res) => {
   const users = await sql`SELECT * FROM users;`;
