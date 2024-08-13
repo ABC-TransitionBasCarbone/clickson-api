@@ -5,6 +5,12 @@ const passwordWordpress = process.env.WORDPRESS_APPLICATION_PASSWORD;
 
 import { handle500errors } from "../common";
 
+const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+myHeaders.set('Authorization', 'Basic ' + Buffer.from(usernameWordpress + ":" + passwordWordpress).toString('base64'));
+
+
+
 module.exports = function (app) {
     app.delete("/delete-user", async (req, res) => {
         const { username } = req.body
@@ -13,8 +19,6 @@ module.exports = function (app) {
 
         requestInit.method = "DELETE";
         requestInit.body = JSON.stringify({ "reassign": "1" })
-
-        
 
         const url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id + "?force=true"
 
@@ -26,10 +30,6 @@ module.exports = function (app) {
     });
 
     async function getUser(username: string, res) {
-        const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        myHeaders.set('Authorization', 'Basic ' + Buffer.from(usernameWordpress + ":" + passwordWordpress).toString('base64'));
-
         res.url = wordpressApiUrl + "/wp-json/wp/v2/users?search=" + username;
         const requestInit = {
             headers: myHeaders,
@@ -43,18 +43,16 @@ module.exports = function (app) {
         }
     }
 
-
     app.post('/auth/login', async (req, res) => {
         const { username } = req.body
         const { users } = await getUser(username, res);
-        console.log("🚀 ~ app.post ~ users:", users)
 
-        return res.status(200).json(users);
+        return res.status(200).send(users);
     });
 
     app.post('/auth/reset-password', async (req, res) => {
         const { username, password } = req.body
-        console.log("🚀 ~ app.post ~ req.body:", req.body)
+
         const { requestInit, users } = await getUser(username, res);
 
         res.url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id
@@ -71,7 +69,7 @@ module.exports = function (app) {
 
     app.post('/auth/modify-user', async (req, res) => {
         const { username } = req.body
-        console.log("🚀 ~ app.post ~ req.body:", req.body)
+
         const { requestInit, users } = await getUser(username, res);
 
         res.url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id
@@ -86,11 +84,13 @@ module.exports = function (app) {
         }
     });
 
-    app.post('/auth/signup', async (req, res) => {
+    app.post('/auth/sign-up', async (req, res) => {
         res.url = wordpressApiUrl + "/wp-json/wp/v2/users"
+
         const requestInit = {
-            method:"POST",
-            body: JSON.stringify(req.body),
+            headers: myHeaders,
+            method: "POST",
+            body: JSON.stringify(req.body)
         } as RequestInit;
 
         try {
@@ -131,35 +131,31 @@ module.exports = function (app) {
         }
     });
 
-    async function handleFetch(requestOptions: RequestInit | undefined, res: { url: string | URL | Request; status: (arg0: number) => { (): any; new(): any; json: { (arg0: { errors: any; }): any; new(): any; }; }; }) {
+    async function handleFetch(requestOptions, res) {
         const response = await fetch(res.url, requestOptions);
 
         // Check response status early to avoid unnecessary parsing
         if (!response.ok) {
             const errorBody = await response.json();
-            // console.error('Errors:', errorBody.errors);
+            console.error('Errors:', errorBody.errors);
             return res.status(response.status).json({ errors: errorBody.errors });
         }
 
         const json = await response.json();
 
-
-
         if (json.errors) {
-            // console.error('Errors:', json.errors);
+            console.error('Errors:', json.errors);
             return res.status(400).json({ errors: json.errors });
         }
-        console.log("🚀 ~ handleFetch ~ json[0]:", json[0])
-
-        return res.status(200).json(json[0]);
+        return json;
     }
 
 
 
     function getGraphQlOptions(graphql: string) {
-        const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        myHeaders.append("Authorization", `Bearer ${token}`);
+        const myHeadersGraphQl = new Headers();
+        myHeadersGraphQl.append("Content-Type", "application/json");
+        myHeadersGraphQl.append("Authorization", `Bearer ${token}`);
 
         return {
             method: "POST",
