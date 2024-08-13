@@ -160,6 +160,12 @@ app.post('/auth/signup', async (req, res, next) => {
   const { email, password, firstName, lastName, country, ecole } = req.body
   const username = email.split("@")[0]
 
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
   myHeaders.append("Authorization", `Bearer ${token}`);
@@ -205,15 +211,19 @@ app.post('/auth/signup', async (req, res, next) => {
     const result = await fetch(wordpressApiUrl, requestOptions)
     const json = await result.json();
 
+    if (!validateEmail(email)) {
+      return res.status(400).json({ error: "Invalid email address" });
+    }
+    
     if (json.errors) {
       console.error(json.errors);
       const message = json.errors[0].message;
-      return res.status(500).send({ message });
+      return res.status(500).json({ message });
     }
-
     const user = json.data?.registerUser?.user
-    return res.status(200).send({ user });
+    return res.status(200).json({ user });
   } catch (error) {
+    console.error(error);
     return handleErrors(next, error);
   }
 
