@@ -1,13 +1,12 @@
 require('dotenv').config();
 
-import {Express, RequestHandler} from 'express'
+import {Express} from 'express'
 import express from "express";
 
 const app:Express = express();
-import cors from "cors";
-
-import swaggerUi from 'swagger-ui-express';
-import swaggerFile from '../swagger-output.json';
+const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('../swagger-output.json');
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
