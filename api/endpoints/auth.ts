@@ -9,89 +9,93 @@ module.exports = function (app) {
     app.delete("/delete-user", async (req, res) => {
         const { username } = req.body
 
-        const { requestInit, users } = await getUser(username);
+        const { requestInit, users } = await getUser(username, res);
 
         requestInit.method = "DELETE";
         requestInit.body = JSON.stringify({ "reassign": "1" })
 
-        const urlDelete = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id + "?force=true"
+        
 
-        const response = await fetch(urlDelete, requestInit);
-        const usersDeleted = await response.json()
+        const url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id + "?force=true"
 
-        return res.status(200).json(usersDeleted);
+        const response = await fetch(url, requestInit);
+        const user = await response.json()
+
+        return res.status(200).json(user);
 
     });
 
-    async function getUser(username: string) {
-        const urlGet = wordpressApiUrl + "/wp-json/wp/v2/users?slug=" + username;
-        console.log("🚀 ~ getUser ~ urlGet:", urlGet)
-
+    async function getUser(username: string, res) {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         myHeaders.set('Authorization', 'Basic ' + Buffer.from(usernameWordpress + ":" + passwordWordpress).toString('base64'));
 
+        res.url = wordpressApiUrl + "/wp-json/wp/v2/users?search=" + username;
         const requestInit = {
             headers: myHeaders,
         } as RequestInit;
 
-        const responseGet = await fetch(urlGet, requestInit);
-        const users = await responseGet.json();
-        return { requestInit, users };
+        try {
+            const users = await handleFetch(requestInit, res)
+            return { requestInit, users };
+        } catch (error) {
+            return handle500errors(error, res);
+        }
     }
 
 
     app.post('/auth/login', async (req, res) => {
-        const { username, password } = req.body
-     
-        const graphql = JSON.stringify({
-            query: `
-        mutation LoginUser($username: String!, $password: String!) {
-            login(input: {username: $username, password: $password
-            }) {
-              user {
-                email
-                }
-            }
-        }
-        `,
-            variables: { "username": username, "password": password }
-        })
+        const { username } = req.body
+        const { users } = await getUser(username, res);
+        console.log("🚀 ~ app.post ~ users:", users)
 
-        const requestOptions = getGraphQlOptions(graphql);
+        return res.status(200).json(users);
+    });
+
+    app.post('/auth/reset-password', async (req, res) => {
+        const { username, password } = req.body
+        console.log("🚀 ~ app.post ~ req.body:", req.body)
+        const { requestInit, users } = await getUser(username, res);
+
+        res.url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id
+        requestInit.method = "POST";
+        requestInit.body = JSON.stringify({ password })
 
         try {
-            const json = await handleFetch(requestOptions, res)
-
-            const user = json.data.login.user;
-            return res.status(200).json({ user });
+            const json = await handleFetch(requestInit, res)
+            return res.status(200).send(json);
         } catch (error) {
             return handle500errors(error, res);
         }
     });
 
-    app.post('/auth/reset-password', async (req, res) => {
+    app.post('/auth/modify-user', async (req, res) => {
         const { username } = req.body
+        console.log("🚀 ~ app.post ~ req.body:", req.body)
+        const { requestInit, users } = await getUser(username, res);
 
-        const graphql = JSON.stringify({
-            query: `
-        mutation ResetPassword($username: String!) {
-          sendPasswordResetEmail(input: {username: $username}) {
-            clientMutationId
-            success
-          }
-        }
-        `,
-            variables: { "username": username }
-        })
-
-        const requestOptions = getGraphQlOptions(graphql);
+        res.url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id
+        requestInit.method = "POST";
+        requestInit.body = JSON.stringify(req.body)
 
         try {
-            const json = await handleFetch(requestOptions, res)
+            const json = await handleFetch(requestInit, res)
+            return res.status(200).send(json);
+        } catch (error) {
+            return handle500errors(error, res);
+        }
+    });
 
-            const user = json.data.login.user;
-            return res.status(200).json({ user });
+    app.post('/auth/signup', async (req, res) => {
+        res.url = wordpressApiUrl + "/wp-json/wp/v2/users"
+        const requestInit = {
+            method:"POST",
+            body: JSON.stringify(req.body),
+        } as RequestInit;
+
+        try {
+            const json = await handleFetch(requestInit, res)
+            return res.status(200).send(json);
         } catch (error) {
             return handle500errors(error, res);
         }
@@ -127,72 +131,8 @@ module.exports = function (app) {
         }
     });
 
-    app.post('/auth/signup', async (req, res) => {
-        const { email, password, firstName, lastName, country, ecole } = req.body
-        const username = email.split("@")[0]
-
-        const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        myHeaders.append("Authorization", `Bearer ${token}`);
-
-        const graphql = JSON.stringify({
-            query: `
-        mutation registerUser(
-          $username: String!, 
-          $password: String!,
-          $email: String!, 
-          $firstName: String!,
-          $lastName: String!
-        ) {
-          registerUser(
-            input: {
-              username: $username
-              email: $email, 
-              firstName: $firstName, 
-              lastName: $lastName,
-              password: $password
-            }
-          ) {
-            clientMutationId
-            user {
-              id
-              name
-              email
-            }
-          }
-        }
-      `,
-            variables: { "username": username, "password": password, "email": email, "firstName": firstName, "lastName": lastName }
-        })
-
-        const requestOptions = {
-            method: "POST",
-            headers: myHeaders,
-            body: graphql,
-            redirect: "follow"
-        } as RequestInit;
-
-        try {
-            const result = await fetch(wordpressApiUrl, requestOptions)
-            const json = await result.json();
-
-            if (json.errors) {
-                console.error(json.errors);
-                const message = json.errors[0].message;
-                return res.status(500).send({ message });
-            }
-
-            const user = json.data.registerUser.user
-            return res.status(200).send({ user });
-        } catch (error) {
-            return handle500errors(error, res);
-        }
-
-    });
-
-    async function handleFetch(requestOptions, res) {
-        const response = await fetch(requestOptions.url, requestOptions);
-        console.log("🚀 ~ handleFetch ~ requestOptions.url:", requestOptions.url)
+    async function handleFetch(requestOptions: RequestInit | undefined, res: { url: string | URL | Request; status: (arg0: number) => { (): any; new(): any; json: { (arg0: { errors: any; }): any; new(): any; }; }; }) {
+        const response = await fetch(res.url, requestOptions);
 
         // Check response status early to avoid unnecessary parsing
         if (!response.ok) {
