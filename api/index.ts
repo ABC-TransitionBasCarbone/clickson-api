@@ -217,7 +217,7 @@ app.post('/auth/signup', async (req, res, next) => {
     if (!validateEmail(email)) {
       return res.status(400).json({ error: "Invalid email address" });
     }
-    
+
     if (json.errors) {
       console.error(json.errors);
       const message = json.errors[0].message;
@@ -298,21 +298,58 @@ async function handleFetch(requestOptions, res) {
   }
   return json;
 }
-// Get all fuel consumption records from an etablishement 
-app.get('/fuel', async (req, res) => {
+
+/**
+ * get emission categrories by student session id
+ */
+app.get('/emission-categories/:studentSessionId', async (req, res) => {
+  const studentSessionId = res.json(req.params).studentSessionId;
+
   try {
-    const fuelConsumption = await sql`SELECT * FROM fuel_consumption;`;
-    return res.status(200).json({ fuelConsumptions: fuelConsumption.rows.map(f => f.fuel_type) });
+    const emissionCategories = await sql`SELECT * FROM emission_categories WHERE id=${studentSessionId};`;
+    return res.status(200).json(emissionCategories.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Get all fuel consumption records from an etablishement 
-app.get('/fuel', async (req, res) => {
+/**
+ * get emission sub categrories by emission categrories id
+ */
+app.get('/emission-sub-categories/:emissionCategorieId', async (req, res) => {
+  const emissionCategorieId = res.json(req.params).emissionCategorieId;
+
   try {
-    const fuelConsumption = await sql`SELECT * FROM fuel_consumption;`;
-    return res.status(200).json({ fuelConsumptions: fuelConsumption.rows.map(f => f.fuel_type) });
+    const emissionSubCategories = await sql`SELECT * FROM emission_sub_categoriess WHERE id=${emissionCategorieId};`;
+    return res.status(200).json(emissionSubCategories.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * get comments by emission sub categrories id
+ */
+app.get('/comments/:emissionSubCategorieId', async (req, res) => {
+  const emissionSubCategorieId = res.json(req.params).emissionSubCategorieId;
+
+  try {
+    const comments = await sql`SELECT * FROM comments WHERE id=${emissionSubCategorieId};`;
+    return res.status(200).json(comments.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/**
+ * get emissions by emission sub categrories id
+ */
+app.get('/emissions/:emissionSubCategorieId', async (req, res) => {
+  const emissionSubCategorieId = res.json(req.params).emissionSubCategorieId;
+
+  try {
+    const emission = await sql`SELECT * FROM emission WHERE id=${emissionSubCategorieId};`;
+    return res.status(200).json(emission.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

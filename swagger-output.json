@@ -11,6 +11,19 @@
     "http"
   ],
   "paths": {
+    "/countries": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "description": "",
@@ -75,7 +88,7 @@
         }
       }
     },
-    "/auth/reset-password": {
+    "/reset-password": {
       "post": {
         "description": "",
         "parameters": [
@@ -102,7 +115,7 @@
         }
       }
     },
-    "/auth/new-token": {
+    "/new-token": {
       "post": {
         "description": "",
         "parameters": [
@@ -165,6 +178,93 @@
                 }
               }
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/emission-categories/{studentSessionId}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "studentSessionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/emission-sub-categories/{emissionCategorieId}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "emissionCategorieId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/comments/{emissionSubCategorieId}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "emissionSubCategorieId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/emissions/{emissionSubCategorieId}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "emissionSubCategorieId",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
