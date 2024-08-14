@@ -303,10 +303,8 @@ async function handleFetch(requestOptions, res) {
  * get emission categrories by student session id
  */
 app.get('/emission-categories/:studentSessionId', async (req, res) => {
-  const studentSessionId = res.json(req.params).studentSessionId;
-
   try {
-    const emissionCategories = await sql`SELECT * FROM emission_categories WHERE id=${studentSessionId};`;
+    const emissionCategories = await sql`SELECT * FROM emission_categories WHERE id=${req.params.studentSessionId};`;
     return res.status(200).json(emissionCategories.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -317,10 +315,8 @@ app.get('/emission-categories/:studentSessionId', async (req, res) => {
  * get emission sub categrories by emission categrories id
  */
 app.get('/emission-sub-categories/:emissionCategorieId', async (req, res) => {
-  const emissionCategorieId = res.json(req.params).emissionCategorieId;
-
   try {
-    const emissionSubCategories = await sql`SELECT * FROM emission_sub_categoriess WHERE id=${emissionCategorieId};`;
+    const emissionSubCategories = await sql`SELECT * FROM emission_sub_categories WHERE id_emission_categorie=${req.params.emissionCategorieId};`;
     return res.status(200).json(emissionSubCategories.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -331,10 +327,8 @@ app.get('/emission-sub-categories/:emissionCategorieId', async (req, res) => {
  * get comments by emission sub categrories id
  */
 app.get('/comments/:emissionSubCategorieId', async (req, res) => {
-  const emissionSubCategorieId = res.json(req.params).emissionSubCategorieId;
-
   try {
-    const comments = await sql`SELECT * FROM comments WHERE id=${emissionSubCategorieId};`;
+    const comments = await sql`SELECT * FROM comments WHERE id_emission_sub_categorie=${req.params.emissionSubCategorieId};`;
     return res.status(200).json(comments.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -345,10 +339,8 @@ app.get('/comments/:emissionSubCategorieId', async (req, res) => {
  * get emissions by emission sub categrories id
  */
 app.get('/emissions/:emissionSubCategorieId', async (req, res) => {
-  const emissionSubCategorieId = res.json(req.params).emissionSubCategorieId;
-
   try {
-    const emission = await sql`SELECT * FROM emission WHERE id=${emissionSubCategorieId};`;
+    const emission = await sql`SELECT * FROM emission WHERE id_emission_sub_categorie=${req.params.emissionSubCategorieId};`;
     return res.status(200).json(emission.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
