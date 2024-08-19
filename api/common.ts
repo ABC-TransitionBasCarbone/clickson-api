@@ -1,7 +1,6 @@
 
-
-
-export function handle500errors(error: any, res: any) {
+export function handleErrors(next: any, error: any) {
     console.error('Fetch error:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    next(error)
+    return error.status(500).json({ error: 'Internal Server Error' });
 }

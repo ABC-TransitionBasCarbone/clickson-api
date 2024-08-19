@@ -3,7 +3,7 @@ const token = process.env.WORDPRESS_AUTH_REFRESH_TOKEN;
 const usernameWordpress = process.env.WORDPRESS_APPLICATION_USERNAME;
 const passwordWordpress = process.env.WORDPRESS_APPLICATION_PASSWORD;
 
-import { handle500errors } from "../common";
+import { handleErrors } from "../common";
 
 const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
@@ -39,7 +39,7 @@ module.exports = function (app) {
             const users = await handleFetch(requestInit, res)
             return { requestInit, users };
         } catch (error) {
-            return handle500errors(error, res);
+            return handleErrors(error, res);
         }
     }
 
@@ -63,7 +63,7 @@ module.exports = function (app) {
             const json = await handleFetch(requestInit, res)
             return res.status(200).send(json);
         } catch (error) {
-            return handle500errors(error, res);
+            return handleErrors(error, res);
         }
     });
 
@@ -80,7 +80,7 @@ module.exports = function (app) {
             const json = await handleFetch(requestInit, res)
             return res.status(200).send(json);
         } catch (error) {
-            return handle500errors(error, res);
+            return handleErrors(error, res);
         }
     });
 
@@ -97,7 +97,7 @@ module.exports = function (app) {
             const json = await handleFetch(requestInit, res)
             return res.status(200).send(json);
         } catch (error) {
-            return handle500errors(error, res);
+            return handleErrors(error, res);
         }
     });
 
@@ -127,7 +127,7 @@ module.exports = function (app) {
 
             return res.status(200).send(refreshJwtAuthToken);
         } catch (error) {
-            return handle500errors(error, res);
+            return handleErrors(error, res);
         }
     });
 
