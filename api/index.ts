@@ -10,7 +10,7 @@ const cors = require("cors");
 const { sql } = require("@vercel/postgres");
 
 const PORT = process.env.PORT || 4000
-const wordpressApiUrl = process.env.WORDPRESS_API_URL || "";
+const wordpressApiUrl = process.env.WORDPRESS_API_URL + "/graphql" || "";
 const token = process.env.WORDPRESS_AUTH_REFRESH_TOKEN;
 
 const swaggerUi = require('swagger-ui-express')
