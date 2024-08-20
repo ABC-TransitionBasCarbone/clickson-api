@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 import {Express} from 'express'
 import express from "express";
 
