@@ -3,6 +3,7 @@ const token = process.env.WORDPRESS_AUTH_REFRESH_TOKEN;
 const usernameWordpress = process.env.WORDPRESS_APPLICATION_USERNAME;
 const passwordWordpress = process.env.WORDPRESS_APPLICATION_PASSWORD;
 
+import { Application, Request, Response } from 'express';
 import { handleErrors } from "../common";
 
 const myHeaders = new Headers();
@@ -11,11 +12,11 @@ myHeaders.set('Authorization', 'Basic ' + Buffer.from(usernameWordpress + ":" + 
 
 
 
-module.exports = function (app) {
-    app.delete("/delete-user", async (req, res, next) => {
+export default function (app: Application): void {
+    app.delete("/delete-user", async (req: Request, res: Response) => {
         const { username } = req.body
 
-        const { requestInit, users } = await getUser(username, res, next);
+        const { requestInit, users } = await getUser(username, res);
 
         requestInit.method = "DELETE";
         requestInit.body = JSON.stringify({ "reassign": "1" })
@@ -29,8 +30,8 @@ module.exports = function (app) {
 
     });
 
-    async function getUser(username: string, res, next) {
-        res.url = wordpressApiUrl + "/wp-json/wp/v2/users?search=" + username;
+    async function getUser(username: string, res: Response) {
+        res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users?search=" + username;
         const requestInit = {
             headers: myHeaders,
         } as RequestInit;
@@ -39,23 +40,23 @@ module.exports = function (app) {
             const users = await handleFetch(requestInit, res)
             return { requestInit, users };
         } catch (error) {
-            return handleErrors(next, error);
+            return handleErrors(error, res);
         }
     }
 
-    app.post('/auth/login', async (req, res, next) => {
+    app.post('/auth/login', async (req: Request, res: Response) => {
         const { username } = req.body
-        const { users  } = await getUser(username, res, next);
+        const { users } = await getUser(username, res);
 
         return res.status(200).send(users);
     });
 
-    app.post('/auth/reset-password', async (req, res, next) => {
+    app.post('/auth/reset-password', async (req: Request, res: Response) => {
         const { username, password } = req.body
 
-        const { requestInit, users } = await getUser(username, res, next);
+        const { requestInit, users } = await getUser(username, res);
 
-        res.url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id
+        res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id
         requestInit.method = "POST";
         requestInit.body = JSON.stringify({ password })
 
@@ -63,16 +64,16 @@ module.exports = function (app) {
             const json = await handleFetch(requestInit, res)
             return res.status(200).send(json);
         } catch (error) {
-            return handleErrors(next, error);
+            return handleErrors(error, res);
         }
     });
 
-    app.post('/auth/modify-user', async (req, res, next) => {
+    app.post('/auth/modify-user', async (req: Request, res: Response) => {
         const { username } = req.body
 
-        const { requestInit, users } = await getUser(username, res, next);
+        const { requestInit, users } = await getUser(username, res);
 
-        res.url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id
+        res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id
         requestInit.method = "POST";
         requestInit.body = JSON.stringify(req.body)
 
@@ -80,12 +81,12 @@ module.exports = function (app) {
             const json = await handleFetch(requestInit, res)
             return res.status(200).send(json);
         } catch (error) {
-            return handleErrors(next, error);
+            return handleErrors(error, res);
         }
     });
 
-    app.post('/auth/sign-up', async (req, res, next) => {
-        res.url = wordpressApiUrl + "/wp-json/wp/v2/users"
+    app.post('/auth/sign-up', async (req: Request, res: Response) => {
+        res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users"
 
         const requestInit = {
             headers: myHeaders,
@@ -97,7 +98,7 @@ module.exports = function (app) {
             const json = await handleFetch(requestInit, res)
             return res.status(200).send(json);
         } catch (error) {
-            return handleErrors(next, error);
+            return handleErrors(error, res);
         }
     });
 
@@ -106,7 +107,7 @@ module.exports = function (app) {
      * @param mettre le refreshToken toutes les heures en entrée
      * TODO gérer la durée de validité du token dans le Wordpress
      */
-    app.post('/auth/new-token', async (req, res, next) => {
+    app.post('/auth/new-token', async (req: Request, res: Response) => {
         const { jwtRefreshToken } = req.body
 
         const graphql = JSON.stringify({
@@ -120,7 +121,6 @@ module.exports = function (app) {
         })
 
         const requestOptions = getGraphQlOptions(graphql);
-        res.url = wordpressApiUrl + "/graphql"
 
         try {
             const json = await handleFetch(requestOptions, res)
@@ -128,12 +128,12 @@ module.exports = function (app) {
 
             return res.status(200).send(refreshJwtAuthToken);
         } catch (error) {
-            return handleErrors(next, error);
+            return handleErrors(error, res);
         }
     });
 
-    async function handleFetch(requestOptions, res) {
-        const response = await fetch(res.url, requestOptions);
+    async function handleFetch(requestOptions: RequestInit, res: Response) {
+        const response = await fetch(res.req.url, requestOptions);
 
         // Check response status early to avoid unnecessary parsing
         if (!response.ok) {
