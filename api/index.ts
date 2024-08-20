@@ -6,7 +6,8 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('../swagger-output.json');
 
-const fs = require('fs');
+import auth from './endpoints/auth';
+import postgres from './endpoints/postgres';
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -17,8 +18,7 @@ app.use("/translations", express.static(__dirname + "/public/translations"));
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 /* Endpoints */
-require('./endpoints/auth')(app)
-require('./endpoints/postgres')(app)
-require('./endpoints/translation')(app)
+auth(app)
+postgres(app)
 
-module.exports = app;
+export default app;
