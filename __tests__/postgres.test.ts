@@ -29,6 +29,10 @@ describe('GET /', () => {
     (sql as unknown as jest.Mock).mockRejectedValue(new Error('Database error'));
 
     const response = await request(app).get('/');
+<<<<<<< HEAD
+=======
+    console.log("🚀 ~ it ~ response:", response)
+>>>>>>> 7e60dfd (test Postgres OK)
 
     expect(response.status).toBe(500);
     expect(response.body.error).toBe('Internal Server Error');
