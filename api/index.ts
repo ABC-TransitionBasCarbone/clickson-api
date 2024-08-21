@@ -6,8 +6,6 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('../swagger-output.json');
 
-const fs = require('fs');
-
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors({ origin: ["http://localhost:3000", "https://clickson-tau.vercel.app"] }));
