@@ -2,5 +2,5 @@
 export function handleErrors(next: any, error: any) {
     console.error('Fetch error:', error);
     next(error)
-    return error.status(500).json({ error: 'Internal Server Error' });
+    return {} as { requestInit: RequestInit; users: any; }
 }

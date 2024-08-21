@@ -45,7 +45,7 @@ module.exports = function (app) {
 
     app.post('/auth/login', async (req, res) => {
         const { username } = req.body
-        const { users } = await getUser(username, res);
+        const { users  } = await getUser(username, res);
 
         return res.status(200).send(users);
     });
