@@ -6,7 +6,7 @@
   "author": "ABC Transition Bas Carbone",
   "license": "MIT",
   "scripts": {
-    "vercel": "npm run open-browser && vercel dev -l 4000",
+    "vercel": "vercel dev -l 4000",
     "swagger-gen": "node swagger.js",
     "open-browser": "start http://localhost:4000/doc"
   },

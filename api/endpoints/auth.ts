@@ -12,10 +12,10 @@ myHeaders.set('Authorization', 'Basic ' + Buffer.from(usernameWordpress + ":" + 
 
 
 module.exports = function (app) {
-    app.delete("/delete-user", async (req, res) => {
+    app.delete("/delete-user", async (req, res, next) => {
         const { username } = req.body
 
-        const { requestInit, users } = await getUser(username, res);
+        const { requestInit, users } = await getUser(username, res, next);
 
         requestInit.method = "DELETE";
         requestInit.body = JSON.stringify({ "reassign": "1" })
@@ -29,7 +29,7 @@ module.exports = function (app) {
 
     });
 
-    async function getUser(username: string, res) {
+    async function getUser(username: string, res, next) {
         res.url = wordpressApiUrl + "/wp-json/wp/v2/users?search=" + username;
         const requestInit = {
             headers: myHeaders,
@@ -39,21 +39,21 @@ module.exports = function (app) {
             const users = await handleFetch(requestInit, res)
             return { requestInit, users };
         } catch (error) {
-            return handleErrors(error, res);
+            return handleErrors(next, error);
         }
     }
 
-    app.post('/auth/login', async (req, res) => {
+    app.post('/auth/login', async (req, res, next) => {
         const { username } = req.body
-        const { users  } = await getUser(username, res);
+        const { users  } = await getUser(username, res, next);
 
         return res.status(200).send(users);
     });
 
-    app.post('/auth/reset-password', async (req, res) => {
+    app.post('/auth/reset-password', async (req, res, next) => {
         const { username, password } = req.body
 
-        const { requestInit, users } = await getUser(username, res);
+        const { requestInit, users } = await getUser(username, res, next);
 
         res.url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id
         requestInit.method = "POST";
@@ -63,14 +63,14 @@ module.exports = function (app) {
             const json = await handleFetch(requestInit, res)
             return res.status(200).send(json);
         } catch (error) {
-            return handleErrors(error, res);
+            return handleErrors(next, error);
         }
     });
 
-    app.post('/auth/modify-user', async (req, res) => {
+    app.post('/auth/modify-user', async (req, res, next) => {
         const { username } = req.body
 
-        const { requestInit, users } = await getUser(username, res);
+        const { requestInit, users } = await getUser(username, res, next);
 
         res.url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id
         requestInit.method = "POST";
@@ -80,11 +80,11 @@ module.exports = function (app) {
             const json = await handleFetch(requestInit, res)
             return res.status(200).send(json);
         } catch (error) {
-            return handleErrors(error, res);
+            return handleErrors(next, error);
         }
     });
 
-    app.post('/auth/sign-up', async (req, res) => {
+    app.post('/auth/sign-up', async (req, res, next) => {
         res.url = wordpressApiUrl + "/wp-json/wp/v2/users"
 
         const requestInit = {
@@ -97,7 +97,7 @@ module.exports = function (app) {
             const json = await handleFetch(requestInit, res)
             return res.status(200).send(json);
         } catch (error) {
-            return handleErrors(error, res);
+            return handleErrors(next, error);
         }
     });
 
@@ -106,7 +106,7 @@ module.exports = function (app) {
      * @param mettre le refreshToken toutes les heures en entrée
      * TODO gérer la durée de validité du token dans le Wordpress
      */
-    app.post('/auth/new-token', async (req, res) => {
+    app.post('/auth/new-token', async (req, res, next) => {
         const { jwtRefreshToken } = req.body
 
         const graphql = JSON.stringify({
@@ -128,7 +128,7 @@ module.exports = function (app) {
 
             return res.status(200).send(refreshJwtAuthToken);
         } catch (error) {
-            return handleErrors(error, res);
+            return handleErrors(next, error);
         }
     });
 
