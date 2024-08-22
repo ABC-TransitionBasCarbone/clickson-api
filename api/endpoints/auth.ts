@@ -120,6 +120,7 @@ module.exports = function (app) {
         })
 
         const requestOptions = getGraphQlOptions(graphql);
+        res.url = wordpressApiUrl + "/graphql"
 
         try {
             const json = await handleFetch(requestOptions, res)
