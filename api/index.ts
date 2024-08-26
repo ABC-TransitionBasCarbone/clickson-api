@@ -271,15 +271,12 @@ app.get('/emission/sub-categories/:category_id', async (req, res, next) => {
  */
 app.post('/energy/', async (req, res, next) => {
   try {
-    const { category_id, sub_category_id } = req.body
+    const { sub_category_id } = req.body
     
     const emission = await sql`
       select em.*
       from emission em
-      join emission_categories ec on ec.id = em.id_emission_sub_categorie
-      join emission_sub_categories esc on ec.id = esc.id_emission_categorie
-      where ec.id = ${category_id} 
-        and esc.id = ${sub_category_id};
+      where em.id_emission_sub_categorie = ${sub_category_id};
     `;
     return res.status(200).json({ emission: emission.rows.map(e => e) });
   } catch (error) {
@@ -296,15 +293,13 @@ app.post('/energy/', async (req, res, next) => {
  */
 app.post('/energy/comments/', async (req, res, next) => {
   try {
-    const { category_id, sub_category_id } = req.body
+    const { sub_category_id } = req.body
     
     const comments = await sql`
       select co.*
       from comments co
-      join emission_categories ec on ec.id = co.id_emission_sub_categorie
-      join emission_sub_categories esc on ec.id = esc.id_emission_categorie
-      where ec.label = ${category_id} 
-        and esc.label = ${sub_category_id};
+      where co.id_emission_sub_categorie = ${sub_category_id}
+      order by co.created_at DESC;
     `;
     return res.status(200).json({ comments: comments.rows.map(c => c) });
   } catch (error) {
@@ -314,13 +309,14 @@ app.post('/energy/comments/', async (req, res, next) => {
 });
 
 /**
- * API: fetch emission comments by category and sub category, e.g : Energy and Fuel
+ * API: add emission for energy
  * @param category_id
  * @param sub_category_id
  * @param label
  * @param type
  * @param value
- * @returns Comment[]
+ * @param id_emission_factor
+ * @returns emission_id
  */
 app.post('/energy/add/', async (req, res, next) => {
   try {
@@ -329,10 +325,11 @@ app.post('/energy/add/', async (req, res, next) => {
     const save = await sql`
       insert into emission 
       (id_emission_sub_categorie, id_emission_factor, label, type, value)
-      values (${sub_category_id}, ${id_emission_factor}, ${label}, ${type}, ${value});
+      values (${sub_category_id}, ${id_emission_factor}, ${label}, ${type}, ${value})
+      returning id;
     `;
     
-    return res.status(200).json({ data: save });
+    return res.status(200).json({ data: save.rows[0] });
   } catch (error) {
     return handleErrors(next, error);
   }
@@ -353,6 +350,32 @@ app.delete('/energy/delete/', async (req, res, next) => {
     `;
     
     return res.status(200).json({ data: action });
+  } catch (error) {
+    return handleErrors(next, error);
+  }
+  
+});
+
+/**
+ * API: add comment for energy
+ * @param sub_category_id
+ * @param comment
+ * @param created_at
+ * @param id_craeted_by
+ * @returns comment_id
+ */
+app.post('/energy/add/comment', async (req, res, next) => {
+  try {
+    const { sub_category_id, comment, created_at, craeted_by } = req.body
+    
+    const save = await sql`
+      insert into comments 
+      (id_emission_sub_categorie, comment, created_at, craeted_by)
+      values (${sub_category_id}, ${comment}, ${created_at}, ${craeted_by})
+      returning id;
+    `;
+    
+    return res.status(200).json({ data: save.rows[0] });
   } catch (error) {
     return handleErrors(next, error);
   }
