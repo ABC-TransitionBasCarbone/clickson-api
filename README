@@ -1,0 +1,27 @@
+# Clickson API
+
+A brief description of what this project does and who it's for
+
+
+## Installation
+
+Install my-project with yarn
+
+```bash
+  yarn i
+```
+    
+## Used By
+
+This project is used by the following project:
+
+- Clickson
+
+
+## API Reference
+
+#### Authentificate users
+
+#### Get emission factor with Postgres
+
+#### Get Translations
