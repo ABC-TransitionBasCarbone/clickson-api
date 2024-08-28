@@ -18,7 +18,7 @@ module.exports = function (app) {
         try {
     
         const categories = await sql`
-            select * from emission_categories`;
+            select * from emission_categories order by id asc`;
         return res.status(200).json({ data: categories.rows});
         } catch (error) {
         return handleErrors(next, error);
