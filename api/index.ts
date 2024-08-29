@@ -18,5 +18,6 @@ app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 require('./endpoints/auth')(app)
 require('./endpoints/postgres')(app)
 require('./endpoints/translation')(app)
+require('./endpoints/exports')(app)
 
 module.exports = app;
