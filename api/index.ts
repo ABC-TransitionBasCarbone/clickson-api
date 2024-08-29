@@ -18,7 +18,9 @@ app.use("/translations", express.static(__dirname + "/public/translations"));
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 /* Endpoints */
-auth(app)
-postgres(app)
+require('./endpoints/auth')(app)
+require('./endpoints/postgres')(app)
+require('./endpoints/translation')(app)
+require('./endpoints/exports')(app)
 
 export default app;
