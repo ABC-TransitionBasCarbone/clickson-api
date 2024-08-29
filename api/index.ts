@@ -6,6 +6,9 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('../swagger-output.json');
 
+import auth from './endpoints/auth';
+import postgres from './endpoints/postgres';
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors({ origin: ["http://localhost:3000", "https://clickson-tau.vercel.app"] }));
@@ -20,4 +23,4 @@ require('./endpoints/postgres')(app)
 require('./endpoints/translation')(app)
 require('./endpoints/exports')(app)
 
-module.exports = app;
+export default app;

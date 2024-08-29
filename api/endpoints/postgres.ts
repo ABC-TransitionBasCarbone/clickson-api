@@ -1,11 +1,22 @@
 const { sql } = require("@vercel/postgres");
+import { Application, Request, Response } from 'express';
 import { handleErrors } from "../common";
 
-module.exports = function (app) {
+interface EmissionCategory {
+    label: string;
+}
 
-    app.get("/", async (req, res) => {
-        const users = await sql`SELECT * FROM users;`;
-        return res.status(200).json({ users: users.rows.map(u => u.name) });
+
+export default function (app: Application): void {
+
+    app.get('/', async (req: Request, res: Response) => {
+        try {
+            const emissionCategories = await sql<EmissionCategory[]>`SELECT * FROM emission_categories;`;
+            return res.status(200).json({ emissionCategories: emissionCategories.rows.map((e: EmissionCategory) => e.label) });
+        } catch (error) {
+            console.error('Error fetching emission categories:', error);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
     });
 
         // Emission routes
