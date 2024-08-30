@@ -11,8 +11,8 @@ myHeaders.append("Content-Type", "application/json");
 myHeaders.set('Authorization', 'Basic ' + Buffer.from(usernameWordpress + ":" + passwordWordpress).toString('base64'));
 
 
+module.exports = function (app: Application): void {
 
-export default function (app: Application): void {
     app.delete("/delete-user", async (req: Request, res: Response, next: NextFunction) => {
         const { username } = req.body
 
@@ -86,12 +86,26 @@ export default function (app: Application): void {
     });
 
     app.post('/auth/sign-up', async (req: Request, res: Response, next: NextFunction) => {
-        res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users"
+        res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users";
+        const {email, username, first_name, last_name, password, state, school, city, zip_code} = req.body;
+        const body = {
+            first_name: first_name,
+            last_name: last_name,
+            email: email,
+            username: username,
+            password: password,
+            acf: {
+                state: state,
+                school: school,
+                city: city,
+                zip_code: zip_code
+            }
+          }
 
         const requestInit = {
             headers: myHeaders,
             method: "POST",
-            body: JSON.stringify(req.body)
+            body: JSON.stringify(body)
         } as RequestInit;
 
         try {
@@ -100,6 +114,7 @@ export default function (app: Application): void {
         } catch (error) {
             return handleErrors(next, error);
         }
+
     });
 
 

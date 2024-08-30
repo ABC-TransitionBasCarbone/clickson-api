@@ -7,7 +7,7 @@ interface EmissionCategory {
 }
 
 
-export default function (app: Application): void {
+module.exports = function (app: Application): void {
 
     app.get('/', async (req: Request, res: Response) => {
         try {
