@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cors({ origin: ["http://localhost:3000", "https://clickson-tau.vercel.app"] }));
 
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
-
+app.use("/countries", express.static(__dirname + "/public/countries/countries.json"));
 /* Endpoints */
 require('./endpoints/auth')(app)
 require('./endpoints/postgres')(app)
