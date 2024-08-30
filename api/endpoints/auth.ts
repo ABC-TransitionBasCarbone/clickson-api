@@ -30,25 +30,53 @@ module.exports = function (app: Application): void {
 
     });
 
-    async function getUser(username: string, res: Response, next: NextFunction) {
-        res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users?search=" + username;
+    async function login(username: string, password: string, rememberMe: boolean, res: Response, next: NextFunction) {
+        try {
+        res.req.url = wordpressApiUrl + "/wp-json/jwt-auth/v1/token";
         const requestInit = {
             headers: myHeaders,
+            method: "POST",
+            body: JSON.stringify({
+                "username": username,
+                "password": password,
+                "rememberMe": rememberMe
+            })
         } as RequestInit;
-
-        try {
-            const users = await handleFetch(requestInit, res)
+            const users = await handleFetch(requestInit, res, next)
             return { requestInit, users };
         } catch (error) {
             return handleErrors(next, error);
         }
     }
 
+    
+    async function getUser(username: string, res: Response, next: NextFunction) {
+        try {
+        res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users?search=" + username;
+        const requestInit = {
+            headers: myHeaders,
+        } as RequestInit;
+            const users = await handleFetch(requestInit, res, next)
+            return { requestInit, users };
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    }
     app.post('/auth/login', async (req: Request, res: Response, next: NextFunction) => {
-        const { username } = req.body
-        const { users } = await getUser(username, res, next);
-
-        return res.status(200).send(users);
+        const { username, password, rememberMe } = req.body;
+        
+        console.log("form: ",req.body);
+        try {
+            const response = await login(username, password, rememberMe, res, next);
+            if(response.users){
+                return res.status(200).send(response.users);
+            }
+            return res.status(403).send({"error": "users not found"});
+ 
+            
+        } catch(error) {
+            return handleErrors(next, error);
+        }
     });
 
     app.post('/auth/reset-password', async (req: Request, res: Response, next: NextFunction) => {
@@ -61,7 +89,7 @@ module.exports = function (app: Application): void {
         requestInit.body = JSON.stringify({ password })
 
         try {
-            const json = await handleFetch(requestInit, res)
+            const json = await handleFetch(requestInit, res, next)
             return res.status(200).send(json);
         } catch (error) {
             return handleErrors(next, error);
@@ -78,7 +106,7 @@ module.exports = function (app: Application): void {
         requestInit.body = JSON.stringify(req.body)
 
         try {
-            const json = await handleFetch(requestInit, res)
+            const json = await handleFetch(requestInit, res, next)
             return res.status(200).send(json);
         } catch (error) {
             return handleErrors(next, error);
@@ -109,7 +137,7 @@ module.exports = function (app: Application): void {
         } as RequestInit;
 
         try {
-            const json = await handleFetch(requestInit, res)
+            const json = await handleFetch(requestInit, res, next)
             return res.status(200).send(json);
         } catch (error) {
             return handleErrors(next, error);
@@ -138,7 +166,7 @@ module.exports = function (app: Application): void {
         const requestOptions = getGraphQlOptions(graphql);
 
         try {
-            const json = await handleFetch(requestOptions, res)
+            const json = await handleFetch(requestOptions, res, next)
             const refreshJwtAuthToken = json.data.refreshJwtAuthToken.authToken
 
             return res.status(200).send(refreshJwtAuthToken);
@@ -147,23 +175,21 @@ module.exports = function (app: Application): void {
         }
     });
 
-    async function handleFetch(requestOptions: RequestInit, res: Response) {
-        const response = await fetch(res.req.url, requestOptions);
-
-        // Check response status early to avoid unnecessary parsing
-        if (!response.ok) {
-            const errorBody = await response.json();
-            console.error('Errors:', errorBody.errors);
-            return res.status(response.status).json({ errors: errorBody.errors });
+    async function handleFetch(requestOptions: RequestInit, res: Response, next: NextFunction) {
+        try {
+            const response = await fetch(res.req.url, requestOptions);
+            if (!response.ok) {
+                const errorBody = await response.json();
+                return res.status(403).send({ errors: errorBody });
+            }
+    
+            return await response.json();
         }
+        catch(errors) {
+            return handleErrors(next, errors);
 
-        const json = await response.json();
-
-        if (json.errors) {
-            console.error('Errors:', json.errors);
-            return res.status(400).json({ errors: json.errors });
         }
-        return json;
+        
     }
 
 
