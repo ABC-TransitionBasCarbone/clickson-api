@@ -1,52 +1,58 @@
--- Insert translations for different languages  'en', 'fr', 'es', 'it', 'gr', 'hr', 'hu', 'ro'
+-- Insert translations for different languages: 'en', 'fr', 'es', 'it', 'gr', 'hr', 'hu', 'ro'
 INSERT INTO public.emission_categories_translation(
-        id,
-        id_emission_categorie,
-        language_code,
-        translated_label
-    )
-VALUES -- Translations for "Energy"
-    (1, 1, 'en', 'Energy'),
-    (2, 1, 'fr', 'Énergie'),
-    (3, 1, 'es', 'Energía'),
-    (4, 1, 'it', 'Energia'),
-    (5, 1, 'gr', 'Ενέργεια'),
-    (6, 1, 'hr', 'Energija'),
-    (7, 1, 'hu', 'Energia'),
-    (8, 1, 'ro', 'Energie'),
-    -- Translations for "Food service"
-    (9, 2, 'en', 'Food Service'),
-    (10, 2, 'fr', 'Service Alimentaire'),
-    (11, 2, 'es', 'Servicio de Alimentos'),
-    (12, 2, 'it', 'Servizio di Ristorazione'),
-    (13, 2, 'gr', 'Υπηρεσία Τροφίμων'),
-    (14, 2, 'hr', 'Usluga Prehrane'),
-    (15, 2, 'hu', 'Élelmiszer Szolgáltatás'),
-    (16, 2, 'ro', 'Serviciu Alimentar'),
-    -- Translations for "Travel"
-    (17, 3, 'en', 'Travel'),
-    (18, 3, 'fr', 'Voyage'),
-    (19, 3, 'es', 'Viaje'),
-    (20, 3, 'it', 'Viaggio'),
-    (21, 3, 'gr', 'Ταξίδι'),
-    (22, 3, 'hr', 'Putovanje'),
-    (23, 3, 'hu', 'Utazás'),
-    (24, 3, 'ro', 'Călătorie'),
-    -- Translations for "Supplies"
-    (25, 4, 'en', 'Supplies'),
-    (26, 4, 'fr', 'Fournitures'),
-    (27, 4, 'es', 'Suministros'),
-    (28, 4, 'it', 'Forniture'),
-    (29, 4, 'gr', 'Προμήθειες'),
-    (30, 4, 'hr', 'Zalihe'),
-    (31, 4, 'hu', 'Kellékek'),
-    (32, 4, 'ro', 'Aprovizionări'),
-    -- Translations for "Fixed assets"
-    (33, 5, 'en', 'Fixed Assets'),
-    (34, 5, 'fr', 'Actifs Fixes'),
-    (35, 5, 'es', 'Activos Fijos'),
-    (36, 5, 'it', 'Beni Fissi'),
-    (37, 5, 'gr', 'Πάγια Περιουσιακά Στοιχεία'),
-    (38, 5, 'hr', 'Stalna Imovina'),
-    (39, 5, 'hu', 'Tárgyi Eszközök'),
-    (40, 5, 'ro', 'Active Fixe');
+    id,
+    id_emission_categorie,
+    language_code,
+    translated_label,
+    translated_detail
+)
+VALUES
+-- Translations for "Energy"
+(1, 1, 'en', 'Energy', 'The energy category focuses on the school''s energy consumption over a school year. Initially, data on electricity and heating consumption will be collected. For a complete approach, consumptions linked to chemistry laboratories will also be added.'),
+(2, 1, 'fr', 'Énergie', 'La catégorie énergie se concentre sur la consommation d''énergie de l''école au cours d''une année scolaire. Initialement, les données sur la consommation d''électricité et de chauffage seront collectées. Pour une approche complète, les consommations liées aux laboratoires de chimie seront également ajoutées.'),
+(3, 1, 'es', 'Energía', 'La categoría de energía se centra en el consumo de energía de la escuela durante un año escolar. Inicialmente, se recopilarán datos sobre el consumo de electricidad y calefacción. Para un enfoque completo, también se añadirán los consumos vinculados a los laboratorios de química.'),
+(4, 1, 'it', 'Energia', 'La categoria energia si concentra sul consumo di energia della scuola durante l''anno scolastico. Inizialmente verranno raccolti i dati sul consumo di elettricità e riscaldamento. Per un approccio completo, verranno aggiunti anche i consumi legati ai laboratori di chimica.'),
+(5, 1, 'gr', 'Ενέργεια', 'Η κατηγορία ενέργειας επικεντρώνεται στην κατανάλωση ενέργειας του σχολείου κατά τη διάρκεια ενός σχολικού έτους. Αρχικά, θα συλλεχθούν δεδομένα για την κατανάλωση ηλεκτρικής ενέργειας και θέρμανσης. Για μια ολοκληρωμένη προσέγγιση, θα προστεθούν και οι καταναλώσεις που συνδέονται με τα χημικά εργαστήρια.'),
+(6, 1, 'hr', 'Energija', 'Kategorija energije fokusira se na potrošnju energije škole tijekom školske godine. U početku će se prikupljati podaci o potrošnji električne energije i grijanja. Za cjelovit pristup dodati će se i potrošnja povezana s kemijskim laboratorijima.'),
+(7, 1, 'hu', 'Energia', 'Az energia kategória az iskola energiafogyasztására összpontosít egy tanév során. Kezdetben az elektromos áram és a fűtés fogyasztási adatait gyűjtik. Teljesebb megközelítéshez hozzáadódnak a kémiai laboratóriumokhoz kapcsolódó fogyasztások is.'),
+(8, 1, 'ro', 'Energie', 'Categoria de energie se concentrează pe consumul de energie al școlii pe parcursul unui an școlar. Inițial, se vor colecta date despre consumul de electricitate și încălzire. Pentru o abordare completă, se vor adăuga și consumurile legate de laboratoarele de chimie.'),
+
+-- Translations for "Food service"
+(9, 2, 'en', 'Food Service', 'In the Food service category, students must calculate emissions linked to meals served. In certain schools, data on food sold in canteens and vending machines will also be collected.'),
+(10, 2, 'fr', 'Service Alimentaire', 'Dans la catégorie service alimentaire, les élèves doivent calculer les émissions liées aux repas servis. Dans certaines écoles, les données sur les aliments vendus dans les cantines et les distributeurs automatiques seront également collectées.'),
+(11, 2, 'es', 'Servicio de Alimentos', 'En la categoría de servicio de alimentos, los estudiantes deben calcular las emisiones vinculadas a las comidas servidas. En algunas escuelas, también se recopilarán datos sobre los alimentos vendidos en las cantinas y máquinas expendedoras.'),
+(12, 2, 'it', 'Servizio di Ristorazione', 'Nella categoria servizio di ristorazione, gli studenti devono calcolare le emissioni legate ai pasti serviti. In alcune scuole, saranno raccolti anche i dati sugli alimenti venduti nelle mense e nei distributori automatici.'),
+(13, 2, 'gr', 'Υπηρεσία Τροφίμων', 'Στην κατηγορία υπηρεσίας τροφίμων, οι μαθητές πρέπει να υπολογίζουν τις εκπομπές που συνδέονται με τα γεύματα που σερβίρονται. Σε ορισμένα σχολεία, θα συλλέγονται επίσης δεδομένα για τα τρόφιμα που πωλούνται στα κυλικεία και τους αυτόματους πωλητές.'),
+(14, 2, 'hr', 'Usluga Prehrane', 'U kategoriji usluga prehrane, učenici moraju izračunati emisije povezane s posluživanjem obroka. U nekim će se školama također prikupljati podaci o hrani koja se prodaje u kantinama i automatima.'),
+(15, 2, 'hu', 'Élelmiszer Szolgáltatás', 'Az élelmiszer-szolgáltatás kategóriában a diákoknak ki kell számolniuk a felszolgált ételekkel kapcsolatos kibocsátásokat. Bizonyos iskolákban az étkezde és az automatákban értékesített ételek adatai is gyűjtésre kerülnek.'),
+(16, 2, 'ro', 'Serviciu Alimentar', 'În categoria de servicii alimentare, elevii trebuie să calculeze emisiile legate de mesele servite. În anumite școli, se vor colecta și date despre alimentele vândute în cantine și automate.'),
+
+-- Translations for "Travel"
+(17, 3, 'en', 'Travel', 'The Travel category focuses on emissions linked to home-establishment travel of students, teachers, and non-teaching staff, as well as school trips if any take place.'),
+(18, 3, 'fr', 'Voyage', 'La catégorie voyage se concentre sur les émissions liées aux trajets domicile-établissement des étudiants, enseignants et personnel non enseignant, ainsi qu''aux voyages scolaires s''il y en a.'),
+(19, 3, 'es', 'Viaje', 'La categoría de viajes se centra en las emisiones vinculadas a los desplazamientos hogar-establecimiento de estudiantes, profesores y personal no docente, así como a los viajes escolares si los hay.'),
+(20, 3, 'it', 'Viaggio', 'La categoria viaggio si concentra sulle emissioni legate agli spostamenti casa-istituto di studenti, insegnanti e personale non docente, nonché sui viaggi scolastici se ce ne sono.'),
+(21, 3, 'gr', 'Ταξίδι', 'Η κατηγορία ταξιδιού επικεντρώνεται στις εκπομπές που συνδέονται με τα ταξίδια από το σπίτι στο σχολείο των μαθητών, των δασκάλων και του μη διδακτικού προσωπικού, καθώς και στις σχολικές εκδρομές, εάν υπάρχουν.'),
+(22, 3, 'hr', 'Putovanje', 'Kategorija putovanja usredotočuje se na emisije povezane s putovanjem učenika, nastavnika i nenastavnog osoblja od kuće do škole, kao i na školske izlete ako ih bude.'),
+(23, 3, 'hu', 'Utazás', 'Az utazási kategória a diákok, tanárok és nem tanári személyzet otthonról az intézménybe történő utazásával, valamint az esetlegesen megrendezett iskolai kirándulásokkal kapcsolatos kibocsátásokra összpontosít.'),
+(24, 3, 'ro', 'Călătorie', 'Categoria de călătorii se concentrează pe emisiile legate de deplasările de la domiciliu la unitatea de învățământ ale elevilor, profesorilor și personalului nedidactic, precum și pe excursiile școlare, dacă există.'),
+
+-- Translations for "Supplies"
+(25, 4, 'en', 'Supplies', 'In the Supplies category, all the material bought for the school year is entered. These are mostly consumables or short-life products that will be used during the year and will have to be bought again next year.'),
+(26, 4, 'fr', 'Fournitures', 'Dans la catégorie fournitures, tous les matériaux achetés pour l''année scolaire sont enregistrés. Il s''agit principalement de consommables ou de produits de courte durée qui seront utilisés pendant l''année et devront être rachetés l''année suivante.'),
+(27, 4, 'es', 'Suministros', 'En la categoría de suministros, se introducen todos los materiales comprados para el año escolar. Son principalmente consumibles o productos de corta duración que se utilizarán durante el año y deberán volver a comprarse el año siguiente.'),
+(28, 4, 'it', 'Forniture', 'Nella categoria forniture, vengono inseriti tutti i materiali acquistati per l''anno scolastico. Si tratta principalmente di consumabili o prodotti di breve durata che verranno utilizzati durante l''anno e dovranno essere acquistati nuovamente l''anno successivo.'),
+(29, 4, 'gr', 'Προμήθειες', 'Στην κατηγορία προμηθειών, καταχωρούνται όλα τα υλικά που αγοράστηκαν για το σχολικό έτος. Πρόκειται κυρίως για αναλώσιμα ή προϊόντα μικρής διάρκειας που θα χρησιμοποιηθούν κατά τη διάρκεια του έτους και θα πρέπει να αγοραστούν ξανά τον επόμενο χρόνο.'),
+(30, 4, 'hr', 'Zalihe', 'U kategoriji zaliha unose se svi materijali kupljeni za školsku godinu. To su uglavnom potrošni materijali ili proizvodi kratkog vijeka koji će se koristiti tijekom godine i morat će se ponovno kupiti sljedeće godine.'),
+(31, 4, 'hu', 'Kellékek', 'A kellékek kategóriában az összes, az iskolai évre vásárolt anyag kerül bevezetésre. Ezek többnyire fogyóeszközök vagy rövid élettartamú termékek, amelyeket az év során használnak, és a következő évben újra meg kell vásárolni.'),
+(32, 4, 'ro', 'Aprovizionări', 'În categoria de aprovizionări, se introduc toate materialele cumpărate pentru anul școlar. Acestea sunt în mare parte consumabile sau produse de scurtă durată care vor fi utilizate în timpul anului și vor trebui cumpărate din nou anul următor.'),
+
+-- Translations for "Fixed assets"
+(33, 5, 'en', 'Fixed Assets', 'The Fixed assets category covers buildings/renovations and goods classified as "long-term" such as IT equipment, production machinery, etc. The emissions generated by the manufacture of these goods are spread over a conventionally chosen period (20 years for buildings, 5 years for IT equipment).'),
+(34, 5, 'fr', 'Actifs Fixes', 'La catégorie des actifs fixes couvre les bâtiments/rénovations et les biens classés comme "long terme" tels que les équipements informatiques, les machines de production, etc. Les émissions générées par la fabrication de ces biens sont réparties sur une période choisie de manière conventionnelle (20 ans pour les bâtiments, 5 ans pour les équipements informatiques).'),
+(35, 5, 'es', 'Activos Fijos', 'La categoría de activos fijos cubre edificios/renovaciones y bienes clasificados como "a largo plazo" como equipos informáticos, maquinaria de producción, etc. Las emisiones generadas por la fabricación de estos bienes se distribuyen durante un período elegido convencionalmente (20 años para edificios, 5 años para equipos informáticos).'),
+(36, 5, 'it', 'Beni Fissi', 'La categoria beni fissi copre edifici/ristrutturazioni e beni classificati come "a lungo termine" come le attrezzature informatiche, le macchine di produzione, ecc. Le emissioni generate dalla produzione di questi beni sono ripartite su un periodo convenzionalmente scelto (20 anni per gli edifici, 5 anni per le attrezzature informatiche).'),
+(37, 5, 'gr', 'Πάγια Περιουσιακά Στοιχεία', 'Η κατηγορία πάγια περιουσιακά στοιχεία καλύπτει κτίρια/ανακαινίσεις και αγαθά που ταξινομούνται ως "μακροπρόθεσμα" όπως ο εξοπλισμός πληροφορικής, μηχανήματα παραγωγής κ.λπ. Οι εκπομπές που παράγονται από την κατασκευή αυτών των αγαθών κατανέμονται σε μια συμβατικά επιλεγμένη περίοδο (20 έτη για τα κτίρια, 5 έτη για τον εξοπλισμό πληροφορικής).'),
+(38, 5, 'hr', 'Stalna Imovina', 'Kategorija stalne imovine obuhvaća zgrade/renovacije i dobra klasificirana kao "dugoročna" kao što su informatička oprema, proizvodni strojevi itd. Emisije nastale proizvodnjom ovih dobara raspoređuju se tijekom konvencionalno odabranog razdoblja (20 godina za zgrade, 5 godina za IT opremu).'),
+(39, 5, 'hu', 'Tárgyi Eszközök', 'A tárgyi eszközök kategória lefedi az épületeket/felújításokat és a "hosszú távú" besorolású javakat, például az IT berendezéseket, gyártóberendezéseket stb. Az ezek előállításával járó kibocsátások egy hagyományosan megválasztott időszakra oszlanak meg (20 év az épületek esetében, 5 év az IT berendezések esetében).'),
+(40, 5, 'ro', 'Active Fixe', 'Categoria activelor fixe acoperă clădiri/renovări și bunuri clasificate ca fiind "pe termen lung", cum ar fi echipamente IT, mașini de producție, etc. Emisiile generate de fabricarea acestor bunuri sunt repartizate pe o perioadă aleasă în mod convențional (20 de ani pentru clădiri, 5 ani pentru echipamente IT).');
