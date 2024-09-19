@@ -3,15 +3,17 @@ CREATE TABLE STUDENT_SESSION (
     id_uai_school INT,
     id_group INT,
     name VARCHAR(255) NOT NULL,
-    year INT
+    year INT archived BOOLEAN DEFAULT false,
+    deleted BOOLEAN DEFAULT false
 );
-
 CREATE TABLE EMISSION_FACTOR (
     id INT PRIMARY KEY,
+    id_emission_sub_categorie INT REFERENCES EMISSION_SUB_CATEGORIES(id),
     label VARCHAR(255) NOT NULL,
     type VARCHAR(100),
     unit VARCHAR(50),
-    value NUMERIC
+    value NUMERIC,
+    uncertainty NUMERIC
 );
 CREATE TABLE EMISSION_FACTOR_TRANSLATION (
     id INT PRIMARY KEY,

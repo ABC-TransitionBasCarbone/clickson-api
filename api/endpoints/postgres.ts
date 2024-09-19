@@ -12,7 +12,7 @@ module.exports = function (app: Application): void {
     app.get('/', async (req: Request, res: Response) => {
         try {
             const emissionCategories = await sql<EmissionCategory[]>`SELECT * FROM emission_categories;`;
-            return res.status(200).json({ emissionCategories: emissionCategories.rows.map((e: EmissionCategory) => e.label) });
+            return res.status(200).json(emissionCategories.rows.map((e: EmissionCategory) => e.label));
         } catch (error) {
             console.error('Error fetching emission categories:', error);
             return res.status(500).json({ error: 'Internal Server Error' });
@@ -30,7 +30,7 @@ module.exports = function (app: Application): void {
 
             const categories = await sql`
             select * from emission_categories order by id asc`;
-            return res.status(200).json({ data: categories.rows });
+            return res.status(200).json(categories.rows);
         } catch (error) {
             return handleErrors(next, error);
         }
@@ -45,7 +45,22 @@ module.exports = function (app: Application): void {
         try {
             const sub_categories = await sql`
             select * from emission_sub_categories where id_emission_categorie=${req.params.category_id}`;
-            return res.status(200).json({ data: sub_categories.rows });
+            return res.status(200).json(sub_categories.rows);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+
+    });
+
+    /**
+     * API: fetch emission sub-categories
+     * @returns SubCategory[]
+     */
+    app.get('/emission/sub-categories', async (req, res, next) => {
+        try {
+            const sub_categories = await sql`
+            select * from emission_sub_categories`;
+            return res.status(200).json(sub_categories.rows);
         } catch (error) {
             return handleErrors(next, error);
         }
@@ -60,40 +75,53 @@ module.exports = function (app: Application): void {
      */
     app.post('/session', async (req, res, next) => {
         try {
+            // Creation of Sesssions
             const { id_uai_school, id_group, name, year } = req.body
 
             const id_student_session = await sql`
-            insert into student_session 
-            (id_uai_school, id_group, name, year)
-            values (${id_uai_school}, ${id_group}, ${name}, ${year})
-            returning id;
-        `.rows[0];
-
-            const emission_categories = await sql`
-        select * from emission_categories order by id asc`;
-
-
-            const session_emission_categories = emission_categories.rows.map(async categorie => {
-                return await sql`
-                insert into SESSION_EMISSION_CATEGORIES 
-                (id_student_session, id_emission_categorie)
-                values (${id_student_session}, ${categorie.id})
+                insert into student_session 
+                (id_uai_school, id_group, name, year)
+                values (${id_uai_school}, ${id_group}, ${name}, ${year})
                 returning id;
-            `.rows[0];
-            });
+            `;
 
+            // Creation of Sesssions Emission Categories
+            const emissionCategories = await sql`
+                select * from emission_categories order by id asc`;
 
-            //     const emission_sub_categories = await sql`
-            //     insert into SESSION_EMISSION_SUB_CATEGORIES 
-            //     (id_uai_school, id_group, name, year)
-            //     values (${id_uai_school}, ${id_group}, ${name}, ${year})
-            //     returning id;
-            // `.rows[0];
+            const sessionEmissionCategoriesMap = await emissionCategories.rows.map(categorie =>
+                ({ id_student_session: id_student_session.rows[0].id, id_emission_categorie: categorie.id }))
 
-            return res.status(200).json({
-                id_student_session: id_student_session,
-                session_emission_categories: session_emission_categories
-            });
+            const sessionEmissionCategories = await sql.query(
+                `INSERT INTO session_emission_categories (id_student_session, id_emission_categorie) VALUES 
+                ${sessionEmissionCategoriesMap.map((categorie) => {
+                    return `('${categorie.id_student_session}', ${categorie.id_emission_categorie})`;
+                }).join()} returning *`
+            );
+
+            // Creation of Sesssions Emissions Sub Categories
+            const emissionSubCategories = (await sql`
+                select * from emission_sub_categories order by id asc`).rows;
+
+            const sessionEmissionSubCategoriesMap =
+                await emissionSubCategories.map(subCategorie => {
+                    const id_session_emission_categorie = sessionEmissionCategories.rows.find(categorie =>
+                        categorie.id_emission_categorie === subCategorie.id_emission_categorie);
+
+                    return {
+                        id_session_emission_categorie: id_session_emission_categorie.id,
+                        id_emission_sub_categorie: subCategorie.id
+                    }
+                })
+
+            await sql.query(
+                `INSERT INTO session_emission_sub_categories (id_session_emission_categorie, id_emission_sub_categorie) VALUES 
+                    ${sessionEmissionSubCategoriesMap.map((categorie) => {
+                    return `('${categorie.id_session_emission_categorie}', ${categorie.id_emission_sub_categorie})`;
+                }).join()} returning *`
+            );
+
+            return res.status(200).json("La session, ses catégories et sous-catégories ont été créées avec succès.");
         } catch (error) {
             return handleErrors(next, error);
         }
@@ -109,7 +137,49 @@ module.exports = function (app: Application): void {
         try {
             const sessions = await sql`
             select * from student_session where year=${req.params.year}`;
-            return res.status(200).json({ sessions: sessions.rows });
+            return res.status(200).json(sessions.rows);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    });
+
+    /**
+     * API: get student session categories
+     * @returns Session categories
+     */
+    app.get('/session-categories', async (req, res, next) => {
+        try {
+            const sessionCategories = await sql`
+            select * from session_emission_categories`;
+            return res.status(200).json(sessionCategories.rows);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    });
+
+    /**
+     * API: get student session categories
+     * @returns Session categories
+     */
+    app.get('/session-sub-categories', async (req, res, next) => {
+        try {
+            const sessionSubCategories = await sql`
+            select * from session_emission_sub_categories`;
+            return res.status(200).json(sessionSubCategories.rows);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    });
+
+    /**
+     * API: delete student session
+     * @returns Session
+     */
+    app.delete('/sessions/:id', async (req, res, next) => {
+        try {
+            const id = await sql`
+            delete from student_session where id=${req.params.id}`;
+            return res.status(200).json(id);
         } catch (error) {
             return handleErrors(next, error);
         }
