@@ -5,7 +5,7 @@ const passwordWordpress = process.env.WORDPRESS_APPLICATION_PASSWORD;
 
 import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
-import { error } from 'console';
+const { sql } = require("@vercel/postgres");
 
 const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
@@ -33,16 +33,16 @@ module.exports = function (app: Application): void {
 
     async function login(username: string, password: string, rememberMe: boolean, res: Response, next: NextFunction) {
         try {
-        res.req.url = wordpressApiUrl + "/wp-json/jwt-auth/v1/token";
-        const requestInit = {
-            headers: myHeaders,
-            method: "POST",
-            body: JSON.stringify({
-                "username": username,
-                "password": password,
-                "rememberMe": rememberMe
-            })
-        } as RequestInit;
+            res.req.url = wordpressApiUrl + "/wp-json/jwt-auth/v1/token";
+            const requestInit = {
+                headers: myHeaders,
+                method: "POST",
+                body: JSON.stringify({
+                    "username": username,
+                    "password": password,
+                    "rememberMe": rememberMe
+                })
+            } as RequestInit;
             const users = await handleFetch(requestInit, res, next)
             return { requestInit, users };
         } catch (error) {
@@ -53,22 +53,22 @@ module.exports = function (app: Application): void {
     app.post('/auth/current', async (req: Request, res: Response, next: NextFunction) => {
         try {
             const response = await getUser(req.body.username, res, next);
-            if(response){
+            if (response) {
                 return res.status(200).send(response);
             }
-            return res.status(403).send({"error": "users not found"});
-                
-            } catch(error) {
-                return handleErrors(next, error);
-            }
+            return res.status(403).send({ "error": "users not found" });
+
+        } catch (error) {
+            return handleErrors(next, error);
+        }
     });
 
     async function getUser(username: string, res: Response, next: NextFunction) {
         try {
-        res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users?search=" + username;
-        const requestInit = {
-            headers: myHeaders,
-        } as RequestInit;
+            res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users?search=" + username;
+            const requestInit = {
+                headers: myHeaders,
+            } as RequestInit;
             const users = await handleFetch(requestInit, res, next)
             return { requestInit, users };
         } catch (error) {
@@ -79,13 +79,13 @@ module.exports = function (app: Application): void {
         const { username, password, rememberMe } = req.body;
         try {
             const response = await login(username, password, rememberMe, res, next);
-            if(response.users){
+            if (response.users) {
                 return res.status(200).send(response.users);
             }
-            return res.status(403).send({"error": "users not found"});
- 
-            
-        } catch(error) {
+            return res.status(403).send({ "error": "users not found" });
+
+
+        } catch (error) {
             return handleErrors(next, error);
         }
     });
@@ -115,7 +115,7 @@ module.exports = function (app: Application): void {
             const { username } = req.body
 
             const { requestInit, users } = await getUser(username, res, next);
-    
+
             res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id
             requestInit.method = "POST";
             requestInit.body = JSON.stringify(req.body)
@@ -125,25 +125,47 @@ module.exports = function (app: Application): void {
             return handleErrors(next, error);
         }
     });
-    
+
 
     app.post('/auth/sign-up', async (req: Request, res: Response, next: NextFunction) => {
         res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users";
-        const {email, username, first_name, last_name, password, state, school, city, zip_code} = req.body;
+        const { email, username, first_name, last_name, password, state, school_name, town_name, postal_code, student_count, staff_count, establishment_year, adress } = req.body;
+
+        // Check if school already exist
+        let schoolFromBdd = await sql.query(`
+            select * 
+            from schools 
+            where LOWER(name) LIKE LOWER('${school_name}');
+        `);
+        console.log("🚀 ~ app.post ~ schoolFromBdd1:", schoolFromBdd)
+
+        // The school doesn't exist so we will create it
+        if (!schoolFromBdd.rows[0]) {
+            try {
+                schoolFromBdd = await sql.query(`insert into schools 
+                    (state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress) 
+                    values 
+                    ('${state}', '${school_name}', '${town_name}', '${postal_code}', ${student_count}, ${staff_count}, ${establishment_year}, '${adress}') 
+                    returning id;`);
+                console.log("🚀 ~ app.post ~ schoolFromBdd2:", schoolFromBdd)
+            } catch (error) {
+                return handleErrors(next, error);
+            }
+        }
+        
         const body = {
             first_name: first_name,
             last_name: last_name,
             email: email,
             username: username,
             password: password,
-            acf: {
-                state: state,
-                school: school,
-                city: city,
-                zip_code: zip_code
-            },
-          }
+            id_school : schoolFromBdd.rows[0].id
+        }
+        console.log("🚀 ~ app.post ~ body.schoolFromBdd3:", schoolFromBdd)
+        console.log("🚀 ~ app.post ~ body:", body)
 
+
+        return
         const requestInit = {
             headers: myHeaders,
             method: "POST",
@@ -196,14 +218,14 @@ module.exports = function (app: Application): void {
                 const errorBody = await response.json();
                 return res.status(403).send({ errors: errorBody });
             }
-    
+
             return await response.json();
         }
-        catch(errors) {
+        catch (errors) {
             return handleErrors(next, errors);
 
         }
-        
+
     }
 
 
