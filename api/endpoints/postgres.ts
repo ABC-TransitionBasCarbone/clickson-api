@@ -147,10 +147,10 @@ module.exports = function (app: Application): void {
      * API: get student session categories
      * @returns Session categories
      */
-    app.get('/session-categories', async (req, res, next) => {
+    app.get('/session-categories/:id_group', async (req, res, next) => {
         try {
             const sessionCategories = await sql`
-            select * from session_emission_categories`;
+            select * from session_emission_categories where id_student_session = ${req.params.id_group}`;
             return res.status(200).json(sessionCategories.rows);
         } catch (error) {
             return handleErrors(next, error);
@@ -158,13 +158,13 @@ module.exports = function (app: Application): void {
     });
 
     /**
-     * API: get student session categories
-     * @returns Session categories
+     * API: get student session sub categories
+     * @returns Session sub categories
      */
-    app.get('/session-sub-categories', async (req, res, next) => {
+    app.get('/session-sub-categories/:id_session_emission_categorie', async (req, res, next) => {
         try {
             const sessionSubCategories = await sql`
-            select * from session_emission_sub_categories`;
+            select * from session_emission_sub_categories where id_student_session = ${req.params.id_session_emission_categorie}`;
             return res.status(200).json(sessionSubCategories.rows);
         } catch (error) {
             return handleErrors(next, error);
@@ -173,12 +173,12 @@ module.exports = function (app: Application): void {
 
     /**
      * API: delete student session
-     * @returns Session
+     * @returns Session id
      */
     app.delete('/sessions/:id', async (req, res, next) => {
         try {
             const id = await sql`
-            delete from student_session where id=${req.params.id}`;
+            delete from student_session where id=${req.params.id} returning id`;
             return res.status(200).json(id);
         } catch (error) {
             return handleErrors(next, error);

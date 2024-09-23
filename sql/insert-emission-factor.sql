@@ -34,7 +34,7 @@ VALUES
 (17, 3, 'Biogenic CH4', 'Principal greenhouse gas', 'kgCO2e/kg', 28, 0),
 (18, 3, 'N2O', 'Principal greenhouse gas', 'kgCO2e/kg', 265, 0),
 (19, 3, 'SF6', 'Principal greenhouse gas', 'kgCO2e/kg', 23500, 0),
-(20, 3, 'NF3', 'Principal greenhouse gas', 'kgCO2e/kg', 16100, 0);
+(20, 3, 'NF3', 'Principal greenhouse gas', 'kgCO2e/kg', 16100, 0),
 
 -- Meals
 (21, 5, 'Typical meal', 'Meal', 'kgCO2e/meal', 2.25, 4),
@@ -64,7 +64,7 @@ VALUES
 (39, 8, 'Paper – typical end of life', 'Other waste', 'kgCO2e/tonne', 43.1, 5),
 (40, 8, 'Cardboard – typical end of life', 'Other waste', 'kgCO2e/tonne', 37.9, 5),
 (41, 8, 'Glass – typical end of life', 'Other waste', 'kgCO2e/tonne', 33, 5),
-(42, 8, 'Plastic – typical end of life', 'Other waste', 'kgCO2e/tonne', 877, 5);
+(42, 8, 'Plastic – typical end of life', 'Other waste', 'kgCO2e/tonne', 877, 5),
 
 -- Means of transport
 (43, 10, 'Personal car – gasoline/petrol', 'Transport', 'kgCO2e/km', 0.259, 2),
@@ -75,10 +75,10 @@ VALUES
 (48, 10, 'Metro', 'Transport', 'kgCO2e/passenger.km', 0.006, 2),
 (49, 10, 'Suburban commuter train', 'Transport', 'kgCO2e/passenger.km', 0.006, 2),
 (50, 10, 'Tramway', 'Transport', 'kgCO2e/passenger.km', 0.006, 2),
-(51, 10, 'Train (average for France)', 'Transport', 'kgCO2e/passenger.km', 0.004, 5);
+(51, 10, 'Train (average for France)', 'Transport', 'kgCO2e/passenger.km', 0.004, 5),
 
 -- Ajout de l'avion en 11
-(52, 11, 'Plane', 'Transport', 'kgCO2e/passenger.km', 0.187, 5);
+(52, 11, 'Plane', 'Transport', 'kgCO2e/passenger.km', 0.187, 5),
 
 (53, 12, 'Standard table (furniture)', 'Office equipment', 'kgCO2e/unit', 60.100, 2),
 (54, 12, 'Chair (wood)', 'Office equipment', 'kgCO2e/unit', 18.600, 1),
@@ -89,12 +89,12 @@ VALUES
 (58, 13, 'AAA batteries (alkaline)', 'Electronics and chemical products', 'kgCO2e/unit', 0.065, 4),
 (59, 13, 'AA batteries (alkaline)', 'Electronics and chemical products', 'kgCO2e/unit', 0.137, 4),
 (60, 13, 'Hydrochloric acid (litres)', 'Electronics and chemical products', 'kgCO2e/L', 1.440, 4),
-(61, 13, 'Sulphuric acid (litres)', 'Electronics and chemical products', 'kgCO2e/L', 2.200, 4);
+(61, 13, 'Sulphuric acid (litres)', 'Electronics and chemical products', 'kgCO2e/L', 2.200, 4),
 
 (62, 14, 'Basketball', 'Sports equipment', 'kgCO2e/unit', 4.600, 3),
 (63, 14, 'Soccer ball', 'Sports equipment', 'kgCO2e/unit', 4.120, 3),
 (64, 14, 'Volleyball', 'Sports equipment', 'kgCO2e/unit', 2.250, 3),
-(65, 14, 'Handball', 'Sports equipment', 'kgCO2e/unit', 2.500, 3);
+(65, 14, 'Handball', 'Sports equipment', 'kgCO2e/unit', 2.500, 3),
 
 (66, 15, 'School building (concrete)', 'Construction', 'kgCO2e/m²', 440000, 4),
 (67, 15, 'Parking lot (concrete)', 'Construction', 'kgCO2e/m²', 319000, 2),
