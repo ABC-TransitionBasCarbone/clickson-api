@@ -4,6 +4,23 @@ import { handleErrors } from "../common";
 
 module.exports = function (app: Application): void {
 
+
+
+
+    /**
+     * API: fetch emission categories
+     * @returns Category[]
+     */
+    app.get('/emission/categories', async (req, res, next) => {
+        try {
+            const emission_categories = await sql`
+            select * from emission_categories`;
+            return res.status(200).json(emission_categories.rows);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+
+    });
     /**
      * API: fetch emission sub-categories
      * @returns SubCategory[]
@@ -32,6 +49,39 @@ module.exports = function (app: Application): void {
             return handleErrors(next, error);
         }
 
+    });
+
+    /**
+     * API : create group
+     * @returns Group
+     */
+    app.post('/groups', async (req, res, next) => {
+        const { id_school, teacher_username, name, year } = req.body
+        try {
+            const id_group = await sql`
+                    insert into student_sessions 
+                    (id_school, teacher_username, name, year)
+                    values (${id_school}, ${teacher_username}, ${name}, ${year})
+                    returning id;
+                `;
+            return res.status(200).json("The school has been created. Name : " + id_group.rows[0].id);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    })
+
+    /**
+     * API: get student session
+     * @returns Session
+     */
+    app.get('/groups/:teacher_username', async (req, res, next) => {
+        try {
+            const sessions = await sql`
+                select * from groups where teacher_username=${req.params.teacher_username} and deleted=false and archived=false`;
+            return res.status(200).json(sessions.rows);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
     });
 
     /**
@@ -165,6 +215,8 @@ module.exports = function (app: Application): void {
             return handleErrors(next, error);
         }
     });
+
+
 
     /**
      * API : create school

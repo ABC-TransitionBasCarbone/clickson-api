@@ -1,3 +1,12 @@
+CREATE TABLE GROUPS (
+    id BIGSERIAL PRIMARY KEY,
+    id_school INT REFERENCES SCHOOLS(id),
+    teacher_username VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    year INT,
+    archived BOOLEAN DEFAULT false,
+    deleted BOOLEAN DEFAULT false
+);
 CREATE TABLE STUDENT_SESSIONS (
     id BIGSERIAL PRIMARY KEY,
     id_school INT REFERENCES SCHOOLS(id),

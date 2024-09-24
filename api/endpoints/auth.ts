@@ -129,7 +129,12 @@ module.exports = function (app: Application): void {
 
     app.post('/auth/sign-up', async (req: Request, res: Response, next: NextFunction) => {
         res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users";
-        const { email, username, first_name, last_name, password, state, school_name, town_name, postal_code, student_count, staff_count, establishment_year, adress } = req.body;
+        const { email, username, first_name, last_name, password, role, state, school_name, town_name, postal_code, student_count, staff_count, establishment_year, adress } = req.body;
+
+
+        if(!school_name) {
+            return handleErrors(next, "Can you enter the name of the school ?");
+        }
 
         // Check if school already exist
         let schoolFromBdd = await sql.query(`
@@ -137,35 +142,30 @@ module.exports = function (app: Application): void {
             from schools 
             where LOWER(name) LIKE LOWER('${school_name}');
         `);
-        console.log("🚀 ~ app.post ~ schoolFromBdd1:", schoolFromBdd)
 
         // The school doesn't exist so we will create it
-        if (!schoolFromBdd.rows[0]) {
+        if (!schoolFromBdd || !schoolFromBdd.rows[0]) {
             try {
                 schoolFromBdd = await sql.query(`insert into schools 
                     (state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress) 
                     values 
                     ('${state}', '${school_name}', '${town_name}', '${postal_code}', ${student_count}, ${staff_count}, ${establishment_year}, '${adress}') 
                     returning id;`);
-                console.log("🚀 ~ app.post ~ schoolFromBdd2:", schoolFromBdd)
             } catch (error) {
                 return handleErrors(next, error);
             }
         }
-        
+
         const body = {
             first_name: first_name,
             last_name: last_name,
             email: email,
             username: username,
             password: password,
-            id_school : schoolFromBdd.rows[0].id
+            roles: role,
+            id_school: schoolFromBdd.rows[0].id
         }
-        console.log("🚀 ~ app.post ~ body.schoolFromBdd3:", schoolFromBdd)
-        console.log("🚀 ~ app.post ~ body:", body)
 
-
-        return
         const requestInit = {
             headers: myHeaders,
             method: "POST",
