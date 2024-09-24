@@ -1,10 +1,10 @@
 -- Insert translations for different languages: 'en', 'fr', 'es', 'it', 'gr', 'hr', 'hu', 'ro'
-INSERT INTO public.emission_categories_translation(
+INSERT INTO public.emission_categories_translations(
     id,
     id_emission_categorie,
     language_code,
     translated_label,
-    translated_detail
+    translated_details
 )
 VALUES
 -- Translations for "Energy"

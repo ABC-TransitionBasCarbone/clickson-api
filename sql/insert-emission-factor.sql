@@ -1,6 +1,6 @@
 -- TODO créer une table id_type/id_type_traduction et id_unit/id_unit_traduction
 
-INSERT INTO public.emission_factor(
+INSERT INTO public.emission_factors(
         id,
         id_emission_sub_categorie,
         label,

@@ -1,3 +1,15 @@
+
+CREATE TABLE SCHOOLS (
+    id BIGSERIAL PRIMARY KEY,
+    state TEXT NOT NULL,
+    name TEXT NOT NULL,
+    town_name TEXT NOT NULL,
+    postal_code TEXT NOT NULL,
+    student_count INTEGER,
+    staff_count INTEGER,
+    establishment_year INTEGER,
+    adress TEXT NOT NULL
+);
 CREATE TABLE GROUPS (
     id BIGSERIAL PRIMARY KEY,
     id_school INT REFERENCES SCHOOLS(id),
@@ -16,6 +28,29 @@ CREATE TABLE STUDENT_SESSIONS (
     archived BOOLEAN DEFAULT false,
     deleted BOOLEAN DEFAULT false
 );
+CREATE TABLE EMISSION_CATEGORIES (
+    id INT PRIMARY KEY,
+    label VARCHAR(255) NOT NULL,
+    details VARCHAR(2550) NOT NULL
+);
+CREATE TABLE SESSION_EMISSION_CATEGORIES (
+    id BIGSERIAL PRIMARY KEY,
+    id_student_session INT REFERENCES STUDENT_SESSIONS(id),
+    id_emission_categorie INT REFERENCES EMISSION_CATEGORIES(id)
+);
+CREATE TABLE EMISSION_CATEGORIES_TRANSLATIONS (
+    id INT PRIMARY KEY,
+    id_emission_categorie INT REFERENCES EMISSION_CATEGORIES(id),
+    language_code CHAR(2) NOT NULL,
+    translated_label VARCHAR(255) NOT NULL,
+    translated_details VARCHAR(2550) NOT NULL
+);
+CREATE TABLE EMISSION_SUB_CATEGORIES (
+    id INT PRIMARY KEY,
+    id_emission_categorie INT REFERENCES EMISSION_CATEGORIES(id),
+    label VARCHAR(255) NOT NULL,
+    details VARCHAR(2550) NOT NULL
+);
 CREATE TABLE EMISSION_FACTORS (
     id INT PRIMARY KEY,
     id_emission_sub_categorie INT REFERENCES EMISSION_SUB_CATEGORIES(id),
@@ -29,30 +64,7 @@ CREATE TABLE EMISSION_FACTOR_TRANSLATIONS (
     id INT PRIMARY KEY,
     id_emission_factor INT REFERENCES EMISSION_FACTORS(id),
     language_code CHAR(2) NOT NULL,
-    translated_label VARCHAR(255) NOT NULL
-);
-CREATE TABLE EMISSION_CATEGORIES (
-    id INT PRIMARY KEY,
-    label VARCHAR(255) NOT NULL,
-    details VARCHAR(255) NOT NULL
-);
-CREATE TABLE SESSION_EMISSION_CATEGORIES (
-    id BIGSERIAL PRIMARY KEY,
-    id_student_session INT REFERENCES STUDENT_SESSIONS(id),
-    id_emission_categorie INT REFERENCES EMISSION_CATEGORIES(id)
-);
-CREATE TABLE EMISSION_CATEGORIES_TRANSLATIONS (
-    id INT PRIMARY KEY,
-    id_emission_categorie INT REFERENCES EMISSION_CATEGORIES(id),
-    language_code CHAR(2) NOT NULL,
-    translated_label VARCHAR(255) NOT NULL,
-    translated_details VARCHAR(255) NOT NULL
-);
-CREATE TABLE EMISSION_SUB_CATEGORIES (
-    id INT PRIMARY KEY,
-    id_emission_categorie INT REFERENCES EMISSION_CATEGORIES(id),
-    label VARCHAR(255) NOT NULL,
-    details VARCHAR(255) NOT NULL
+    translated_label VARCHAR(2550) NOT NULL
 );
 CREATE TABLE SESSION_EMISSION_SUB_CATEGORIES (
     id BIGSERIAL PRIMARY KEY,
@@ -63,8 +75,8 @@ CREATE TABLE EMISSION_SUB_CATEGORIES_TRANSLATIONS (
     id INT PRIMARY KEY,
     id_emission_sub_categorie INT REFERENCES EMISSION_SUB_CATEGORIES(id),
     language_code CHAR(2) NOT NULL,
-    translated_label VARCHAR(255) NOT NUL,
-    translated_details VARCHAR(255) NOT NULL
+    translated_label VARCHAR(255) NOT NULL,
+    translated_details VARCHAR(2550) NOT NULL
 );
 CREATE TABLE COMMENTS (
     id INT PRIMARY KEY,
@@ -89,15 +101,4 @@ CREATE TABLE EMISSIONS (
     unit VARCHAR(50),
     value NUMERIC,
     uncertainty NUMERIC
-);
-CREATE TABLE SCHOOLS (
-    id BIGSERIAL PRIMARY KEY,
-    state TEXT NOT NULL,
-    name TEXT NOT NULL,
-    town_name TEXT NOT NULL,
-    postal_code TEXT NOT NULL,
-    student_count INTEGER,
-    staff_count INTEGER,
-    establishment_year INTEGER,
-    adress TEXT NOT NULL
 );

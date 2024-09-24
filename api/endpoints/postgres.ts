@@ -59,16 +59,17 @@ module.exports = function (app: Application): void {
         const { id_school, teacher_username, name, year } = req.body
         try {
             const id_group = await sql`
-                    insert into student_sessions 
+                    insert into groups 
                     (id_school, teacher_username, name, year)
                     values (${id_school}, ${teacher_username}, ${name}, ${year})
                     returning id;
                 `;
-            return res.status(200).json("The school has been created. Name : " + id_group.rows[0].id);
+            return res.status(200).json("The group has been created. ID : " + id_group.rows[0].id);
         } catch (error) {
             return handleErrors(next, error);
         }
     })
+
 
     /**
      * API: get student session
@@ -150,10 +151,10 @@ module.exports = function (app: Application): void {
      * API: get student session
      * @returns Session
      */
-    app.get('/sessions/:year', async (req, res, next) => {
+    app.get('/sessions/:id_group', async (req, res, next) => {
         try {
             const sessions = await sql`
-            select * from student_sessions where year=${req.params.year} and deleted=false and archived=false`;
+            select * from student_sessions where id_group=${req.params.id_group} and deleted=false and archived=false`;
             return res.status(200).json(sessions.rows);
         } catch (error) {
             return handleErrors(next, error);
@@ -181,8 +182,42 @@ module.exports = function (app: Application): void {
     app.get('/session-sub-categories/:id_session_emission_categorie', async (req, res, next) => {
         try {
             const sessionSubCategories = await sql`
-            select * from session_emission_sub_categories where id_student_session = ${req.params.id_session_emission_categorie}`;
+            select * from session_emission_sub_categories 
+            where id_student_session = ${req.params.id_session_emission_categorie}`;
             return res.status(200).json(sessionSubCategories.rows);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    });
+
+    /**
+     * API : create student session-emission
+     * @returns session-emission ID
+     */
+    app.post('/session-emission', async (req, res, next) => {
+        const { id_session_emission_sub_categorie, id_emission_factor, value } = req.body
+        try {
+            const sessionEmission = await sql.query(`insert into session_emissions 
+                    (id_session_emission_sub_categorie, id_emission_factor, value) 
+                    values 
+                    (${id_session_emission_sub_categorie}, ${id_emission_factor}, ${value}) 
+                    returning *;`);
+            return res.status(200).json("The session-emission has been created. ID : " + sessionEmission.rows[0].id);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    })
+
+    /**
+    * API: get student session-emission
+    * @returns session-emission
+    */
+    app.get('/session-emission/:id_session_emission_sub_categorie', async (req, res, next) => {
+        try {
+            const id_session_emission_sub_categorie = await sql`
+           select * from session_emissions 
+           where id_session_emission_sub_categorie = ${req.params.id_session_emission_sub_categorie}`;
+            return res.status(200).json(id_session_emission_sub_categorie.rows);
         } catch (error) {
             return handleErrors(next, error);
         }
