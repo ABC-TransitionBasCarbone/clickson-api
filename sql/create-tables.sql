@@ -79,6 +79,17 @@ CREATE TABLE SESSION_EMISSIONS (
     id_emission_factor INT REFERENCES EMISSION_FACTORS(id),
     value NUMERIC
 );
+-- TODO DELETE THIS TABLE
+CREATE TABLE EMISSIONS (
+    id BIGSERIAL PRIMARY KEY,
+    id_emission_sub_categorie INT,
+    id_emission_factor INT,
+    label VARCHAR(255) NOT NULL,
+    type VARCHAR(100),
+    unit VARCHAR(50),
+    value NUMERIC,
+    uncertainty NUMERIC
+);
 CREATE TABLE SCHOOLS (
     id BIGSERIAL PRIMARY KEY,
     state TEXT NOT NULL,

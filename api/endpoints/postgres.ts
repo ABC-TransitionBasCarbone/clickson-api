@@ -252,4 +252,139 @@ module.exports = function (app: Application): void {
         }
     });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * TODO Change this energy into common emissions
+     */
+    // Energy routes
+    /**
+     * API: fetch emission by category and sub category, e.g : Energy and Fuel
+     * @param category_id
+     * @param sub_category_id
+     * @returns Emission[]
+     */
+    app.post('/energy/', async (req, res, next) => {
+        try {
+            const { sub_category_id } = req.body
+
+            const emission = await sql`
+            select em.*
+            from emissions em
+            where em.id_emission_sub_categorie = ${sub_category_id};
+        `;
+            return res.status(200).json({ emission: emission.rows.map(e => e) });
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+
+    });
+
+    /**
+     * API: fetch emission comments by category and sub category, e.g : Energy and Fuel
+     * @param category_id
+     * @param sub_category_id
+     * @returns Comment[]
+     */
+    app.post('/energy/comments/', async (req, res, next) => {
+        try {
+            const { sub_category_id } = req.body
+
+            const comments = await sql`
+            select co.*
+            from comments co
+            where co.id_emission_sub_categorie = ${sub_category_id}
+            order by co.created_at DESC;
+        `;
+            return res.status(200).json({ comments: comments.rows.map(c => c) });
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+
+    });
+
+    /**
+     * API: add emission for energy
+     * @param category_id
+     * @param sub_category_id
+     * @param label
+     * @param type
+     * @param value
+     * @param id_emission_factor
+     * @returns emission_id
+     */
+    app.post('/energy/add/', async (req, res, next) => {
+        try {
+            const { category_id, sub_category_id, label, type, value, id_emission_factor } = req.body
+
+            const save = await sql`
+            insert into emissions 
+            (id_emission_sub_categorie, id_emission_factor, label, type, value)
+            values (${sub_category_id}, ${id_emission_factor}, ${label}, ${type}, ${value})
+            returning id;
+        `;
+
+            return res.status(200).json({ data: save.rows[0] });
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+
+    });
+
+    /**
+     * API: Delete emission by id
+     * @param id
+     * @returns 
+     */
+    app.delete('/energy/delete/', async (req, res, next) => {
+        try {
+            const { id } = req.body
+
+            const action = await sql`
+            delete from emissions where id=${id};
+        `;
+
+            return res.status(200).json({ data: action });
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+
+    });
+
+    /**
+     * API: add comment for energy
+     * @param sub_category_id
+     * @param comment
+     * @param created_at
+     * @param id_craeted_by
+     * @returns comment_id
+     */
+    app.post('/energy/add/comment', async (req, res, next) => {
+        try {
+            const { sub_category_id, comment, created_at, craeted_by } = req.body
+
+            const save = await sql`
+            insert into comments 
+            (id_emission_sub_categorie, comment, created_at, craeted_by)
+            values (${sub_category_id}, ${comment}, ${created_at}, ${craeted_by})
+            returning id;
+        `;
+
+            return res.status(200).json({ data: save.rows[0] });
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+
+    });
 }
