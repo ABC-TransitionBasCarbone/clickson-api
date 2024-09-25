@@ -138,10 +138,8 @@ module.exports = function (app: Application): void {
 
         // Check if school already exist
         let schoolFromBdd = await sql.query(`
-            select * 
-            from schools 
-            where LOWER(name) LIKE LOWER('${school_name}') 
-            and LOWER(admin_username) LIKE LOWER('${email}');
+            select * from schools 
+            where postal_code LIKE '${postal_code}' and LOWER(admin_username) LIKE LOWER('${email}');
         `);
 
         const test = `
@@ -151,16 +149,15 @@ module.exports = function (app: Application): void {
                     ('${state}', '${school_name}', '${town_name}', '${postal_code}', ${student_count}, ${staff_count}, ${establishment_year}, '${adress}', '${email}') 
                     returning id;
                     `
-        console.log("🚀 ~ app.post ~ test:", test)
 
         // The school doesn't exist so we will create it
         if (!schoolFromBdd || !schoolFromBdd.rows[0]) {
             try {
                 schoolFromBdd = await sql.query(`
                     insert into schools 
-                    (state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress, admin_username) 
-                    values 
-                    ('${state}', '${school_name}', '${town_name}', '${postal_code}', ${student_count}, ${staff_count}, ${establishment_year}, '${adress}', '${email}') 
+                        (state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress, admin_username) 
+                        values 
+                        ('${state}', '${school_name}', '${town_name}', '${postal_code}', ${student_count}, ${staff_count}, ${establishment_year}, '${adress}', '${email}') 
                     returning id;
                     `);
             } catch (error) {
@@ -192,36 +189,6 @@ module.exports = function (app: Application): void {
 
     });
 
-
-    /**
-     * @param mettre le refreshToken toutes les heures en entrée
-     * TODO gérer la durée de validité du token dans le Wordpress
-     */
-    app.post('/auth/new-token', async (req: Request, res: Response, next: NextFunction) => {
-        const { jwtRefreshToken } = req.body
-
-        const graphql = JSON.stringify({
-            query: `
-        mutation NewToken($jwtRefreshToken: String!) {
-          refreshJwtAuthToken(input: {jwtRefreshToken: $jwtRefreshToken}) {
-            authToken
-          }
-        }`,
-            variables: { "jwtRefreshToken": jwtRefreshToken }
-        })
-
-        const requestOptions = getGraphQlOptions(graphql);
-
-        try {
-            const json = await handleFetch(requestOptions, res, next)
-            const refreshJwtAuthToken = json.data.refreshJwtAuthToken.authToken
-
-            return res.status(200).send(refreshJwtAuthToken);
-        } catch (error) {
-            return handleErrors(next, error);
-        }
-    });
-
     async function handleFetch(requestOptions: RequestInit, res: Response, next: NextFunction) {
         try {
             const response = await fetch(res.req.url, requestOptions);
@@ -238,20 +205,4 @@ module.exports = function (app: Application): void {
         }
 
     }
-
-
-
-    function getGraphQlOptions(graphql: string) {
-        const myHeadersGraphQl = new Headers();
-        myHeadersGraphQl.append("Content-Type", "application/json");
-        myHeadersGraphQl.append("Authorization", `Bearer ${token}`);
-
-        return {
-            method: "POST",
-            headers: myHeaders,
-            body: graphql,
-            redirect: "follow"
-        } as RequestInit;
-    }
-
 }
