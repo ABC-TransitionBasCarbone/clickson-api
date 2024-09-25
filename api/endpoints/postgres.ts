@@ -3,10 +3,6 @@ import { Application } from 'express';
 import { handleErrors } from "../common";
 
 module.exports = function (app: Application): void {
-
-
-
-
     /**
      * API: fetch emission categories
      * @returns Category[]
@@ -21,6 +17,7 @@ module.exports = function (app: Application): void {
         }
 
     });
+
     /**
      * API: fetch emission sub-categories
      * @returns SubCategory[]
@@ -33,7 +30,6 @@ module.exports = function (app: Application): void {
         } catch (error) {
             return handleErrors(next, error);
         }
-
     });
 
     /**
@@ -69,7 +65,6 @@ module.exports = function (app: Application): void {
             return handleErrors(next, error);
         }
     })
-
 
     /**
      * API: get student session
@@ -238,32 +233,16 @@ module.exports = function (app: Application): void {
     });
 
     /**
-     * API: archive student session
-     * @returns session id
-     */
-    app.put('/sessions/:id', async (req, res, next) => {
-        try {
-            const id = await sql`
-            update student_session set archive = true where id=${req.params.id} returning id`;
-            return res.status(200).json(id);
-        } catch (error) {
-            return handleErrors(next, error);
-        }
-    });
-
-
-
-    /**
      * API : create school
      * @returns School
      */
     app.post('/school', async (req, res, next) => {
-        const { state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress } = req.body
+        const { state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress, admin_username } = req.body
         try {
             const result = await sql.query(`insert into schools 
-                (state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress) 
+                (state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress, admin_username) 
                 values 
-                ('${state}', '${name}', '${town_name}', '${postal_code}', ${student_count}, ${staff_count}, ${establishment_year}, '${adress}') 
+                ('${state}', '${name}', '${town_name}', '${postal_code}', ${student_count}, ${staff_count}, ${establishment_year}, '${adress}', '${admin_username}') 
                 returning *;`);
             return res.status(200).json("The school has been created. Name : " + result.rows[0].name);
         } catch (error) {
@@ -272,16 +251,42 @@ module.exports = function (app: Application): void {
     })
 
     /**
-     * API : get school
+     * API : update school
      * @returns School
      */
-    app.get('/school/:name', async (req, res, next) => {
+    app.put('/school', async (req, res, next) => {
+        const { id, state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress, admin_username } = req.body
         try {
-            const sessions = await sql.query(`select * 
+            await sql.query(`
+                update schools 
+                set 
+                    state = '${state}',
+                    name = '${name}',
+                    town_name = '${town_name}',
+                    postal_code = '${postal_code}',
+                    student_count = ${student_count},
+                    staff_count = ${staff_count},
+                    establishment_year = ${establishment_year},
+                    adress = '${adress}',
+                    admin_username = '${admin_username}'
+                where id = ${id} ;`);
+            return res.status(200).json("The school has been updated");
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    })
+
+    /**
+     * API : get school by admin name
+     * @returns School
+     */
+    app.get('/school/:admin_username', async (req, res, next) => {
+        try {
+            const schools = await sql.query(`select * 
                 from schools 
-                where LOWER(name) LIKE LOWER('${req.params.name}');
+                where LOWER(admin_username) LIKE LOWER('${req.params.admin_username}');
             `);
-            return res.status(200).json(sessions.rows);
+            return res.status(200).json(schools.rows);
         } catch (error) {
             return handleErrors(next, error);
         }
@@ -361,7 +366,7 @@ module.exports = function (app: Application): void {
      */
     app.post('/energy/add/', async (req, res, next) => {
         try {
-            const { category_id, sub_category_id, label, type, value, id_emission_factor } = req.body
+            const { sub_category_id, label, type, value, id_emission_factor } = req.body
 
             const save = await sql`
             insert into emissions 

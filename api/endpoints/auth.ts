@@ -129,10 +129,10 @@ module.exports = function (app: Application): void {
 
     app.post('/auth/sign-up', async (req: Request, res: Response, next: NextFunction) => {
         res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users";
-        const { email, username, first_name, last_name, password, role, state, school_name, town_name, postal_code, student_count, staff_count, establishment_year, adress } = req.body;
+        const { email, first_name, last_name, password, role, state, school_name, town_name, postal_code, student_count, staff_count, establishment_year, adress } = req.body;
 
 
-        if(!school_name) {
+        if (!school_name) {
             return handleErrors(next, "Can you enter the name of the school ?");
         }
 
@@ -140,17 +140,29 @@ module.exports = function (app: Application): void {
         let schoolFromBdd = await sql.query(`
             select * 
             from schools 
-            where LOWER(name) LIKE LOWER('${school_name}');
+            where LOWER(name) LIKE LOWER('${school_name}') 
+            and LOWER(admin_username) LIKE LOWER('${email}');
         `);
+
+        const test = `
+                    insert into schools 
+                    (state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress, admin_username) 
+                    values 
+                    ('${state}', '${school_name}', '${town_name}', '${postal_code}', ${student_count}, ${staff_count}, ${establishment_year}, '${adress}', '${email}') 
+                    returning id;
+                    `
+        console.log("🚀 ~ app.post ~ test:", test)
 
         // The school doesn't exist so we will create it
         if (!schoolFromBdd || !schoolFromBdd.rows[0]) {
             try {
-                schoolFromBdd = await sql.query(`insert into schools 
-                    (state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress) 
+                schoolFromBdd = await sql.query(`
+                    insert into schools 
+                    (state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress, admin_username) 
                     values 
-                    ('${state}', '${school_name}', '${town_name}', '${postal_code}', ${student_count}, ${staff_count}, ${establishment_year}, '${adress}') 
-                    returning id;`);
+                    ('${state}', '${school_name}', '${town_name}', '${postal_code}', ${student_count}, ${staff_count}, ${establishment_year}, '${adress}', '${email}') 
+                    returning id;
+                    `);
             } catch (error) {
                 return handleErrors(next, error);
             }
@@ -160,10 +172,9 @@ module.exports = function (app: Application): void {
             first_name: first_name,
             last_name: last_name,
             email: email,
-            username: username,
+            username: email,
             password: password,
             roles: role,
-            id_school: schoolFromBdd.rows[0].id
         }
 
         const requestInit = {

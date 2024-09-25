@@ -1,5 +1,6 @@
 INSERT INTO public.emission_categories(id, label, details)
-VALUES (1, 'Energy', 'The energy category focuses on the school''s energy consumption over a school year. Initially data on electricity and heating consumption will be collected. For a complete approach, consumptions linked to chemistry laboratories will also be added.'),
+VALUES 
+    (1, 'Energy', 'The energy category focuses on the school''s energy consumption over a school year. Initially data on electricity and heating consumption will be collected. For a complete approach, consumptions linked to chemistry laboratories will also be added.'),
     (2, 'Food service', 'The Travel category focuses on emissions linked to home-establishment travel of students, teachers, and non-teaching staff, as well as school trips if any take place.'),
     (3, 'Travel', 'In the Food service category, students must calculate emissions linked to meals served. In certain schools, data on food sold in canteens and vending machines will also be collected.'),
     (4, 'Supplies', 'In the Supplies category, all the material bought for the school year is entered. These are mostly consumables or short-life products that will be used during the year and will have to be bought again next year.'),

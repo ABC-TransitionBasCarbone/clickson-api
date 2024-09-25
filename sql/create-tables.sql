@@ -8,7 +8,8 @@ CREATE TABLE SCHOOLS (
     student_count INTEGER,
     staff_count INTEGER,
     establishment_year INTEGER,
-    adress TEXT NOT NULL
+    adress TEXT NOT NULL,
+    admin_username TEXT NOT NULL
 );
 CREATE TABLE GROUPS (
     id BIGSERIAL PRIMARY KEY,
