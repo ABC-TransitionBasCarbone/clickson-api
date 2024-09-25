@@ -23,6 +23,30 @@ module.exports = function (app: Application): void {
     })
 
     /**
+     * API : update group
+     * @returns Group
+     */
+    app.put('/groups', async (req, res, next) => {
+        const { id, id_school, teacher_username, name, year, archived, deleted } = req.body
+        try {
+            await sql`
+                    update groups 
+                    set
+                        id_school='${id_school}',
+                        teacher_username='${teacher_username}',
+                        name='${name}',
+                        year='${year}'
+                        archived='${archived}',
+                        deleted='${deleted}'
+                    where id = ${id};
+                `;
+            return res.status(200).json("The group has been updated. ID : " + id);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    })
+
+    /**
      * API: get student session
      * @returns Session
      */
