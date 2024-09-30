@@ -10,13 +10,13 @@ module.exports = function (app: Application): void {
     app.post('/groups', async (req, res, next) => {
         const { id_school, teacher_username, name, year } = req.body
         try {
-            const id_group = await sql`
+            const groups = await sql`
                     insert into groups 
                     (id_school, teacher_username, name, year)
                     values (${id_school}, ${teacher_username}, ${name}, ${year})
-                    returning id;
+                    returning *;
                 `;
-            return res.status(200).json("The group has been created. ID : " + id_group.rows[0].id);
+            return res.status(200).json(groups.rows[0]);
         } catch (error) {
             return handleErrors(next, error);
         }
@@ -40,7 +40,7 @@ module.exports = function (app: Application): void {
                         deleted=${deleted}
                     where id = ${id};
                 `);
-            return res.status(200).json("The group has been updated. ID : " + id);
+            return res.status(200).json(id);
         } catch (error) {
             return handleErrors(next, error);
         }

@@ -49,15 +49,14 @@ module.exports = function (app: Application): void {
     })
 
     /**
-     * API : get school by admin name
+     * API : get school by admin name and postal code
      * @returns School
      */
-    app.get('/school/:admin_username/:postal_code', async (req, res, next) => {
+    app.get('/school/:admin_username', async (req, res, next) => {
         try {
             const schools = await sql.query(`
                 select * from schools 
-                where LOWER(admin_username) LIKE LOWER('${req.params.admin_username}')
-                and postal_code = ${req.params.postal_code};
+                where LOWER(admin_username) LIKE LOWER('${req.params.admin_username}');
             `);
             return res.status(200).json(schools.rows);
         } catch (error) {
