@@ -1,4 +1,4 @@
-INSERT INTO public.emission_factors(
+INSERT INTO emission_factors(
         id,
         id_emission_sub_categorie,
         id_language,

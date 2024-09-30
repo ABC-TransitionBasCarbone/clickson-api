@@ -1,7 +1,6 @@
--- Insert translations with translated_detail for "Energy - Fuel"
-INSERT INTO public.emission_sub_categories (
+INSERT INTO emission_sub_categories (
     id,
-    id_emission_sub_categorie,
+    id_emission_categorie,
     id_language,
     label,
     detail

@@ -1,5 +1,4 @@
--- Insert languages
-INSERT INTO public.languages (id, language_code)
+INSERT INTO languages (id, language_code)
 VALUES 
 (1, 'en'),
 (2, 'fr'),
@@ -8,4 +7,4 @@ VALUES
 (5, 'gr'),
 (6, 'hr'),
 (7, 'hu'),
-(8, 'ro'),
+(8, 'ro');

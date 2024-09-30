@@ -1,5 +1,4 @@
--- Insert translations for different languages: 'en', 'fr', 3, 4, 5, 6, 7, 8
-INSERT INTO public.emission_categories(
+INSERT INTO emission_categories(
     id,
     id_emission_categorie,
     id_language,
@@ -18,8 +17,8 @@ VALUES
 (8, 1, 8, 'Energie', 'Categoria de energie se concentrează pe consumul de energie al școlii pe parcursul unui an școlar. Inițial, se vor colecta date despre consumul de electricitate și încălzire. Pentru o abordare completă, se vor adăuga și consumurile legate de laboratoarele de chimie.'),
 
 -- Translations for "Food service"
-(9, 2, 'en', 'Food Service', 'In the Food service category, students must calculate emissions linked to meals served. In certain schools, data on food sold in canteens and vending machines will also be collected.'),
-(10, 2, 'fr', 'Service Alimentaire', 'Dans la catégorie service alimentaire, les élèves doivent calculer les émissions liées aux repas servis. Dans certaines écoles, les données sur les aliments vendus dans les cantines et les distributeurs automatiques seront également collectées.'),
+(9, 2, 1, 'Food Service', 'In the Food service category, students must calculate emissions linked to meals served. In certain schools, data on food sold in canteens and vending machines will also be collected.'),
+(10, 2, 2, 'Service Alimentaire', 'Dans la catégorie service alimentaire, les élèves doivent calculer les émissions liées aux repas servis. Dans certaines écoles, les données sur les aliments vendus dans les cantines et les distributeurs automatiques seront également collectées.'),
 (11, 2, 3, 'Servicio de Alimentos', 'En la categoría de servicio de alimentos, los estudiantes deben calcular las emisiones vinculadas a las comidas servidas. En algunas escuelas, también se recopilarán datos sobre los alimentos vendidos en las cantinas y máquinas expendedoras.'),
 (12, 2, 4, 'Servizio di Ristorazione', 'Nella categoria servizio di ristorazione, gli studenti devono calcolare le emissioni legate ai pasti serviti. In alcune scuole, saranno raccolti anche i dati sugli alimenti venduti nelle mense e nei distributori automatici.'),
 (13, 2, 5, 'Υπηρεσία Τροφίμων', 'Στην κατηγορία υπηρεσίας τροφίμων, οι μαθητές πρέπει να υπολογίζουν τις εκπομπές που συνδέονται με τα γεύματα που σερβίρονται. Σε ορισμένα σχολεία, θα συλλέγονται επίσης δεδομένα για τα τρόφιμα που πωλούνται στα κυλικεία και τους αυτόματους πωλητές.'),
@@ -28,8 +27,8 @@ VALUES
 (16, 2, 8, 'Serviciu Alimentar', 'În categoria de servicii alimentare, elevii trebuie să calculeze emisiile legate de mesele servite. În anumite școli, se vor colecta și date despre alimentele vândute în cantine și automate.'),
 
 -- Translations for "Travel"
-(17, 3, 'en', 'Travel', 'The Travel category focuses on emissions linked to home-establishment travel of students, teachers, and non-teaching staff, as well as school trips if any take place.'),
-(18, 3, 'fr', 'Voyage', 'La catégorie voyage se concentre sur les émissions liées aux trajets domicile-établissement des étudiants, enseignants et personnel non enseignant, ainsi qu''aux voyages scolaires s''il y en a.'),
+(17, 3, 1, 'Travel', 'The Travel category focuses on emissions linked to home-establishment travel of students, teachers, and non-teaching staff, as well as school trips if any take place.'),
+(18, 3, 2, 'Voyage', 'La catégorie voyage se concentre sur les émissions liées aux trajets domicile-établissement des étudiants, enseignants et personnel non enseignant, ainsi qu''aux voyages scolaires s''il y en a.'),
 (19, 3, 3, 'Viaje', 'La categoría de viajes se centra en las emisiones vinculadas a los desplazamientos hogar-establecimiento de estudiantes, profesores y personal no docente, así como a los viajes escolares si los hay.'),
 (20, 3, 4, 'Viaggio', 'La categoria viaggio si concentra sulle emissioni legate agli spostamenti casa-istituto di studenti, insegnanti e personale non docente, nonché sui viaggi scolastici se ce ne sono.'),
 (21, 3, 5, 'Ταξίδι', 'Η κατηγορία ταξιδιού επικεντρώνεται στις εκπομπές που συνδέονται με τα ταξίδια από το σπίτι στο σχολείο των μαθητών, των δασκάλων και του μη διδακτικού προσωπικού, καθώς και στις σχολικές εκδρομές, εάν υπάρχουν.'),
@@ -38,8 +37,8 @@ VALUES
 (24, 3, 8, 'Călătorie', 'Categoria de călătorii se concentrează pe emisiile legate de deplasările de la domiciliu la unitatea de învățământ ale elevilor, profesorilor și personalului nedidactic, precum și pe excursiile școlare, dacă există.'),
 
 -- Translations for "Supplies"
-(25, 4, 'en', 'Supplies', 'In the Supplies category, all the material bought for the school year is entered. These are mostly consumables or short-life products that will be used during the year and will have to be bought again next year.'),
-(26, 4, 'fr', 'Fournitures', 'Dans la catégorie fournitures, tous les matériaux achetés pour l''année scolaire sont enregistrés. Il s''agit principalement de consommables ou de produits de courte durée qui seront utilisés pendant l''année et devront être rachetés l''année suivante.'),
+(25, 4, 1, 'Supplies', 'In the Supplies category, all the material bought for the school year is entered. These are mostly consumables or short-life products that will be used during the year and will have to be bought again next year.'),
+(26, 4, 2, 'Fournitures', 'Dans la catégorie fournitures, tous les matériaux achetés pour l''année scolaire sont enregistrés. Il s''agit principalement de consommables ou de produits de courte durée qui seront utilisés pendant l''année et devront être rachetés l''année suivante.'),
 (27, 4, 3, 'Suministros', 'En la categoría de suministros, se introducen todos los materiales comprados para el año escolar. Son principalmente consumibles o productos de corta duración que se utilizarán durante el año y deberán volver a comprarse el año siguiente.'),
 (28, 4, 4, 'Forniture', 'Nella categoria forniture, vengono inseriti tutti i materiali acquistati per l''anno scolastico. Si tratta principalmente di consumabili o prodotti di breve durata che verranno utilizzati durante l''anno e dovranno essere acquistati nuovamente l''anno successivo.'),
 (29, 4, 5, 'Προμήθειες', 'Στην κατηγορία προμηθειών, καταχωρούνται όλα τα υλικά που αγοράστηκαν για το σχολικό έτος. Πρόκειται κυρίως για αναλώσιμα ή προϊόντα μικρής διάρκειας που θα χρησιμοποιηθούν κατά τη διάρκεια του έτους και θα πρέπει να αγοραστούν ξανά τον επόμενο χρόνο.'),
@@ -48,8 +47,8 @@ VALUES
 (32, 4, 8, 'Aprovizionări', 'În categoria de aprovizionări, se introduc toate materialele cumpărate pentru anul școlar. Acestea sunt în mare parte consumabile sau produse de scurtă durată care vor fi utilizate în timpul anului și vor trebui cumpărate din nou anul următor.'),
 
 -- Translations for "Fixed assets"
-(33, 5, 'en', 'Fixed Assets', 'The Fixed assets category covers buildings/renovations and goods classified as "long-term" such as IT equipment, production machinery, etc. The emissions generated by the manufacture of these goods are spread over a conventionally chosen period (20 years for buildings, 5 years for IT equipment).'),
-(34, 5, 'fr', 'Actifs Fixes', 'La catégorie des actifs fixes couvre les bâtiments/rénovations et les biens classés comme "long terme" tels que les équipements informatiques, les machines de production, etc. Les émissions générées par la fabrication de ces biens sont réparties sur une période choisie de manière conventionnelle (20 ans pour les bâtiments, 5 ans pour les équipements informatiques).'),
+(33, 5, 1, 'Fixed Assets', 'The Fixed assets category covers buildings/renovations and goods classified as "long-term" such as IT equipment, production machinery, etc. The emissions generated by the manufacture of these goods are spread over a conventionally chosen period (20 years for buildings, 5 years for IT equipment).'),
+(34, 5, 2, 'Actifs Fixes', 'La catégorie des actifs fixes couvre les bâtiments/rénovations et les biens classés comme "long terme" tels que les équipements informatiques, les machines de production, etc. Les émissions générées par la fabrication de ces biens sont réparties sur une période choisie de manière conventionnelle (20 ans pour les bâtiments, 5 ans pour les équipements informatiques).'),
 (35, 5, 3, 'Activos Fijos', 'La categoría de activos fijos cubre edificios/renovaciones y bienes clasificados como "a largo plazo" como equipos informáticos, maquinaria de producción, etc. Las emisiones generadas por la fabricación de estos bienes se distribuyen durante un período elegido convencionalmente (20 años para edificios, 5 años para equipos informáticos).'),
 (36, 5, 4, 'Beni Fissi', 'La categoria beni fissi copre edifici/ristrutturazioni e beni classificati come "a lungo termine" come le attrezzature informatiche, le macchine di produzione, ecc. Le emissioni generate dalla produzione di questi beni sono ripartite su un periodo convenzionalmente scelto (20 anni per gli edifici, 5 anni per le attrezzature informatiche).'),
 (37, 5, 5, 'Πάγια Περιουσιακά Στοιχεία', 'Η κατηγορία πάγια περιουσιακά στοιχεία καλύπτει κτίρια/ανακαινίσεις και αγαθά που ταξινομούνται ως "μακροπρόθεσμα" όπως ο εξοπλισμός πληροφορικής, μηχανήματα παραγωγής κ.λπ. Οι εκπομπές που παράγονται από την κατασκευή αυτών των αγαθών κατανέμονται σε μια συμβατικά επιλεγμένη περίοδο (20 έτη για τα κτίρια, 5 έτη για τον εξοπλισμό πληροφορικής).'),

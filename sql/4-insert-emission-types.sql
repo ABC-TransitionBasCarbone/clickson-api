@@ -1,6 +1,5 @@
-INSERT INTO public.emission_types(id, id_language, label)
-VALUES 
-    (1, 1, 'Fuel'),
+INSERT INTO emission_types(id, id_language, label)
+VALUES (1, 1, 'Fuel'),
     (2, 1, 'Electricity'),
     (3, 1, 'Refrigerant gas'),
     (4, 1, 'Principal greenhouse gas'),

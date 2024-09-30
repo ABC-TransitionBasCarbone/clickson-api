@@ -1,4 +1,4 @@
-INSERT INTO public.emission_units(id, id_language, label)
+INSERT INTO emission_units(id, id_language, label)
 VALUES 
     (1, 1, 'kgCO2e/kWh net heating'),
     (2, 1, 'kgCO2e/kWh gross heating'),
