@@ -9,16 +9,16 @@ module.exports = function (app: Application): void {
      * create session emission sub categories associated
      * @returns Session
      */
-    app.post('/session', async (req, res, next) => {
+    app.post('/sessions', async (req, res, next) => {
         try {
             // Creation of a session
             const { id_school, id_group, name, year } = req.body
 
-            const id_student_session = await sql`
-                insert into student_sessions 
+            const sessions = await sql`
+                insert into session_students 
                 (id_school, id_group, name, year)
                 values (${id_school}, ${id_group}, ${name}, ${year})
-                returning id;
+                returning *;
             `;
 
             // Creation of Sesssions Emission Categories
@@ -26,12 +26,12 @@ module.exports = function (app: Application): void {
                 select * from emission_categories order by id asc`;
 
             const sessionEmissionCategoriesMap = await emissionCategories.rows.map(categorie =>
-                ({ id_student_session: id_student_session.rows[0].id, id_emission_categorie: categorie.id }))
+                ({ id_session_student: sessions.rows[0].id, id_emission_categorie: categorie.id }))
 
             const sessionEmissionCategories = await sql.query(
-                `insert into session_emission_categories (id_student_session, id_emission_categorie) values 
+                `insert into session_emission_categories (id_session_student, id_emission_categorie) values 
                 ${sessionEmissionCategoriesMap.map((categorie) => {
-                    return `('${categorie.id_student_session}', ${categorie.id_emission_categorie})`;
+                    return `('${categorie.id_session_student}', ${categorie.id_emission_categorie})`;
                 }).join()} returning *`
             );
 
@@ -57,7 +57,7 @@ module.exports = function (app: Application): void {
                 }).join()} returning *`
             );
 
-            return res.status(200).json("The session, their categories and sub categories has been created. id_student_session : " + id_student_session);
+            return res.status(200).json(sessions.rows);
         } catch (error) {
             return handleErrors(next, error);
         }
@@ -66,13 +66,35 @@ module.exports = function (app: Application): void {
     });
 
     /**
+     * API : put student session
+     */
+    app.put('/sessions', async (req, res, next) => {
+        const { id, id_school, name, year, archived, deleted } = req.body
+        try {
+            await sql.query(`
+                        update session_students
+                        set
+                            id_school=${id_school},
+                            name='${name}',
+                            year=${year},
+                            archived=${archived},
+                            deleted=${deleted}
+                        where id = ${id};
+                    `);
+            return res.status(200).json(id);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    })
+
+    /**
      * API: get student session
      * @returns Session
      */
     app.get('/sessions/:id_group', async (req, res, next) => {
         try {
             const sessions = await sql`
-            select * from student_sessions where id_group=${req.params.id_group} and deleted=false and archived=false`;
+            select * from session_students where id_group=${req.params.id_group} and deleted=false and archived=false`;
             return res.status(200).json(sessions.rows);
         } catch (error) {
             return handleErrors(next, error);
@@ -86,7 +108,7 @@ module.exports = function (app: Application): void {
     app.get('/session-categories/:id_group', async (req, res, next) => {
         try {
             const sessionCategories = await sql`
-            select * from session_emission_categories where id_student_session = ${req.params.id_group}`;
+            select * from session_emission_categories where id_session_student = ${req.params.id_group}`;
             return res.status(200).json(sessionCategories.rows);
         } catch (error) {
             return handleErrors(next, error);
@@ -101,7 +123,7 @@ module.exports = function (app: Application): void {
         try {
             const sessionSubCategories = await sql`
             select * from session_emission_sub_categories 
-            where id_student_session = ${req.params.id_session_emission_categorie}`;
+            where id_session_emission_categorie = ${req.params.id_session_emission_categorie}`;
             return res.status(200).json(sessionSubCategories.rows);
         } catch (error) {
             return handleErrors(next, error);
@@ -148,7 +170,7 @@ module.exports = function (app: Application): void {
     app.put('/sessions/:id', async (req, res, next) => {
         try {
             const id = await sql`
-            update student_sessions set deleted = true where id=${req.params.id} returning id`;
+            update session_students set deleted = true where id=${req.params.id} returning id`;
             return res.status(200).json(id);
         } catch (error) {
             return handleErrors(next, error);

@@ -22,5 +22,6 @@ require('./endpoints/groups')(app)
 require('./endpoints/schools')(app)
 require('./endpoints/sessions')(app)
 require('./endpoints/exports')(app)
+require('./endpoints/languages')(app)
 
 export default app;
