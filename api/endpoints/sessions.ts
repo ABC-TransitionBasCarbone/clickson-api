@@ -23,7 +23,7 @@ module.exports = function (app: Application): void {
 
             // Creation of Sesssions Emission Categories
             const emissionCategories = await sql`
-                select * from emission_categories order by id asc`;
+                select * from emission_categories where id_language = 1`;
 
             const sessionEmissionCategoriesMap = await emissionCategories.rows.map(categorie =>
                 ({ id_session_student: sessions.rows[0].id, id_emission_categorie: categorie.id }))
@@ -34,10 +34,9 @@ module.exports = function (app: Application): void {
                     return `('${categorie.id_session_student}', ${categorie.id_emission_categorie})`;
                 }).join()} returning *`
             );
-
             // Creation of Sesssions Emissions Sub Categories
             const emissionSubCategories = (await sql`
-                select * from emission_sub_categories order by id asc`).rows;
+                select * from emission_sub_categories where id_language = 1`).rows;
 
             const sessionEmissionSubCategoriesMap =
                 await emissionSubCategories.map(subCategorie => {
@@ -105,10 +104,10 @@ module.exports = function (app: Application): void {
      * API: get student session categories
      * @returns Session categories
      */
-    app.get('/session-categories/:id_group', async (req, res, next) => {
+    app.get('/session-categories/:id_session_student', async (req, res, next) => {
         try {
             const sessionCategories = await sql`
-            select * from session_emission_categories where id_session_student = ${req.params.id_group}`;
+            select * from session_emission_categories where id_session_student = ${req.params.id_session_student}`;
             return res.status(200).json(sessionCategories.rows);
         } catch (error) {
             return handleErrors(next, error);

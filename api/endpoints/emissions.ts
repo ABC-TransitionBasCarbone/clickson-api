@@ -15,7 +15,6 @@ module.exports = function (app: Application): void {
         } catch (error) {
             return handleErrors(next, error);
         }
-
     });
 
     /**
@@ -30,20 +29,5 @@ module.exports = function (app: Application): void {
         } catch (error) {
             return handleErrors(next, error);
         }
-    });
-
-    /**
-     * API: fetch emission sub-categories
-     * @returns SubCategory[]
-     */
-    app.get('/emission/sub-categories', async (req, res, next) => {
-        try {
-            const sub_categories = await sql`
-            select * from emission_sub_categories`;
-            return res.status(200).json(sub_categories.rows);
-        } catch (error) {
-            return handleErrors(next, error);
-        }
-
     });
 }
