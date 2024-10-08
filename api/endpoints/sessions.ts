@@ -11,7 +11,6 @@ module.exports = function (app: Application): void {
      */
     app.post('/sessions', async (req, res, next) => {
         try {
-            // Creation of a session
             const { id_school, id_group, name, year } = req.body
 
             const sessions = await sql`
@@ -21,7 +20,7 @@ module.exports = function (app: Application): void {
                 returning *;
             `;
 
-            // Creation of Sesssions Emission Categories
+            // Creation of student Sesssions Emission Categories for each categories
             const emissionCategories = await sql`
                 select * from emission_categories where id_language = 1`;
 
@@ -34,7 +33,8 @@ module.exports = function (app: Application): void {
                     return `('${categorie.id_session_student}', ${categorie.id_emission_categorie})`;
                 }).join()} returning *`
             );
-            // Creation of Sesssions Emissions Sub Categories
+
+            // Creation of Sesssions Emissions Sub Categories for each sub categories
             const emissionSubCategories = (await sql`
                 select * from emission_sub_categories where id_language = 1`).rows;
 
@@ -60,8 +60,6 @@ module.exports = function (app: Application): void {
         } catch (error) {
             return handleErrors(next, error);
         }
-
-
     });
 
     /**
