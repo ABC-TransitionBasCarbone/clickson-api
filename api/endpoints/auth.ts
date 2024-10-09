@@ -1,5 +1,4 @@
 const wordpressApiUrl = process.env.WORDPRESS_API_URL || "";
-const token = process.env.WORDPRESS_AUTH_REFRESH_TOKEN;
 const usernameWordpress = process.env.WORDPRESS_APPLICATION_USERNAME;
 const passwordWordpress = process.env.WORDPRESS_APPLICATION_PASSWORD;
 
@@ -10,7 +9,6 @@ const { sql } = require("@vercel/postgres");
 const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 myHeaders.set('Authorization', 'Basic ' + Buffer.from(usernameWordpress + ":" + passwordWordpress).toString('base64'));
-
 
 module.exports = function (app: Application): void {
 
@@ -131,7 +129,6 @@ module.exports = function (app: Application): void {
         res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users";
         const { email, first_name, last_name, password, role, state, school_name, town_name, postal_code, student_count, staff_count, establishment_year, adress } = req.body;
 
-
         if (!school_name) {
             return handleErrors(next, "Can you enter the name of the school ?");
         }
@@ -139,16 +136,8 @@ module.exports = function (app: Application): void {
         // Check if school already exist
         let schoolFromBdd = await sql.query(`
             select * from schools 
-            where postal_code LIKE '${postal_code}' and LOWER(admin_username) LIKE LOWER('${email}');
+            where postal_code LIKE '${postal_code}' and LOWER(school_name) LIKE LOWER('${school_name}');
         `);
-
-        const test = `
-                    insert into schools 
-                    (state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress, admin_username) 
-                    values 
-                    ('${state}', '${school_name}', '${town_name}', '${postal_code}', ${student_count}, ${staff_count}, ${establishment_year}, '${adress}', '${email}') 
-                    returning id;
-                    `
 
         // The school doesn't exist so we will create it
         if (!schoolFromBdd || !schoolFromBdd.rows[0]) {
