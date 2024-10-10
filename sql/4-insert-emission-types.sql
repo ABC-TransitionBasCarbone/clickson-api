@@ -1,0 +1,18 @@
+INSERT INTO emission_types(id, id_language, label)
+VALUES (1, 1, 'Fuel'),
+    (2, 1, 'Electricity'),
+    (3, 1, 'Refrigerant gas'),
+    (4, 1, 'Principal greenhouse gas'),
+    (5, 1, 'Meal'),
+    (6, 1, 'Road haulage'),
+    (7, 1, 'Air freight'),
+    (8, 1, 'Freight train'),
+    (9, 1, 'Cargo ship'),
+    (10, 1, 'Organic waste'),
+    (11, 1, 'Other waste'),
+    (12, 1, 'Transport'),
+    (13, 1, 'Office equipment'),
+    (14, 1, 'Electronics and chemical products'),
+    (15, 1, 'Sports equipment'),
+    (16, 1, 'Construction'),
+    (17, 1, 'Equipment');
