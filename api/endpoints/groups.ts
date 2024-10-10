@@ -32,7 +32,7 @@ module.exports = function (app: Application): void {
             await sql.query(`
                     update groups 
                     set
-                        id_school=${id_school},
+                        id_school='${id_school}',
                         teacher_username='${teacher_username}',
                         name='${name}',
                         year=${year},
