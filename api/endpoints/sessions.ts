@@ -3,6 +3,21 @@ import { Application } from 'express';
 import { handleErrors } from "../common";
 
 module.exports = function (app: Application): void {
+
+    /**
+     * API: delete student session
+     * @returns session id
+     */
+    app.put('/sessions/:id', async (req, res, next) => {
+        try {
+            const id = await sql`
+                update session_students set deleted = true where id='${req.params.id}' returning id`;
+            return res.status(200).json(id);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    });
+
     /**
      * API: create student session
      * create session emission categories associated
@@ -71,12 +86,12 @@ module.exports = function (app: Application): void {
             await sql.query(`
                         update session_students
                         set
-                            id_school=${id_school},
+                            id_school='${id_school}',
                             name='${name}',
                             year=${year},
                             archived=${archived},
                             deleted=${deleted}
-                        where id = ${id};
+                        where id = '${id}';
                     `);
             return res.status(200).json(id);
         } catch (error) {
@@ -85,13 +100,13 @@ module.exports = function (app: Application): void {
     })
 
     /**
-     * API: get student session
+     * API: get student session by id group
      * @returns Session
      */
-    app.get('/sessions/:id_group', async (req, res, next) => {
+    app.get('/sessions/:id', async (req, res, next) => {
         try {
             const sessions = await sql`
-            select * from session_students where id_group=${req.params.id_group} and deleted=false and archived=false`;
+            select * from session_students where id=${req.params.id} and deleted=false and archived=false`;
             return res.status(200).json(sessions.rows);
         } catch (error) {
             return handleErrors(next, error);
@@ -99,7 +114,21 @@ module.exports = function (app: Application): void {
     });
 
     /**
-     * API: get student session categories
+     * API: get student session by id session
+     * @returns Session
+     */
+    app.get('/sessions', async (req, res, next) => {
+        try {
+            const sessions = await sql`
+            select * from session_students where id_group=${req.query.id_group} and deleted=false and archived=false`;
+            return res.status(200).json(sessions.rows);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    });
+
+    /**
+     * API: get student session categories by id_session_student
      * @returns Session categories
      */
     app.get('/session-categories/:id_session_student', async (req, res, next) => {
@@ -120,7 +149,7 @@ module.exports = function (app: Application): void {
         try {
             const sessionSubCategories = await sql`
             select * from session_emission_sub_categories 
-            where id_session_emission_categorie = ${req.params.id_session_emission_categorie}`;
+            where id_session_emission_categorie = '${req.params.id_session_emission_categorie}'`;
             return res.status(200).json(sessionSubCategories.rows);
         } catch (error) {
             return handleErrors(next, error);
@@ -153,22 +182,8 @@ module.exports = function (app: Application): void {
         try {
             const id_session_emission_sub_categorie = await sql`
            select * from session_emissions 
-           where id_session_emission_sub_categorie = ${req.params.id_session_emission_sub_categorie}`;
+           where id_session_emission_sub_categorie = '${req.params.id_session_emission_sub_categorie}'`;
             return res.status(200).json(id_session_emission_sub_categorie.rows);
-        } catch (error) {
-            return handleErrors(next, error);
-        }
-    });
-
-    /**
-     * API: delete student session
-     * @returns session id
-     */
-    app.put('/sessions/:id', async (req, res, next) => {
-        try {
-            const id = await sql`
-            update session_students set deleted = true where id=${req.params.id} returning id`;
-            return res.status(200).json(id);
         } catch (error) {
             return handleErrors(next, error);
         }

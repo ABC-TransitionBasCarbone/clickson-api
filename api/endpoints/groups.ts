@@ -38,7 +38,7 @@ module.exports = function (app: Application): void {
                         year=${year},
                         archived=${archived},
                         deleted=${deleted}
-                    where id = ${id};
+                    where id = '${id}';
                 `);
             return res.status(200).json(id);
         } catch (error) {

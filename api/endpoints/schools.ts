@@ -22,7 +22,7 @@ module.exports = function (app: Application): void {
                     establishment_year = ${establishment_year},
                     adress = '${adress}',
                     admin_username = '${admin_username}'
-                where id = ${id};`);
+                where id = '${id}';`);
             return res.status(200).json("The school has been updated");
         } catch (error) {
             return handleErrors(next, error);
