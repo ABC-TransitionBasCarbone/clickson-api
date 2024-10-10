@@ -147,9 +147,9 @@ module.exports = function (app: Application): void {
      */
     app.get('/session-sub-categories/:id_session_emission_categorie', async (req, res, next) => {
         try {
-            const sessionSubCategories = await sql`
+            const sessionSubCategories = await sql.query(`
             select * from session_emission_sub_categories 
-            where id_session_emission_categorie = '${req.params.id_session_emission_categorie}'`;
+            where id_session_emission_categorie = '${req.params.id_session_emission_categorie}'            `);
             return res.status(200).json(sessionSubCategories.rows);
         } catch (error) {
             return handleErrors(next, error);
