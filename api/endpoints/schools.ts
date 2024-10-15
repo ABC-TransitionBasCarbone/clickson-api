@@ -6,6 +6,7 @@ module.exports = function (app: Application): void {
     /**
      * API : update school
      * @returns School
+     * TODO Add multiples admin into Schools
      */
     app.put('/school', async (req, res, next) => {
         const { id, state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress, admin_username } = req.body
