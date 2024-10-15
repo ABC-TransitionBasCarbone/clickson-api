@@ -6,6 +6,7 @@ module.exports = function (app: Application): void {
 
     app.get('/emission/categories/:id_language', async (req: Request, res: Response, next: NextFunction) => getEmissionCategoriesByLanguageId(req, res, next));
     app.get('/emission/sub-categories/:category_id', async (req: Request, res: Response, next: NextFunction) => getEmissionSubCategoriesByCategoryId(req, res, next));
+    app.post('/emission/sub-categories', async (req: Request, res: Response, next: NextFunction) => getEmissionSubCategoriesByCategoryIds(req, res, next));
 
     async function getEmissionCategoriesByLanguageId(req: Request, res: Response, next: NextFunction) {
         try {
@@ -21,6 +22,18 @@ module.exports = function (app: Application): void {
         try {
             const sub_categories = await sql`
             select * from emission_sub_categories where id_emission_categorie=${req.params.category_id}`;
+            return res.status(200).json(sub_categories.rows);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    }
+
+    async function getEmissionSubCategoriesByCategoryIds(req: Request, res: Response, next: NextFunction) {
+        try {
+
+            const sub_categories = await sql.query(
+                `select * from emission_sub_categories 
+                where id in (${req.body.join(',')})`)
             return res.status(200).json(sub_categories.rows);
         } catch (error) {
             return handleErrors(next, error);
