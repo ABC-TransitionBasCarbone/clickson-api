@@ -62,9 +62,16 @@ module.exports = function (app: Application): void {
         res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users?search=" + req.body.username;
         const requestInit = {
             headers: myHeaders,
+            method: "POST"
         } as RequestInit;
-        const users = await handleFetch(requestInit, res, next)
-        return { requestInit, users }
+        try {
+
+            const users = await handleFetch(requestInit, res, next)
+            return { requestInit, users }
+
+        } catch (error) {
+            return handleErrors(next, error);
+        }
     }
 
     app.post('/auth/reset-password', async (req: Request, res: Response, next: NextFunction) => {
