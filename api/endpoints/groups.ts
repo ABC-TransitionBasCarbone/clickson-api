@@ -1,13 +1,14 @@
 const { sql } = require("@vercel/postgres");
-import { Application } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
 
 module.exports = function (app: Application): void {
-    /**
-     * API : create group
-     * @returns Group
-     */
-    app.post('/groups', async (req, res, next) => {
+
+    app.post('/groups', async (req: Request, res: Response, next: NextFunction) => createGroup(req, res, next));
+    app.put('/groups', async (req: Request, res: Response, next: NextFunction) => updateGroup(req, res, next));
+    app.get('/groups/:teacher_username', async (req: Request, res: Response, next: NextFunction) => getTeacherGroups(req, res, next));
+
+    async function createGroup(req: Request, res: Response, next: NextFunction) {
         const { id_school, teacher_username, name, year } = req.body
         try {
             const groups = await sql`
@@ -20,13 +21,9 @@ module.exports = function (app: Application): void {
         } catch (error) {
             return handleErrors(next, error);
         }
-    })
+    }
 
-    /**
-     * API : update group
-     * @returns Group
-     */
-    app.put('/groups', async (req, res, next) => {
+    async function updateGroup(req: Request, res: Response, next: NextFunction) {
         const { id, id_school, teacher_username, name, year, archived, deleted } = req.body
         try {
             await sql.query(`
@@ -44,13 +41,9 @@ module.exports = function (app: Application): void {
         } catch (error) {
             return handleErrors(next, error);
         }
-    })
+    }
 
-    /**
-     * API: get student session
-     * @returns Session
-     */
-    app.get('/groups/:teacher_username', async (req, res, next) => {
+    async function getTeacherGroups(req: Request, res: Response, next: NextFunction) {
         try {
             const sessions = await sql`
                 select * from groups where teacher_username=${req.params.teacher_username}`;
@@ -58,5 +51,5 @@ module.exports = function (app: Application): void {
         } catch (error) {
             return handleErrors(next, error);
         }
-    });
+    }
 }

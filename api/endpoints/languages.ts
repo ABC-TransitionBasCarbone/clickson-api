@@ -1,13 +1,11 @@
 const { sql } = require("@vercel/postgres");
-import { Application } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
 
 module.exports = function (app: Application): void {
-    /**
-     * API: get languages
-     * @returns Languages
-     */
-    app.get('/languages/:language_code', async (req, res, next) => {
+    app.get('/languages/:language_code', async (req: Request, res: Response, next: NextFunction) => getLanguage(req, res, next));
+
+    async function getLanguage(req: Request, res: Response, next: NextFunction) {
         try {
             const languages = await sql`
                 select * from languages where language_code=${req.params.language_code}`;
@@ -15,5 +13,5 @@ module.exports = function (app: Application): void {
         } catch (error) {
             return handleErrors(next, error);
         }
-    });
+    }
 }
