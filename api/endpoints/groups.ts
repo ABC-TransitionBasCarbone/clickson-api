@@ -3,10 +3,9 @@ import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
 
 module.exports = function (app: Application): void {
-
-    app.post('/groups', async (req: Request, res: Response, next: NextFunction) => createGroup(req, res, next));
-    app.put('/groups', async (req: Request, res: Response, next: NextFunction) => updateGroup(req, res, next));
-    app.get('/groups/:teacher_username', async (req: Request, res: Response, next: NextFunction) => getTeacherGroups(req, res, next));
+    app.post('/groups', createGroup);
+    app.put('/groups', updateGroup);
+    app.get('/groups/:teacher_username', getTeacherGroups);
 
     async function createGroup(req: Request, res: Response, next: NextFunction) {
         const { id_school, teacher_username, name, year } = req.body

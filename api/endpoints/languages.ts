@@ -3,7 +3,7 @@ import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
 
 module.exports = function (app: Application): void {
-    app.get('/languages/:language_code', async (req: Request, res: Response, next: NextFunction) => getLanguage(req, res, next));
+    app.get('/languages/:language_code', getLanguage);
 
     async function getLanguage(req: Request, res: Response, next: NextFunction) {
         try {

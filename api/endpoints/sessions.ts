@@ -3,15 +3,15 @@ import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
 
 module.exports = function (app: Application): void {
-    app.put('/sessions/:id', async (req: Request, res: Response, next: NextFunction) => updateSessionsById(req, res, next));
-    app.post('/sessions', async (req: Request, res: Response, next: NextFunction) => createSession(req, res, next))
-    app.put('/sessions', async (req: Request, res: Response, next: NextFunction) => updateSession(req, res, next))
-    app.get('/sessions/:id', async (req: Request, res: Response, next: NextFunction) => getSessionById(req, res, next))
-    app.get('/sessions', async (req: Request, res: Response, next: NextFunction) => getSessionByIdGroup(req, res, next))
-    app.get('/session-categories/:id_session_student', async (req: Request, res: Response, next: NextFunction) => getSessionCategoriesByIdSessionStudent(req, res, next))
-    app.post('/session-emission', async (req: Request, res: Response, next: NextFunction) => createSessionEmission(req, res, next))
-    app.get('/session-emission/:id_session_emission_sub_categorie', async (req: Request, res: Response, next: NextFunction) => getSessionEmissionByIdSubCategorie(req, res, next))
-    app.get('/session-sub-categories/:id_session_emission_categorie', async (req: Request, res: Response, next: NextFunction) => getSessionSubCategoriesByIdSessionEmissionCategorie(req, res, next))
+    app.put('/sessions/:id', updateSessionsById);
+    app.post('/sessions', createSession)
+    app.put('/sessions', updateSession)
+    app.get('/sessions/:id', getSessionById)
+    app.get('/sessions', getSessionByIdGroup)
+    app.get('/session-categories/:id_session_student', getSessionCategoriesByIdSessionStudent)
+    app.post('/session-emission', createSessionEmission)
+    app.get('/session-emission/:id_session_emission_sub_categorie', getSessionEmissionByIdSubCategorie)
+    app.get('/session-sub-categories/:id_session_emission_categorie', getSessionSubCategoriesByIdSessionEmissionCategorie)
 
     async function updateSessionsById(req: Request, res: Response, next: NextFunction) {
         try {

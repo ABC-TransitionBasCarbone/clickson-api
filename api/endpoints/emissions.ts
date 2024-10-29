@@ -4,10 +4,10 @@ import { handleErrors } from "../common";
 
 module.exports = function (app: Application): void {
 
-    app.get('/emission/categories/:id_language', async (req: Request, res: Response, next: NextFunction) => getEmissionCategoriesByLanguageId(req, res, next));
-    app.get('/emission/sub-categories/:category_id', async (req: Request, res: Response, next: NextFunction) => getEmissionSubCategoriesByCategoryId(req, res, next));
-    app.post('/emission/sub-categories', async (req: Request, res: Response, next: NextFunction) => getEmissionSubCategoriesByCategoryIds(req, res, next));
-    app.get('/emission-factors/:id_emission_sub_categorie', async (req: Request, res: Response, next: NextFunction) => getEmissionFactorsBySubCategorieId(req, res, next));
+    app.get('/emission/categories/:id_language', getEmissionCategoriesByLanguageId);
+    app.get('/emission/sub-categories/:category_id', getEmissionSubCategoriesByCategoryId);
+    app.post('/emission/sub-categories', getEmissionSubCategoriesByCategoryIds);
+    app.get('/emission-factors/:id_emission_sub_categorie', getEmissionFactorsBySubCategorieId);
 
     async function getEmissionCategoriesByLanguageId(req: Request, res: Response, next: NextFunction) {
         try {

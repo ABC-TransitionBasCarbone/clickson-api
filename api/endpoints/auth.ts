@@ -12,9 +12,9 @@ myHeaders.set('Authorization', 'Basic ' + Buffer.from(usernameWordpress + ":" + 
 
 module.exports = function (app: Application): void {
 
-    app.delete("/delete-user", async (req: Request, res: Response, next: NextFunction) => deleteUser(req, res, next));
-    app.post('/auth/login', async (req: Request, res: Response, next: NextFunction) => login(req, res, next));
-    app.post('/auth/current', async (req: Request, res: Response, next: NextFunction) => getUser(req, res, next));
+    app.delete("/delete-user", deleteUser);
+    app.post('/auth/login', login);
+    app.post('/auth/current', getUser);
 
     async function deleteUser(req: Request, res: Response, next: NextFunction) {
         const { username } = req.body
@@ -47,11 +47,11 @@ module.exports = function (app: Application): void {
                     "rememberMe": rememberMe
                 })
             } as RequestInit;
-            const users = await handleFetch(requestInit, res, next)
-            if (users) {
-                return res.status(200).send(users);
+            const user = await handleFetch(requestInit, res, next)
+            if (user) {
+                return res.status(200).send(user);
             }
-            return res.status(403).send({ "error": "users not found" });
+            return res.status(403).send({ "error": "user not found" });
 
         } catch (error) {
             return handleErrors(next, error);

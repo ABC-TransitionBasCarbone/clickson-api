@@ -5,7 +5,7 @@ import { Application, NextFunction, Request, Response } from 'express';
 
 
 module.exports = function (app: Application): void {
-  app.put('/report/file', async (req: Request, res: Response, next: NextFunction) => getFiles(req, res, next));
+  app.put('/report/file', getFiles);
 
   async function getFiles(req: Request, res: Response, next: NextFunction) {
 

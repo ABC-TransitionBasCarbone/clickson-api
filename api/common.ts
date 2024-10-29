@@ -13,7 +13,7 @@ export async function handleFetch(requestOptions: RequestInit, res: Response, ne
             return res.status(403).send({ errors: errorBody });
         }
 
-        return await response.json();
+        return response.json();
     }
     catch (errors) {
         return handleErrors(next, errors);
