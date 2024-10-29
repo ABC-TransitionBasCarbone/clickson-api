@@ -3,7 +3,7 @@ const usernameWordpress = process.env.WORDPRESS_APPLICATION_USERNAME;
 const passwordWordpress = process.env.WORDPRESS_APPLICATION_PASSWORD;
 
 import { Application, NextFunction, Request, Response } from 'express';
-import { handleErrors } from "../common";
+import { handleErrors, handleFetch } from "../common";
 const { sql } = require("@vercel/postgres");
 
 const myHeaders = new Headers();
@@ -12,7 +12,11 @@ myHeaders.set('Authorization', 'Basic ' + Buffer.from(usernameWordpress + ":" + 
 
 module.exports = function (app: Application): void {
 
-    app.delete("/delete-user", async (req: Request, res: Response, next: NextFunction) => {
+    app.delete("/delete-user", deleteUser);
+    app.post('/auth/login', login);
+    app.post('/auth/current', getUser);
+
+    async function deleteUser(req: Request, res: Response, next: NextFunction) {
         const { username } = req.body
 
         const { requestInit, users } = await getUser(username, res, next);
@@ -27,9 +31,11 @@ module.exports = function (app: Application): void {
 
         return res.status(200).json(user);
 
-    });
+    }
 
-    async function login(username: string, password: string, rememberMe: boolean, res: Response, next: NextFunction) {
+    async function login(req: Request, res: Response, next: NextFunction) {
+        const { username, password, rememberMe } = req.body;
+
         try {
             res.req.url = wordpressApiUrl + "/wp-json/jwt-auth/v1/token";
             const requestInit = {
@@ -41,57 +47,37 @@ module.exports = function (app: Application): void {
                     "rememberMe": rememberMe
                 })
             } as RequestInit;
-            const users = await handleFetch(requestInit, res, next)
-            return { requestInit, users };
+            const user = await handleFetch(requestInit, res, next)
+            if (user) {
+                return res.status(200).send(user);
+            }
+            return res.status(403).send({ "error": "user not found" });
+
         } catch (error) {
             return handleErrors(next, error);
         }
     }
 
-    app.post('/auth/current', async (req: Request, res: Response, next: NextFunction) => {
+    async function getUser(req: Request, res: Response, next: NextFunction) {
+        res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users?search=" + req.body.username;
+        const requestInit = {
+            headers: myHeaders,
+            method: "POST"
+        } as RequestInit;
         try {
-            const response = await getUser(req.body.username, res, next);
-            if (response) {
-                return res.status(200).send(response);
-            }
-            return res.status(403).send({ "error": "users not found" });
 
-        } catch (error) {
-            return handleErrors(next, error);
-        }
-    });
-
-    async function getUser(username: string, res: Response, next: NextFunction) {
-        try {
-            res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users?search=" + username;
-            const requestInit = {
-                headers: myHeaders,
-            } as RequestInit;
             const users = await handleFetch(requestInit, res, next)
-            return { requestInit, users };
+            return { requestInit, users }
+
         } catch (error) {
             return handleErrors(next, error);
         }
     }
-    app.post('/auth/login', async (req: Request, res: Response, next: NextFunction) => {
-        const { username, password, rememberMe } = req.body;
-        try {
-            const response = await login(username, password, rememberMe, res, next);
-            if (response.users) {
-                return res.status(200).send(response.users);
-            }
-            return res.status(403).send({ "error": "users not found" });
-
-
-        } catch (error) {
-            return handleErrors(next, error);
-        }
-    });
 
     app.post('/auth/reset-password', async (req: Request, res: Response, next: NextFunction) => {
         const { username, password } = req.body
 
-        const { requestInit, users } = await getUser(username, res, next);
+        const { requestInit, users } = await getUser(req, res, next);
 
         res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id
         requestInit.method = "POST";
@@ -107,8 +93,6 @@ module.exports = function (app: Application): void {
 
 
     app.post('/auth/modify-user', async (req: Request, res: Response, next: NextFunction) => {
-
-
         try {
             const { username } = req.body
 
@@ -177,21 +161,4 @@ module.exports = function (app: Application): void {
         }
 
     });
-
-    async function handleFetch(requestOptions: RequestInit, res: Response, next: NextFunction) {
-        try {
-            const response = await fetch(res.req.url, requestOptions);
-            if (!response.ok) {
-                const errorBody = await response.json();
-                return res.status(403).send({ errors: errorBody });
-            }
-
-            return await response.json();
-        }
-        catch (errors) {
-            return handleErrors(next, errors);
-
-        }
-
-    }
 }

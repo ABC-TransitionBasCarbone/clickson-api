@@ -1,16 +1,16 @@
 const { sql } = require("@vercel/postgres");
-import { Application } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
 
 module.exports = function (app: Application): void {
-    /**
-     * API : update school
-     * @returns School
-     */
-    app.put('/school', async (req, res, next) => {
+    app.put('/school', updateSchool);
+    app.get('/school/:admin_username', getSchoolsById)
+
+    // TODO Add multiples admin into Schools
+    async function updateSchool(req: Request, res: Response, next: NextFunction) {
         const { id, state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress, admin_username } = req.body
         try {
-            await sql.query(`
+            const school = await sql.query(`
                 update schools 
                 set 
                     state = '${state}',
@@ -23,17 +23,13 @@ module.exports = function (app: Application): void {
                     adress = '${adress}',
                     admin_username = '${admin_username}'
                 where id = '${id}';`);
-            return res.status(200).json("The school has been updated");
-        } catch (error) {
+                return res.status(200).json(school.rows[0]);
+            } catch (error) {
             return handleErrors(next, error);
         }
-    })
+    }
 
-    /**
-     * API : get school by admin name
-     * @returns School
-     */
-    app.get('/school/:admin_username', async (req, res, next) => {
+    async function getSchoolsById(req: Request, res: Response, next: NextFunction) {
         try {
             const schools = await sql.query(`
                 select * from schools 
@@ -43,5 +39,5 @@ module.exports = function (app: Application): void {
         } catch (error) {
             return handleErrors(next, error);
         }
-    });
+    }
 }
