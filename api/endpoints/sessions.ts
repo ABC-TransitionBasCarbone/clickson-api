@@ -9,10 +9,10 @@ module.exports = function (app: Application): void {
     app.get('/sessions/:id', async (req: Request, res: Response, next: NextFunction) => getSessionById(req, res, next))
     app.get('/sessions', async (req: Request, res: Response, next: NextFunction) => getSessionByIdGroup(req, res, next))
     app.get('/session-categories/:id_session_student', async (req: Request, res: Response, next: NextFunction) => getSessionCategoriesByIdSessionStudent(req, res, next))
-    app.post('/session-emission', async (req: Request, res: Response, next: NextFunction) => createSessionStudent(req, res, next))
+    app.post('/session-emission', async (req: Request, res: Response, next: NextFunction) => createSessionEmission(req, res, next))
     app.get('/session-emission/:id_session_emission_sub_categorie', async (req: Request, res: Response, next: NextFunction) => getSessionEmissionByIdSubCategorie(req, res, next))
     app.get('/session-sub-categories/:id_session_emission_categorie', async (req: Request, res: Response, next: NextFunction) => getSessionSubCategoriesByIdSessionEmissionCategorie(req, res, next))
-    
+
     async function updateSessionsById(req: Request, res: Response, next: NextFunction) {
         try {
             const id = await sql`
@@ -143,27 +143,26 @@ module.exports = function (app: Application): void {
         }
     }
 
-    async function createSessionStudent(req: Request, res: Response, next: NextFunction) {
+    async function createSessionEmission(req: Request, res: Response, next: NextFunction) {
 
         const { id_session_emission_sub_categorie, id_emission_factor, value } = req.body
         try {
             const sessionEmission = await sql.query(`insert into session_emissions 
                     (id_session_emission_sub_categorie, id_emission_factor, value) 
                     values 
-                    (${id_session_emission_sub_categorie}, ${id_emission_factor}, ${value}) 
+                    ('${id_session_emission_sub_categorie}', ${id_emission_factor}, ${value}) 
                     returning *;`);
-            return res.status(200).json("The session-emission has been created. ID : " + sessionEmission.rows[0].id);
+            return res.status(200).json(sessionEmission.rows[0]);
         } catch (error) {
             return handleErrors(next, error);
         }
     }
 
     async function getSessionEmissionByIdSubCategorie(req: Request, res: Response, next: NextFunction) {
-
         try {
-            const id_session_emission_sub_categorie = await sql`
-           select * from session_emissions 
-           where id_session_emission_sub_categorie = '${req.params.id_session_emission_sub_categorie}'`;
+            const id_session_emission_sub_categorie = await sql.query(`
+                select * from session_emissions 
+                where id_session_emission_sub_categorie = '${req.params.id_session_emission_sub_categorie}'`);
             return res.status(200).json(id_session_emission_sub_categorie.rows);
         } catch (error) {
             return handleErrors(next, error);

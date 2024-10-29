@@ -1,4 +1,4 @@
-const { sql } = require("@vercel/postgres");
+import { sql } from "@vercel/postgres";
 import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
 
