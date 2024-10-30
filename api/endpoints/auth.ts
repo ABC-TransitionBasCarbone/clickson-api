@@ -15,6 +15,9 @@ module.exports = function (app: Application): void {
     app.delete("/delete-user", deleteUser);
     app.post('/auth/login', login);
     app.post('/auth/current', getUser);
+    app.post('/auth/reset-password', resetPassword);
+    app.post('/auth/modify-user', modifyUser);
+    app.post('/auth/sign-up', signUp);
 
     async function deleteUser(req: Request, res: Response, next: NextFunction) {
         const { username } = req.body
@@ -74,7 +77,7 @@ module.exports = function (app: Application): void {
         }
     }
 
-    app.post('/auth/reset-password', async (req: Request, res: Response, next: NextFunction) => {
+    async function resetPassword(req: Request, res: Response, next: NextFunction) {
         const { username, password } = req.body
 
         const { requestInit, users } = await getUser(req, res, next);
@@ -89,10 +92,10 @@ module.exports = function (app: Application): void {
         } catch (error) {
             return handleErrors(next, error);
         }
-    });
+    }
 
+    async function modifyUser(req: Request, res: Response, next: NextFunction) {
 
-    app.post('/auth/modify-user', async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { username } = req.body
 
@@ -106,12 +109,21 @@ module.exports = function (app: Application): void {
         } catch (error) {
             return handleErrors(next, error);
         }
-    });
+    }
 
-
-    app.post('/auth/sign-up', async (req: Request, res: Response, next: NextFunction) => {
+    async function signUp(req: Request, res: Response, next: NextFunction) {
         res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users";
-        const { email, first_name, last_name, password, role, state, school_name, town_name, postal_code, student_count, staff_count, establishment_year, adress } = req.body;
+        const {
+            email,
+            first_name,
+            last_name,
+            password,
+            role,
+            state,
+            school_name,
+            town_name,
+            postal_code,
+        } = req.body;
 
         if (!school_name) {
             return handleErrors(next, "Can you enter the name of the school ?");
@@ -120,7 +132,7 @@ module.exports = function (app: Application): void {
         // Check if school already exist
         let schoolFromBdd = await sql.query(`
             select * from schools 
-            where postal_code LIKE '${postal_code}' and LOWER(school_name) LIKE LOWER('${school_name}');
+            where postal_code LIKE '${postal_code}' and LOWER(name) LIKE LOWER('${school_name}');
         `);
 
         // The school doesn't exist so we will create it
@@ -128,9 +140,9 @@ module.exports = function (app: Application): void {
             try {
                 schoolFromBdd = await sql.query(`
                     insert into schools 
-                        (state, name, town_name, postal_code, student_count, staff_count, establishment_year, adress, admin_username) 
+                        (state, name, town_name, postal_code, admin_username) 
                         values 
-                        ('${state}', '${school_name}', '${town_name}', '${postal_code}', ${student_count}, ${staff_count}, ${establishment_year}, '${adress}', '${email}') 
+                        ('${state}', '${school_name}', '${town_name}', '${postal_code}', '${email}') 
                     returning id;
                     `);
             } catch (error) {
@@ -160,5 +172,5 @@ module.exports = function (app: Application): void {
             return handleErrors(next, error);
         }
 
-    });
+    }
 }
