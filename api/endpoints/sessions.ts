@@ -59,6 +59,7 @@ module.exports = function (app: Application): void {
             const emissionSubCategories = (await sql`
                 select * from emission_sub_categories where id_language = 1`).rows;
 
+            // TOFIX for fixed assets not adding to sub categories
             const sessionEmissionSubCategoriesMap =
                 await emissionSubCategories.map(subCategorie => {
                     const id_session_emission_categorie = sessionEmissionCategories.rows.find(categorie =>
@@ -77,7 +78,7 @@ module.exports = function (app: Application): void {
                 }).join()} returning *`
             );
 
-            return res.status(200).json(sessions.rows);
+            return res.status(200).json(sessions.rows[0]);
         } catch (error) {
             return handleErrors(next, error);
         }
