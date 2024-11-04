@@ -1,0 +1,7 @@
+## Start prisma
+
+Create prisma client :
+
+dotenv -e .env.development -- npx prisma db seed
+dotenv -e .env.development -- npx prisma generate
+dotenv -e .env.development -- npx prisma migrate deploy

@@ -36,25 +36,27 @@ CREATE TABLE SCHOOLS (
     student_count INTEGER,
     staff_count INTEGER,
     establishment_year INTEGER,
-    adress TEXT,
-    admin_username TEXT NOT NULL
+    adress TEXT
 );
-CREATE TABLE GROUPS (
-    id UUID DEFAULT gen_random_uuid()  PRIMARY KEY,
-    id_school UUID REFERENCES SCHOOLS(id),
-    teacher_username VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    year INT,
-    archived BOOLEAN DEFAULT false,
-    deleted BOOLEAN DEFAULT false
+CREATE TABLE SCHOOL_ADMINS (
+    school_id UUID REFERENCES SCHOOLS(id),
+    admin_username TEXT NOT NULL,
+    PRIMARY KEY (school_id, admin_username)
 );
 CREATE TABLE SESSION_STUDENTS (
     id UUID DEFAULT gen_random_uuid()  PRIMARY KEY,
     id_school UUID REFERENCES SCHOOLS(id),
-    id_group UUID REFERENCES GROUPS(id),
     name VARCHAR(255) NOT NULL,
-    year INT,
+    year INT DEFAULT (DATE_PART('year'::text, CURRENT_DATE)),
     progress INT DEFAULT 0,
+    archived BOOLEAN DEFAULT false,
+    deleted BOOLEAN DEFAULT false
+);
+CREATE TABLE GROUPS (
+    id UUID DEFAULT gen_random_uuid()  PRIMARY KEY,
+    id_session UUID REFERENCES SESSION_STUDENTS(id),
+    name VARCHAR(255) NOT NULL,
+    year INT DEFAULT (DATE_PART('year'::text, CURRENT_DATE)),
     archived BOOLEAN DEFAULT false,
     deleted BOOLEAN DEFAULT false
 );

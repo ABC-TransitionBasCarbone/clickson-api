@@ -140,14 +140,28 @@ module.exports = function (app: Application): void {
             try {
                 schoolFromBdd = await sql.query(`
                     insert into schools 
-                        (state, name, town_name, postal_code, admin_username) 
+                        (state, name, town_name, postal_code) 
                         values 
-                        ('${state}', '${school_name}', '${town_name}', '${postal_code}', '${email}') 
+                        ('${state}', '${school_name}', '${town_name}', '${postal_code}') 
                     returning id;
                     `);
             } catch (error) {
                 return handleErrors(next, error);
             }
+
+            // Add user to admin school table
+            try {
+                const admin = await sql.query(`
+                    insert into school_admins 
+                        (school_id, admin_username) 
+                        values 
+                        ('${schoolFromBdd.rows[0].id}', '${email}')
+                    returning *;
+                    `);
+            } catch (error) {
+                return handleErrors(next, error);
+            }
+
         }
 
         const body = {
@@ -171,6 +185,5 @@ module.exports = function (app: Application): void {
         } catch (error) {
             return handleErrors(next, error);
         }
-
     }
 }

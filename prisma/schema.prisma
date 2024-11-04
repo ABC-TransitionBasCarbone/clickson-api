@@ -1,0 +1,159 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+}
+
+model comments {
+  id                              Int                              @id
+  id_emission_sub_categorie       String?                          @db.Uuid
+  comment                         String
+  created_at                      DateTime?                        @default(now()) @db.Timestamp(6)
+  id_created_by                   Int?
+  session_emission_sub_categories session_emission_sub_categories? @relation(fields: [id_emission_sub_categorie], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model emission_categories {
+  id                          Int                           @id
+  id_language                 Int?
+  label                       String                        @db.VarChar(255)
+  detail                      String                        @db.VarChar(2550)
+  languages                   languages?                    @relation(fields: [id_language], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  emission_sub_categories     emission_sub_categories[]
+  session_emission_categories session_emission_categories[]
+}
+
+model EmissionFactors {
+  id                        Int                      @id
+  id_emission_sub_categorie Int?
+  id_language               Int?
+  label                     String                   @db.VarChar(255)
+  id_type                   Int?
+  id_unit                   Int?
+  value                     Decimal?                 @db.Decimal
+  uncertainty               Decimal?                 @db.Decimal
+  emission_sub_categories   emission_sub_categories? @relation(fields: [id_emission_sub_categorie], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  languages                 languages?               @relation(fields: [id_language], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  emission_types            emission_types?          @relation(fields: [id_type], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  emission_units            emission_units?          @relation(fields: [id_unit], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  session_emissions         session_emissions[]
+	@@map("emission_factors")
+}
+
+model emission_sub_categories {
+  id                              Int                               @id
+  id_emission_categorie           Int?
+  id_language                     Int?
+  label                           String                            @db.VarChar(255)
+  detail                          String                            @db.VarChar(2550)
+  emission_factors                EmissionFactors[]
+  emission_categories             emission_categories?              @relation(fields: [id_emission_categorie], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  languages                       languages?                        @relation(fields: [id_language], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  session_emission_sub_categories session_emission_sub_categories[]
+}
+
+model emission_types {
+  id               Int                @id
+  id_language      Int?
+  label            String             @db.VarChar(255)
+  emission_factors EmissionFactors[]
+  languages        languages?         @relation(fields: [id_language], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model emission_units {
+  id               Int                @id
+  id_language      Int?
+  label            String             @db.VarChar(255)
+  emission_factors EmissionFactors[]
+  languages        languages?         @relation(fields: [id_language], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model groups {
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_school        String?            @db.Uuid
+  teacher_username String             @db.VarChar(255)
+  name             String             @db.VarChar(255)
+  year             Int?               @default(dbgenerated("date_part('year'::text, CURRENT_DATE)"))
+  archived         Boolean?           @default(false)
+  deleted          Boolean?           @default(false)
+  schools          schools?           @relation(fields: [id_school], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  session_students session_students[]
+}
+
+model languages {
+  id                      Int                       @id
+  language_code           String                    @db.Char(2)
+  emission_categories     emission_categories[]
+  emission_factors        EmissionFactors[]
+  emission_sub_categories emission_sub_categories[]
+  emission_types          emission_types[]
+  emission_units          emission_units[]
+}
+
+model school_admins {
+  school_id      String  @db.Uuid
+  admin_username String
+  schools        schools @relation(fields: [school_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([school_id, admin_username])
+}
+
+model schools {
+  id                 String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  state              String
+  name               String
+  town_name          String
+  postal_code        String
+  student_count      Int?
+  staff_count        Int?
+  establishment_year Int?
+  adress             String?
+  admin_username     String?
+  groups             groups[]
+  school_admins      school_admins[]
+  session_students   session_students[]
+}
+
+model session_emission_categories {
+  id                              String                            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_session_student              String?                           @db.Uuid
+  id_emission_categorie           Int?
+  emission_categories             emission_categories?              @relation(fields: [id_emission_categorie], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  session_emission_sub_categories session_emission_sub_categories[]
+}
+
+model session_emission_sub_categories {
+  id                            String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_session_emission_categorie String?                      @db.Uuid
+  id_emission_sub_categorie     Int?
+  comments                      comments[]
+  session_emission_categories   session_emission_categories? @relation(fields: [id_session_emission_categorie], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "session_emission_sub_categori_id_session_emission_categori_fkey")
+  emission_sub_categories       emission_sub_categories?     @relation(fields: [id_emission_sub_categorie], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  session_emissions             session_emissions[]
+}
+
+model session_emissions {
+  id                                String                           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_session_emission_sub_categorie String?                          @db.Uuid
+  id_emission_factor                Int?
+  value                             Decimal?                         @db.Decimal
+  emission_factors                  EmissionFactors?                @relation(fields: [id_emission_factor], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  session_emission_sub_categories   session_emission_sub_categories? @relation(fields: [id_session_emission_sub_categorie], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model session_students {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_school String?  @db.Uuid
+  id_group  String?  @db.Uuid
+  name      String   @db.VarChar(255)
+  year      Int?     @default(dbgenerated("date_part('year'::text, CURRENT_DATE)"))
+  progress  Int?     @default(0)
+  archived  Boolean? @default(false)
+  deleted   Boolean? @default(false)
+  groups    groups?  @relation(fields: [id_group], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  schools   schools? @relation(fields: [id_school], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}

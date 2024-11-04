@@ -20,8 +20,7 @@ module.exports = function (app: Application): void {
                     student_count = ${student_count},
                     staff_count = ${staff_count},
                     establishment_year = ${establishment_year},
-                    adress = '${adress}',
-                    admin_username = '${admin_username}'
+                    adress = '${adress}'
                 where id = '${id}';`);
                 return res.status(200).json(school.rows[0]);
             } catch (error) {
@@ -31,9 +30,13 @@ module.exports = function (app: Application): void {
 
     async function getSchoolsById(req: Request, res: Response, next: NextFunction) {
         try {
+            const schoolAdmin = await sql.query(`
+                select * from school_admins
+                where LOWER(admin_username) LIKE LOWER('${req.params.admin_username}');
+            `);
             const schools = await sql.query(`
                 select * from schools 
-                where LOWER(admin_username) LIKE LOWER('${req.params.admin_username}');
+                where id = '${schoolAdmin.rows[0].school_id}';
             `);
             return res.status(200).json(schools.rows[0]);
         } catch (error) {

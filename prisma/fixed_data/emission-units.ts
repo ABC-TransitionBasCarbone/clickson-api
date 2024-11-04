@@ -1,0 +1,15 @@
+export const EMISSIONUNITS = [
+    { id: 1, id_language: 1, label: "kgCO2e/kWh net heating" },
+    { id: 2, id_language: 1, label: "kgCO2e/kWh gross heating" },
+    { id: 3, id_language: 1, label: "kgCO2e/kWh" },
+    { id: 4, id_language: 1, label: "kgCO2e/kg" },
+    { id: 5, id_language: 1, label: "kgCO2e/meal" },
+    { id: 6, id_language: 1, label: "kgCO2e/tonne.km" },
+    { id: 7, id_language: 1, label: "kgCO2e/tonne" },
+    { id: 8, id_language: 1, label: "kgCO2e/km" },
+    { id: 9, id_language: 1, label: "kgCO2e/passenger.km" },
+    { id: 10, id_language: 1, label: "kgCO2e/unit" },
+    { id: 11, id_language: 1, label: "kgCO2e/€ of expense" },
+    { id: 12, id_language: 1, label: "kgCO2e/L" },
+    { id: 13, id_language: 1, label: "kgCO2e/m²" },
+]
