@@ -16,32 +16,17 @@ const languages = async () => {
     await prisma.emissionSubCategories.deleteMany()
     await prisma.emissionCategories.deleteMany()
     await prisma.languages.deleteMany()
+
     await prisma.languages.createMany({ data: LANGUAGES })
-}
-const emissionCategories = async () => {
-    await prisma.emissionSubCategories.deleteMany()
-    await prisma.emissionCategories.deleteMany()
     await prisma.emissionCategories.createMany({ data: EMISSIONCATEGORIES })
-}
-const emissionSubCategories = async () => {
-    await prisma.emissionSubCategories.deleteMany()
     await prisma.emissionSubCategories.createMany({ data: EMISSIONSUBCATEGORIES })
-}
-const emissionTypes = async () => {
-    await prisma.emissionTypes.deleteMany()
     await prisma.emissionTypes.createMany({ data: EMISSIONTYPES })
-}
-const emissionUnits = async () => {
-    await prisma.emissionUnits.deleteMany()
     await prisma.emissionUnits.createMany({ data: EMISSIONUNITS })
-}
-const emissionFactors = async () => {
-    await prisma.emissionFactors.deleteMany()
     await prisma.emissionFactors.createMany({ data: EMISSIONFACTORS })
 }
 
 const main = async () => {
-    await Promise.all([languages(), emissionCategories(), emissionSubCategories(), emissionTypes(), emissionUnits(), emissionFactors()])
+    await Promise.all([languages()])
 }
 
 main()

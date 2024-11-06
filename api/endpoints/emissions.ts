@@ -1,6 +1,7 @@
-import { sql } from "@vercel/postgres";
 import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 
 module.exports = function (app: Application): void {
 
@@ -11,11 +12,11 @@ module.exports = function (app: Application): void {
 
     async function getEmissionCategoriesByLanguageId(req: Request, res: Response, next: NextFunction) {
         try {
-            const emission_categories = await sql`
-            SELECT * 
-            FROM emission_categories 
-            WHERE id_language=${req.params.id_language}`;
-            return res.status(200).json(emission_categories.rows);
+            const emissionCategories = await prisma.emissionCategories.findMany({
+                where: { idLanguage: Number(req.params.id_language) }
+            })
+
+            return res.status(200).json(emissionCategories);
         } catch (error) {
             return handleErrors(next, error);
         }
@@ -23,11 +24,11 @@ module.exports = function (app: Application): void {
 
     async function getEmissionSubCategoriesByCategoryId(req: Request, res: Response, next: NextFunction) {
         try {
-            const sub_categories = await sql`
-            SELECT * 
-            FROM emission_sub_categories 
-            WHERE id_emission_categorie=${req.params.category_id}`;
-            return res.status(200).json(sub_categories.rows);
+            const sub_categories = await prisma.emissionSubCategories.findMany({
+                where: { idEmissionCategorie: Number(req.params.category_id) }
+            })
+
+            return res.status(200).json(sub_categories);
         } catch (error) {
             return handleErrors(next, error);
         }
@@ -36,11 +37,12 @@ module.exports = function (app: Application): void {
     async function getEmissionSubCategoriesByCategoryIds(req: Request, res: Response, next: NextFunction) {
         try {
 
-            const sub_categories = await sql.query(
-                `SELECT * 
-                FROM emission_sub_categories 
-                WHERE id in (${req.body.join(',')})`)
-            return res.status(200).json(sub_categories.rows);
+            const subCategories = prisma.emissionSubCategories.findMany({
+                where: {
+                    id: { in: req.body },
+                },
+            })
+            return res.status(200).json(subCategories);
         } catch (error) {
             return handleErrors(next, error);
         }
@@ -48,25 +50,13 @@ module.exports = function (app: Application): void {
 
     async function getEmissionFactorsBySubCategorieId(req: Request, res: Response, next: NextFunction) {
         try {
-            const emissions = await sql.query(
-                `SELECT 
-                    ef.id,
-                    ef.label,
-                    ef.value,
-                    ef.uncertainty,
-                    et.label AS type,
-                    eu.label AS unit
-                 FROM 
-                    emission_factors ef
-                 JOIN 
-                    emission_types et ON ef.id_type = et.id
-                 JOIN 
-                    emission_units eu ON ef.id_unit = eu.id
-                 WHERE 
-                    ef.id_emission_sub_categorie = $1`,
-                [req.params.id_emission_sub_categorie]
-            );
-            return res.status(200).json(emissions.rows);
+            const emissions = prisma.emissionFactors.findMany({
+                where: {
+                    idEmissionSubCategorie: Number(req.params.id_emission_sub_categorie)
+                }
+            })
+
+            return res.status(200).json(emissions);
         } catch (error) {
             return handleErrors(next, error);
         }
