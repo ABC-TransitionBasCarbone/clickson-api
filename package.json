@@ -7,9 +7,13 @@
   "license": "MIT",
   "scripts": {
     "vercel": "vercel dev -l 4000",
+    "vercel:dev": "dotenv -e .env.development vercel dev -l 4000",
     "swagger-gen": "node swagger.js",
     "open-browser": "start http://localhost:4000/doc",
-    "migrate:postgres": "dotenv -e .env.development -- npx prisma migrate deploy",
+    "migrate:generate": "dotenv -e .env.development -- npx prisma generate",
+    "migrate:dev": "dotenv -e .env.development -- npx prisma migrate dev",
+    "migrate:seed": "dotenv -e .env.development -- npx prisma db seed",
+    "migrate:staging": "npx prisma migrate deploy",
     "format": "prettier --write .",
     "test": "jest",
     "test:watch": "jest --watch"
@@ -39,6 +43,6 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "^5.4.5",
-    "vercel": "^37.13.0"
+    "vercel": "^37.14.0"
   }
 }
