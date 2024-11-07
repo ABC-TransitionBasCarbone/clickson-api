@@ -47,11 +47,9 @@ module.exports = function (app: Application): void {
             })
 
             const sessionEmissionCategories = await prisma.sessionEmissionCategories.findMany({ where: { idSessionStudent: session.id } })
-            console.log("🚀 ~ createSession ~ sessionEmissionCategories:", sessionEmissionCategories)
 
             // Creation of Sessions Emissions Sub Categories for each sub categories
             const emissionSubCategories = await prisma.emissionSubCategories.findMany({ where: { idLanguage: 1 } })
-            console.log("🚀 ~ createSession ~ emissionSubCategories:", emissionSubCategories)
 
             const sessionEmissionSubCategoriesMap =
                 emissionSubCategories.map(subCategorie => ({
