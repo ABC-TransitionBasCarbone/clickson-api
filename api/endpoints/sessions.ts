@@ -17,7 +17,10 @@ module.exports = function (app: Application): void {
     async function updateSessionsById(req: Request, res: Response, next: NextFunction) {
         try {
             const id = await prisma.sessionStudents.update({
-                where: { id: req.params.id },
+                where: {
+                    id: req.params.id,
+                    updatedAt: new Date()
+                },
                 data: { deleted: true }
             })
 
@@ -70,8 +73,11 @@ module.exports = function (app: Application): void {
         const { id, idSchool, name, year, archived, deleted } = req.body
         try {
             const session = await prisma.sessionStudents.update({
-                where: { id: id },
-                data: { idSchool: idSchool, name: name, year: year, archived: archived, deleted: deleted }
+                where: { id },
+                data: {
+                    idSchool, name, year, archived, deleted,
+                    updatedAt: new Date()
+                }
             })
 
             return res.status(200).json(session);

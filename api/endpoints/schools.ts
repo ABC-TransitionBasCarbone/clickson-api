@@ -13,7 +13,10 @@ module.exports = function (app: Application): void {
         try {
             const school = await prisma.schools.update({
                 where: { id },
-                data: { state, name, townName, postalCode, studentCount, staffCount, establishmentYear, adress }
+                data: {
+                    state, name, townName, postalCode, studentCount, staffCount, establishmentYear, adress,
+                    updatedAt: new Date()
+                }
             })
 
             return res.status(200).json(school);
