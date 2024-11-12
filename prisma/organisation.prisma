@@ -1,0 +1,63 @@
+model EmissionCategories {
+  id                        Int                         @id
+  idLanguage                Int?                        @map("id_language")
+  label                     String                      @db.VarChar(255)
+  detail                    String                      @db.VarChar(2550)
+  languages                 Languages?                  @relation(fields: [idLanguage], references: [id])
+  emissionSubCategories     EmissionSubCategories[]
+  sessionEmissionCategories SessionEmissionCategories[]
+
+  @@map("emission_categories")
+}
+
+model EmissionFactors {
+  id                     Int                    @id
+  idEmissionSubCategorie Int?                   @map("id_emission_sub_categorie")
+  idLanguage             Int?                   @map("id_language")
+  label                  String                 @db.VarChar(255)
+  idType                 Int?                   @map("id_type")
+  idUnit                 Int?                   @map("id_unit")
+  value                  Decimal?               @db.Decimal
+  uncertainty            Decimal?               @db.Decimal
+  emissionSubCategories  EmissionSubCategories? @relation(fields: [idEmissionSubCategorie], references: [id])
+  languages              Languages?             @relation(fields: [idLanguage], references: [id])
+  emissionTypes          EmissionTypes?         @relation(fields: [idType], references: [id])
+  emissionUnits          EmissionUnits?         @relation(fields: [idUnit], references: [id])
+  sessionEmissions       SessionEmissions[]
+
+  @@map("emission_factors")
+}
+
+model EmissionSubCategories {
+  id                           Int                            @id
+  idEmissionCategorie          Int?                           @map("id_emission_categorie")
+  idLanguage                   Int?                           @map("id_language")
+  label                        String                         @db.VarChar(255)
+  detail                       String                         @db.VarChar(2550)
+  emissionFactors              EmissionFactors[]
+  emissionCategories           EmissionCategories?            @relation(fields: [idEmissionCategorie], references: [id])
+  languages                    Languages?                     @relation(fields: [idLanguage], references: [id])
+  sessionEmissionSubCategories SessionEmissionSubCategories[]
+
+  @@map("emission_sub_categories")
+}
+
+model EmissionTypes {
+  id              Int               @id
+  idLanguage      Int?              @map("id_language")
+  label           String            @db.VarChar(255)
+  emissionFactors EmissionFactors[]
+  languages       Languages?        @relation(fields: [idLanguage], references: [id])
+
+  @@map("emission_types")
+}
+
+model EmissionUnits {
+  id              Int               @id
+  idLanguage      Int?              @map("id_language")
+  label           String            @db.VarChar(255)
+  emissionFactors EmissionFactors[]
+  languages       Languages?        @relation(fields: [idLanguage], references: [id])
+
+  @@map("emission_units")
+}
