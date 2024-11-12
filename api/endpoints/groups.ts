@@ -1,4 +1,3 @@
-const { sql } = require("@vercel/postgres");
 import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
 import { PrismaClient } from '@prisma/client'
@@ -7,7 +6,7 @@ const prisma = new PrismaClient()
 module.exports = function (app: Application): void {
     app.post('/groups', createGroup);
     app.put('/groups', updateGroup);
-    app.get('/groups/:id_session', getTeacherGroups);
+    app.get('/groups/:id_session', getGroupsBySession);
 
     async function createGroup(req: Request, res: Response, next: NextFunction) {
         const { idSchool, idSessionStudent, name, year } = req.body
@@ -41,12 +40,11 @@ module.exports = function (app: Application): void {
         }
     }
 
-    async function getTeacherGroups(req: Request, res: Response, next: NextFunction) {
+    async function getGroupsBySession(req: Request, res: Response, next: NextFunction) {
         try {
             const groups = prisma.groups.findMany({
                 where: { idSessionStudent: req.params.id_session }
             })
-
             return res.status(200).json(groups);
         } catch (error) {
             return handleErrors(next, error);
