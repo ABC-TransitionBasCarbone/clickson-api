@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 
 module.exports = function (app: Application): void {
     app.put('/school', updateSchool);
-    app.get('/school/:admin_username', getSchoolsById)
+    app.get('/school/:admin_username', getSchoolByAdmin)
 
     async function updateSchool(req: Request, res: Response, next: NextFunction) {
         const { id, state, name, town: townName, postalCode, studentCount, staffCount, establishmentYear, adress } = req.body
@@ -25,15 +25,16 @@ module.exports = function (app: Application): void {
         }
     }
 
-    async function getSchoolsById(req: Request, res: Response, next: NextFunction) {
+    async function getSchoolByAdmin(req: Request, res: Response, next: NextFunction) {
         try {
-            const schoolAdmin = await prisma.schoolAdmins.findFirstOrThrow({
-                where: { adminUsername: req.params.adminUsername },
-                select: { schoolId: true }
-            })
-
-            const schools = await prisma.schools.findFirst({
-                where: { id: schoolAdmin.schoolId }
+            const schools = await prisma.schools.findFirstOrThrow({
+                where: {
+                    schoolAdmins: {
+                        some: {
+                            adminUsername: req.params.admin_username
+                        }
+                    }
+                }
             })
 
             return res.status(200).json(schools);

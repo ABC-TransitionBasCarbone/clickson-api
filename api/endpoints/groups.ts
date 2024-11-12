@@ -7,13 +7,13 @@ const prisma = new PrismaClient()
 module.exports = function (app: Application): void {
     app.post('/groups', createGroup);
     app.put('/groups', updateGroup);
-    app.get('/groups/:teacher_username', getTeacherGroups);
+    app.get('/groups/:id_session', getTeacherGroups);
 
     async function createGroup(req: Request, res: Response, next: NextFunction) {
-        const { idSchool, teacherUsername, name, year } = req.body
+        const { idSchool, idSessionStudent, name, year } = req.body
         try {
             const groups = await prisma.groups.create({
-                data: { idSchool, teacherUsername, name, year }
+                data: { idSchool, idSessionStudent, name, year }
             })
             return res.status(200).json(groups);
         } catch (error) {
@@ -22,13 +22,12 @@ module.exports = function (app: Application): void {
     }
 
     async function updateGroup(req: Request, res: Response, next: NextFunction) {
-        const { id, idSchool, teacherUsername, name, year, archived, deleted } = req.body
+        const { id, idSchool, name, year, archived, deleted } = req.body
         try {
             await prisma.groups.update({
                 where: { id: id },
                 data: {
                     idSchool,
-                    teacherUsername,
                     name,
                     year,
                     archived,
@@ -45,7 +44,7 @@ module.exports = function (app: Application): void {
     async function getTeacherGroups(req: Request, res: Response, next: NextFunction) {
         try {
             const groups = prisma.groups.findMany({
-                where: { teacherUsername: req.params.teacher_username }
+                where: { idSessionStudent: req.params.id_session }
             })
 
             return res.status(200).json(groups);

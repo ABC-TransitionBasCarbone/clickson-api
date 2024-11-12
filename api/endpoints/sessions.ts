@@ -46,10 +46,17 @@ module.exports = function (app: Application): void {
             const emissionCategories = await prisma.emissionCategories.findMany({ where: { idLanguage: 1 } })
 
             await prisma.sessionEmissionCategories.createMany({
-                data: emissionCategories.map(categorie => ({ idSessionStudent: session.id, idEmissionCategorie: categorie.id }))
+                data: emissionCategories.map(categorie => (
+                    {
+                        idSessionStudent: session.id,
+                        idEmissionCategorie: categorie.id
+                    }))
             })
 
-            const sessionEmissionCategories = await prisma.sessionEmissionCategories.findMany({ where: { idSessionStudent: session.id } })
+            const sessionEmissionCategories = await prisma.sessionEmissionCategories.findMany(
+                {
+                    where: { idSessionStudent: session.id }
+                })
 
             // Creation of Sessions Emissions Sub Categories for each sub categories
             const emissionSubCategories = await prisma.emissionSubCategories.findMany({ where: { idLanguage: 1 } })
@@ -98,7 +105,20 @@ module.exports = function (app: Application): void {
 
     async function getSessionByIdSchool(req: Request, res: Response, next: NextFunction) {
         try {
-            const sessions = await prisma.sessionStudents.findMany({ where: { idSchool: req.params.id_school } });
+            const sessions = await prisma.sessionStudents.findMany(
+                {
+                    where: {
+                        idSchool: req.params.id_school
+                    },
+                    include: {
+                        groups: {
+                            where: {
+                                deleted: false
+                            }
+                        },
+
+                    }
+                });
 
             return res.status(200).json(sessions);
         } catch (error) {
@@ -108,7 +128,9 @@ module.exports = function (app: Application): void {
 
     async function getSessionCategoriesByIdSessionStudent(req: Request, res: Response, next: NextFunction) {
         try {
-            const sessionCategories = await prisma.sessionEmissionCategories.findMany({ where: { id: req.params.id_session_student } });
+            const sessionCategories = await prisma.sessionEmissionCategories.findMany({
+                where: { id: req.params.id_session_student }
+            });
 
             return res.status(200).json(sessionCategories);
         } catch (error) {
@@ -131,7 +153,15 @@ module.exports = function (app: Application): void {
         const { idSessionEmissionSubCategorie, idEmissionFactor, value } = req.body
 
         try {
-            const sessionEmission = await prisma.sessionEmissions.create({ data: { idSessionEmissionSubCategorie, idEmissionFactor, value } })
+            const sessionEmission = await prisma.sessionEmissions.create(
+                {
+                    data:
+                    {
+                        idSessionEmissionSubCategorie,
+                        idEmissionFactor,
+                        value
+                    }
+                })
 
             return res.status(200).json(sessionEmission);
         } catch (error) {
