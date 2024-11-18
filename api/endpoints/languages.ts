@@ -1,4 +1,3 @@
-const { sql } = require("@vercel/postgres");
 import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
 import { PrismaClient } from '@prisma/client'
