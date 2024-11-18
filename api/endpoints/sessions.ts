@@ -10,9 +10,9 @@ module.exports = function (app: Application): void {
     app.get('/sessions/:id', getSessionById)
     app.get('/sessions/school/:id_school', getSessionByIdSchool)
     app.get('/session-categories/:id_session_student', getSessionCategoriesByIdSessionStudent)
-    app.get('/session-sub-categories/:id_session_emission_categorie', getSessionSubCategoriesByIdSessionEmissionCategorie)
+    app.get('/session-sub-categories/:id_session_emission_category', getSessionSubCategoriesByIdSessionEmissionCategorie)
     app.post('/session-emission', createSessionEmission)
-    app.get('/session-emission/:id_session_emission_sub_categorie', getSessionEmissionByIdSubCategorie)
+    app.get('/session-emission/:id_session_emission_sub_category', getSessionEmissionByIdSubCategorie)
 
     async function updateSessionsById(req: Request, res: Response, next: NextFunction) {
         try {
@@ -49,7 +49,7 @@ module.exports = function (app: Application): void {
                 data: emissionCategories.map(categorie => (
                     {
                         idSessionStudent: session.id,
-                        idEmissionCategorie: categorie.id
+                        idEmissionCategory: categorie.id
                     }))
             })
 
@@ -63,9 +63,9 @@ module.exports = function (app: Application): void {
 
             const sessionEmissionSubCategoriesMap =
                 emissionSubCategories.map(subCategorie => ({
-                    idSessionEmissionCategorie: sessionEmissionCategories.find(categorie =>
-                        categorie.idEmissionCategorie === subCategorie.idEmissionCategorie)?.id,
-                    idEmissionSubCategorie: subCategorie.id
+                    idSessionEmissionCategory: sessionEmissionCategories.find(categorie =>
+                        categorie.idEmissionCategory === subCategorie.idEmissionCategory)?.id || "",
+                    idEmissionSubCategory: subCategorie.id
                 }))
 
             await prisma.sessionEmissionSubCategories.createMany({ data: sessionEmissionSubCategoriesMap })
@@ -142,43 +142,25 @@ module.exports = function (app: Application): void {
             const sessionSubCategories = await prisma.sessionEmissionSubCategories.findMany(
                 {
                     where: {
-                        idSessionEmissionCategorie: req.params.id_session_emission_categorie
+                        idSessionEmissionCategory: req.params.id_session_emission_category
                     },
                     select: {
                         id: true,
-                        idEmissionSubCategorie: true,
+                        idEmissionSubCategory: true,
                         comments: true,
-                        sessionEmissions: {
-                            include: {
-                                    emissionFactor: {
-                                    select: {
-                                        id: true,
-                                        label: true,
-                                        value: true,
-                                        uncertainty: true,
-                                        emissionType: { select: { label: true } },
-                                        emissionUnit: { select: { label: true } }
-                                    }
-                                },
-                            }
-                        },
                         emissionSubCategories: {
                             select: {
                                 label: true,
                                 detail: true,
-                                emissionFactors: {
-                                    select: {
-                                        id: true,
-                                        label: true,
-                                        value: true,
-                                        uncertainty: true,
-                                        emissionType: { select: { label: true } },
-                                        emissionUnit: { select: { label: true } }
-                                    }
-                                }
+                                emissionFactors: true
                             }
+                        },
+                        sessionEmissions: {
+                            include: {
+                                emissionFactor: true
+                            },
                         }
-                    }
+                    },
                 })
 
             return res.status(200).json(sessionSubCategories);
@@ -188,14 +170,14 @@ module.exports = function (app: Application): void {
     }
 
     async function createSessionEmission(req: Request, res: Response, next: NextFunction) {
-        const { idSessionEmissionSubCategorie, idEmissionFactor, value } = req.body
+        const { idSessionEmissionSubCategory, idEmissionFactor, value } = req.body
 
         try {
             const sessionEmission = await prisma.sessionEmissions.create(
                 {
                     data:
                     {
-                        idSessionEmissionSubCategorie,
+                        idSessionEmissionSubCategory,
                         idEmissionFactor,
                         value
                     }
@@ -210,7 +192,7 @@ module.exports = function (app: Application): void {
     async function getSessionEmissionByIdSubCategorie(req: Request, res: Response, next: NextFunction) {
         try {
             const idSessionEmissionSubCategorie = await prisma.sessionEmissionSubCategories.findMany(
-                { where: { id: req.params.id_session_emission_sub_categorie } });
+                { where: { id: req.params.id_session_emission_sub_category } });
 
             return res.status(200).json(idSessionEmissionSubCategorie);
         } catch (error) {

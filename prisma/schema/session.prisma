@@ -1,10 +1,10 @@
 model Comments {
   id                         Int                           @id
-  idEmissionSubCategorie     String?                       @map("id_emission_sub_categorie") @db.Uuid
+  idEmissionSubCategory      String?                       @map("id_emission_sub_category") @db.Uuid
   comment                    String
   createdAt                  DateTime                      @default(now()) @map("created_at")
   idCreatedBy                Int?                          @map("id_created_by")
-  sessionEmissionSubCategory SessionEmissionSubCategories? @relation(fields: [idEmissionSubCategorie], references: [id])
+  sessionEmissionSubCategory SessionEmissionSubCategories? @relation(fields: [idEmissionSubCategory], references: [id])
 
   @@map("comments")
 }

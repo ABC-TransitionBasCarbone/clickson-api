@@ -6,9 +6,9 @@ const prisma = new PrismaClient()
 module.exports = function (app: Application): void {
 
     app.get('/emission/categories/:id_language', getEmissionCategoriesByLanguageId);
-    app.get('/emission/sub-categories/:category_id', getEmissionSubCategoriesByCategoryId);
+    app.get('/emission/sub-categories/:id_category', getEmissionSubCategoriesByCategoryId);
     app.post('/emission/sub-categories', getEmissionSubCategoriesByCategoryIds);
-    app.get('/emission-factors/:id_emission_sub_categorie', getEmissionFactorsBySubCategorieId);
+    app.get('/emission-factors/:id_emission_sub_category', getEmissionFactorsBySubCategorieId);
 
     async function getEmissionCategoriesByLanguageId(req: Request, res: Response, next: NextFunction) {
         try {
@@ -25,7 +25,7 @@ module.exports = function (app: Application): void {
     async function getEmissionSubCategoriesByCategoryId(req: Request, res: Response, next: NextFunction) {
         try {
             const sub_categories = await prisma.emissionSubCategories.findMany({
-                where: { idEmissionCategorie: Number(req.params.category_id) }
+                where: { idEmissionCategory: Number(req.params.id_category) }
             })
 
             return res.status(200).json(sub_categories);
@@ -50,9 +50,9 @@ module.exports = function (app: Application): void {
 
     async function getEmissionFactorsBySubCategorieId(req: Request, res: Response, next: NextFunction) {
         try {
-            const emissions = prisma.emissionFactors.findMany({
+            const emissions = await prisma.emissionFactors.findMany({
                 where: {
-                    idEmissionSubCategorie: Number(req.params.id_emission_sub_categorie)
+                    idEmissionSubCategory: Number(req.params.id_emission_sub_category)
                 }
             })
 
