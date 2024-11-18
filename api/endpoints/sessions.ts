@@ -1,22 +1,29 @@
-const { sql } = require("@vercel/postgres");
 import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 
 module.exports = function (app: Application): void {
     app.put('/sessions/:id', updateSessionsById);
     app.post('/sessions', createSession)
     app.put('/sessions', updateSession)
     app.get('/sessions/:id', getSessionById)
-    app.get('/sessions', getSessionByIdGroup)
+    app.get('/sessions/school/:id_school', getSessionByIdSchool)
     app.get('/session-categories/:id_session_student', getSessionCategoriesByIdSessionStudent)
+    app.get('/session-sub-categories/:id_session_emission_category', getSessionSubCategoriesByIdSessionEmissionCategorie)
     app.post('/session-emission', createSessionEmission)
-    app.get('/session-emission/:id_session_emission_sub_categorie', getSessionEmissionByIdSubCategorie)
-    app.get('/session-sub-categories/:id_session_emission_categorie', getSessionSubCategoriesByIdSessionEmissionCategorie)
+    app.get('/session-emission/:id_session_emission_sub_category', getSessionEmissionByIdSubCategorie)
 
     async function updateSessionsById(req: Request, res: Response, next: NextFunction) {
         try {
-            const id = await sql`
-                update session_students set deleted = true where id='${req.params.id}' returning id`;
+            const id = await prisma.sessionStudents.update({
+                where: {
+                    id: req.params.id,
+                    updatedAt: new Date()
+                },
+                data: { deleted: true }
+            })
+
             return res.status(200).json(id);
         } catch (error) {
             return handleErrors(next, error);
@@ -30,74 +37,57 @@ module.exports = function (app: Application): void {
      * @returns Session
      */
     async function createSession(req: Request, res: Response, next: NextFunction) {
-
         try {
-            const { id_school, id_group, name, year } = req.body
+            const { idSchool, name, year } = req.body
 
-            const sessions = await sql`
-                insert into session_students 
-                (id_school, id_group, name, year)
-                values (${id_school}, ${id_group}, ${name}, ${year})
-                returning *;
-            `;
+            const session = await prisma.sessionStudents.create({ data: { idSchool, name, year } })
 
-            // Creation of student Sesssions Emission Categories for each categories
-            const emissionCategories = await sql`
-                select * from emission_categories where id_language = 1`;
+            // Creation of student Sessions Emission Categories for each categories
+            const emissionCategories = await prisma.emissionCategories.findMany({ where: { idLanguage: 1 } })
 
-            const sessionEmissionCategoriesMap = await emissionCategories.rows.map(categorie =>
-                ({ id_session_student: sessions.rows[0].id, id_emission_categorie: categorie.id }))
+            await prisma.sessionEmissionCategories.createMany({
+                data: emissionCategories.map(categorie => (
+                    {
+                        idSessionStudent: session.id,
+                        idEmissionCategory: categorie.id
+                    }))
+            })
 
-            const sessionEmissionCategories = await sql.query(
-                `insert into session_emission_categories (id_session_student, id_emission_categorie) values 
-                ${sessionEmissionCategoriesMap.map((categorie) => {
-                    return `('${categorie.id_session_student}', ${categorie.id_emission_categorie})`;
-                }).join()} returning *`
-            );
-
-            // Creation of Sesssions Emissions Sub Categories for each sub categories
-            const emissionSubCategories = (await sql`
-                select * from emission_sub_categories where id_language = 1`).rows;
-
-            // TOFIX for fixed assets not adding to sub categories
-            const sessionEmissionSubCategoriesMap =
-                await emissionSubCategories.map(subCategorie => {
-                    const id_session_emission_categorie = sessionEmissionCategories.rows.find(categorie =>
-                        categorie.id_emission_categorie === subCategorie.id_emission_categorie);
-
-                    return {
-                        id_session_emission_categorie: id_session_emission_categorie.id,
-                        id_emission_sub_categorie: subCategorie.id
-                    }
+            const sessionEmissionCategories = await prisma.sessionEmissionCategories.findMany(
+                {
+                    where: { idSessionStudent: session.id }
                 })
 
-            await sql.query(
-                `insert into session_emission_sub_categories (id_session_emission_categorie, id_emission_sub_categorie) values 
-                    ${sessionEmissionSubCategoriesMap.map((categorie) => {
-                    return `('${categorie.id_session_emission_categorie}', ${categorie.id_emission_sub_categorie})`;
-                }).join()} returning *`
-            );
+            // Creation of Sessions Emissions Sub Categories for each sub categories
+            const emissionSubCategories = await prisma.emissionSubCategories.findMany({ where: { idLanguage: 1 } })
 
-            return res.status(200).json(sessions.rows[0]);
+            const sessionEmissionSubCategoriesMap =
+                emissionSubCategories.map(subCategorie => ({
+                    idSessionEmissionCategory: sessionEmissionCategories.find(categorie =>
+                        categorie.idEmissionCategory === subCategorie.idEmissionCategory)?.id || "",
+                    idEmissionSubCategory: subCategorie.id
+                }))
+
+            await prisma.sessionEmissionSubCategories.createMany({ data: sessionEmissionSubCategoriesMap })
+
+            return res.status(200).json(session);
         } catch (error) {
             return handleErrors(next, error);
         }
     }
 
     async function updateSession(req: Request, res: Response, next: NextFunction) {
-        const { id, id_school, name, year, archived, deleted } = req.body
+        const { id, idSchool, name, year, archived, deleted } = req.body
         try {
-            await sql.query(`
-                        update session_students
-                        set
-                            id_school='${id_school}',
-                            name='${name}',
-                            year=${year},
-                            archived=${archived},
-                            deleted=${deleted}
-                        where id = '${id}';
-                    `);
-            return res.status(200).json(id);
+            const session = await prisma.sessionStudents.update({
+                where: { id },
+                data: {
+                    idSchool, name, year, archived, deleted,
+                    updatedAt: new Date()
+                }
+            })
+
+            return res.status(200).json(session);
         } catch (error) {
             return handleErrors(next, error);
         }
@@ -105,19 +95,31 @@ module.exports = function (app: Application): void {
 
     async function getSessionById(req: Request, res: Response, next: NextFunction) {
         try {
-            const sessions = await sql`
-            select * from session_students where id=${req.params.id} and deleted=false and archived=false`;
-            return res.status(200).json(sessions.rows);
+            const sessions = await prisma.sessionStudents.findMany({ where: { id: req.params.id } });
+
+            return res.status(200).json(sessions);
         } catch (error) {
             return handleErrors(next, error);
         }
     }
 
-    async function getSessionByIdGroup(req: Request, res: Response, next: NextFunction) {
+    async function getSessionByIdSchool(req: Request, res: Response, next: NextFunction) {
         try {
-            const sessions = await sql`
-            select * from session_students where id_group=${req.query.id_group} and deleted=false and archived=false`;
-            return res.status(200).json(sessions.rows);
+            const sessions = await prisma.sessionStudents.findMany(
+                {
+                    where: {
+                        idSchool: req.params.id_school
+                    },
+                    include: {
+                        groups: {
+                            where: {
+                                deleted: false
+                            }
+                        },
+                    }
+                });
+
+            return res.status(200).json(sessions);
         } catch (error) {
             return handleErrors(next, error);
         }
@@ -125,9 +127,11 @@ module.exports = function (app: Application): void {
 
     async function getSessionCategoriesByIdSessionStudent(req: Request, res: Response, next: NextFunction) {
         try {
-            const sessionCategories = await sql`
-            select * from session_emission_categories where id_session_student = ${req.params.id_session_student}`;
-            return res.status(200).json(sessionCategories.rows);
+            const sessionCategories = await prisma.sessionEmissionCategories.findMany({
+                where: { id: req.params.id_session_student }
+            });
+
+            return res.status(200).json(sessionCategories);
         } catch (error) {
             return handleErrors(next, error);
         }
@@ -135,25 +139,51 @@ module.exports = function (app: Application): void {
 
     async function getSessionSubCategoriesByIdSessionEmissionCategorie(req: Request, res: Response, next: NextFunction) {
         try {
-            const sessionSubCategories = await sql.query(`
-            select * from session_emission_sub_categories 
-            where id_session_emission_categorie = '${req.params.id_session_emission_categorie}'`);
-            return res.status(200).json(sessionSubCategories.rows);
+            const sessionSubCategories = await prisma.sessionEmissionSubCategories.findMany(
+                {
+                    where: {
+                        idSessionEmissionCategory: req.params.id_session_emission_category
+                    },
+                    select: {
+                        id: true,
+                        idEmissionSubCategory: true,
+                        comments: true,
+                        emissionSubCategories: {
+                            select: {
+                                label: true,
+                                detail: true,
+                                emissionFactors: true
+                            }
+                        },
+                        sessionEmissions: {
+                            include: {
+                                emissionFactor: true
+                            },
+                        }
+                    },
+                })
+
+            return res.status(200).json(sessionSubCategories);
         } catch (error) {
             return handleErrors(next, error);
         }
     }
 
     async function createSessionEmission(req: Request, res: Response, next: NextFunction) {
+        const { idSessionEmissionSubCategory, idEmissionFactor, value } = req.body
 
-        const { id_session_emission_sub_categorie, id_emission_factor, value } = req.body
         try {
-            const sessionEmission = await sql.query(`insert into session_emissions 
-                    (id_session_emission_sub_categorie, id_emission_factor, value) 
-                    values 
-                    ('${id_session_emission_sub_categorie}', ${id_emission_factor}, ${value}) 
-                    returning *;`);
-            return res.status(200).json(sessionEmission.rows[0]);
+            const sessionEmission = await prisma.sessionEmissions.create(
+                {
+                    data:
+                    {
+                        idSessionEmissionSubCategory,
+                        idEmissionFactor,
+                        value
+                    }
+                })
+
+            return res.status(200).json(sessionEmission);
         } catch (error) {
             return handleErrors(next, error);
         }
@@ -161,10 +191,10 @@ module.exports = function (app: Application): void {
 
     async function getSessionEmissionByIdSubCategorie(req: Request, res: Response, next: NextFunction) {
         try {
-            const id_session_emission_sub_categorie = await sql.query(`
-                select * from session_emissions 
-                where id_session_emission_sub_categorie = '${req.params.id_session_emission_sub_categorie}'`);
-            return res.status(200).json(id_session_emission_sub_categorie.rows);
+            const idSessionEmissionSubCategorie = await prisma.sessionEmissionSubCategories.findMany(
+                { where: { id: req.params.id_session_emission_sub_category } });
+
+            return res.status(200).json(idSessionEmissionSubCategorie);
         } catch (error) {
             return handleErrors(next, error);
         }

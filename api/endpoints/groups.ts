@@ -1,52 +1,77 @@
-const { sql } = require("@vercel/postgres");
 import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 
 module.exports = function (app: Application): void {
     app.post('/groups', createGroup);
     app.put('/groups', updateGroup);
-    app.get('/groups/:teacher_username', getTeacherGroups);
+    app.get('/groups/:id_group', getGroup);
 
     async function createGroup(req: Request, res: Response, next: NextFunction) {
-        const { id_school, teacher_username, name, year } = req.body
+        const { idSchool, idSessionStudent, name, year } = req.body
         try {
-            const groups = await sql`
-                    insert into groups 
-                    (id_school, teacher_username, name, year)
-                    values (${id_school}, ${teacher_username}, ${name}, ${year})
-                    returning *;
-                `;
-            return res.status(200).json(groups.rows[0]);
+            const groups = await prisma.groups.create({
+                data: { idSchool, idSessionStudent, name, year }
+            })
+            return res.status(200).json(groups);
         } catch (error) {
             return handleErrors(next, error);
         }
     }
 
     async function updateGroup(req: Request, res: Response, next: NextFunction) {
-        const { id, id_school, teacher_username, name, year, archived, deleted } = req.body
+        const { id, idSchool, name, year, archived, deleted, rights } = req.body
         try {
-            await sql.query(`
-                    update groups 
-                    set
-                        id_school='${id_school}',
-                        teacher_username='${teacher_username}',
-                        name='${name}',
-                        year=${year},
-                        archived=${archived},
-                        deleted=${deleted}
-                    where id = '${id}';
-                `);
-            return res.status(200).json(id);
+            const group = await prisma.groups.update({
+                where: { id: id },
+                data: {
+                    idSchool,
+                    name,
+                    year,
+                    archived,
+                    deleted,
+                    rights,
+                    updatedAt: new Date()
+                }
+            })
+            return res.status(200).json(group);
         } catch (error) {
             return handleErrors(next, error);
         }
     }
 
-    async function getTeacherGroups(req: Request, res: Response, next: NextFunction) {
+    async function getGroup(req: Request, res: Response, next: NextFunction) {
         try {
-            const sessions = await sql`
-                select * from groups where teacher_username=${req.params.teacher_username}`;
-            return res.status(200).json(sessions.rows);
+            const group = await prisma.groups.findFirstOrThrow({
+                where: {
+                    id: req.params.id_group
+                },
+                select: {
+                    id: true,
+                    idSessionStudent: true,
+                    sessionStudent: {
+                        select: {
+                            id: true,
+                            sessionEmissionCategories: {
+                                select: {
+                                    id: true,
+                                    idSessionStudent: true,
+                                    emissionCategorie: {
+                                        select: {
+                                            label: true,
+                                            detail: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+            })
+
+            return res.status(200).json(group);
         } catch (error) {
             return handleErrors(next, error);
         }

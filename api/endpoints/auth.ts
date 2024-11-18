@@ -1,10 +1,11 @@
 const wordpressApiUrl = process.env.WORDPRESS_API_URL || "";
 const usernameWordpress = process.env.WORDPRESS_APPLICATION_USERNAME;
 const passwordWordpress = process.env.WORDPRESS_APPLICATION_PASSWORD;
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 
 import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors, handleFetch } from "../common";
-const { sql } = require("@vercel/postgres");
 
 const myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
@@ -12,29 +13,8 @@ myHeaders.set('Authorization', 'Basic ' + Buffer.from(usernameWordpress + ":" + 
 
 module.exports = function (app: Application): void {
 
-    app.delete("/delete-user", deleteUser);
     app.post('/auth/login', login);
-    app.post('/auth/current', getUser);
-    app.post('/auth/reset-password', resetPassword);
-    app.post('/auth/modify-user', modifyUser);
     app.post('/auth/sign-up', signUp);
-
-    async function deleteUser(req: Request, res: Response, next: NextFunction) {
-        const { username } = req.body
-
-        const { requestInit, users } = await getUser(username, res, next);
-
-        requestInit.method = "DELETE";
-        requestInit.body = JSON.stringify({ "reassign": "1" })
-
-        const url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id + "?force=true"
-
-        const response = await fetch(url, requestInit);
-        const user = await response.json()
-
-        return res.status(200).json(user);
-
-    }
 
     async function login(req: Request, res: Response, next: NextFunction) {
         const { username, password, rememberMe } = req.body;
@@ -61,100 +41,65 @@ module.exports = function (app: Application): void {
         }
     }
 
-    async function getUser(req: Request, res: Response, next: NextFunction) {
-        res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users?search=" + req.body.username;
-        const requestInit = {
-            headers: myHeaders,
-            method: "POST"
-        } as RequestInit;
-        try {
-
-            const users = await handleFetch(requestInit, res, next)
-            return { requestInit, users }
-
-        } catch (error) {
-            return handleErrors(next, error);
-        }
-    }
-
-    async function resetPassword(req: Request, res: Response, next: NextFunction) {
-        const { username, password } = req.body
-
-        const { requestInit, users } = await getUser(req, res, next);
-
-        res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id
-        requestInit.method = "POST";
-        requestInit.body = JSON.stringify({ password })
-
-        try {
-            const json = await handleFetch(requestInit, res, next)
-            return res.status(200).send(json);
-        } catch (error) {
-            return handleErrors(next, error);
-        }
-    }
-
-    async function modifyUser(req: Request, res: Response, next: NextFunction) {
-
-        try {
-            const { username } = req.body
-
-            const { requestInit, users } = await getUser(username, res, next);
-
-            res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users/" + users[0].id
-            requestInit.method = "POST";
-            requestInit.body = JSON.stringify(req.body)
-            const json = await handleFetch(requestInit, res, next)
-            return res.status(200).send(json);
-        } catch (error) {
-            return handleErrors(next, error);
-        }
-    }
-
     async function signUp(req: Request, res: Response, next: NextFunction) {
         res.req.url = wordpressApiUrl + "/wp-json/wp/v2/users";
         const {
             email,
-            first_name,
-            last_name,
+            firstName,
+            lastName,
             password,
             role,
             state,
-            school_name,
-            town_name,
-            postal_code,
+            schoolName,
+            townName,
+            postalCode,
         } = req.body;
 
-        if (!school_name) {
+        if (!schoolName) {
             return handleErrors(next, "Can you enter the name of the school ?");
         }
 
         // Check if school already exist
-        let schoolFromBdd = await sql.query(`
-            select * from schools 
-            where postal_code LIKE '${postal_code}' and LOWER(name) LIKE LOWER('${school_name}');
-        `);
+        let schoolFromBdd = await prisma.schools.findFirst({
+            where: {
+                postalCode,
+                name: schoolName
+            }
+        })
 
         // The school doesn't exist so we will create it
-        if (!schoolFromBdd || !schoolFromBdd.rows[0]) {
+        if (!schoolFromBdd) {
             try {
-                schoolFromBdd = await sql.query(`
-                    insert into schools 
-                        (state, name, town_name, postal_code, admin_username) 
-                        values 
-                        ('${state}', '${school_name}', '${town_name}', '${postal_code}', '${email}') 
-                    returning id;
-                    `);
+                schoolFromBdd = await prisma.schools.create({
+                    data: {
+                        state,
+                        name: schoolName,
+                        townName,
+                        postalCode
+                    }
+                })
+            } catch (error) {
+                return handleErrors(next, error);
+            }
+
+            // Add user to admin school table
+            try {
+                await prisma.schoolAdmins.create({
+                    data: {
+                        schoolId: schoolFromBdd.id,
+                        adminUsername: email.toLowerCase()
+                    }
+                })
             } catch (error) {
                 return handleErrors(next, error);
             }
         }
 
         const body = {
-            first_name: first_name,
-            last_name: last_name,
-            email: email,
-            username: email,
+            first_name: firstName,
+            last_name: lastName,
+            email: email.toLowerCase(),
+            username: email.toLowerCase(),
             password: password,
             roles: role,
         }
@@ -171,6 +116,5 @@ module.exports = function (app: Application): void {
         } catch (error) {
             return handleErrors(next, error);
         }
-
     }
 }
