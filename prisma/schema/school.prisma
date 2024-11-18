@@ -3,14 +3,14 @@ model SchoolAdmins {
   adminUsername String   @map("admin_username")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @default(now()) @map("updated_at")
-  schools       Schools  @relation(fields: [schoolId], references: [id])
+  school       Schools  @relation(fields: [schoolId], references: [id])
 
   @@id([schoolId, adminUsername])
   @@map("school_admins")
 }
 
 model Schools {
-  id                String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                String            @id @default(uuid()) @db.Uuid
   state             String
   name              String
   townName          String            @map("town_name")

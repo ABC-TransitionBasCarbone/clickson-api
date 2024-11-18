@@ -10,7 +10,7 @@
     "swagger-gen": "node swagger.js",
     "open-browser": "start http://localhost:4000/doc",
     "migrate:generate": "dotenv -e .env.development -- npx prisma generate",
-    "migrate:dev": "dotenv -e .env.development -- npx prisma migrate dev",
+    "migrate:dev": "dotenv -e .env.development -- npx prisma migrate dev  --create-only",
     "migrate:seed": "dotenv -e .env.development -- npx prisma db seed",
     "migrate:staging": "npx prisma migrate deploy",
     "format": "prettier --write .",
@@ -42,6 +42,6 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "^5.4.5",
-    "vercel": "^37.14.0"
+    "vercel": "^38.0.0"
   }
 }

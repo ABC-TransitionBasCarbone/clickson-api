@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 module.exports = function (app: Application): void {
     app.post('/groups', createGroup);
     app.put('/groups', updateGroup);
-    app.get('/groups/:id_session', getGroupsBySession);
+    app.get('/groups/:id_group', getGroup);
 
     async function createGroup(req: Request, res: Response, next: NextFunction) {
         const { idSchool, idSessionStudent, name, year } = req.body
@@ -21,9 +21,9 @@ module.exports = function (app: Application): void {
     }
 
     async function updateGroup(req: Request, res: Response, next: NextFunction) {
-        const { id, idSchool, name, year, archived, deleted } = req.body
+        const { id, idSchool, name, year, archived, deleted, rights } = req.body
         try {
-            await prisma.groups.update({
+            const group = await prisma.groups.update({
                 where: { id: id },
                 data: {
                     idSchool,
@@ -31,21 +31,47 @@ module.exports = function (app: Application): void {
                     year,
                     archived,
                     deleted,
+                    rights,
                     updatedAt: new Date()
                 }
             })
-            return res.status(200).json(id);
+            return res.status(200).json(group);
         } catch (error) {
             return handleErrors(next, error);
         }
     }
 
-    async function getGroupsBySession(req: Request, res: Response, next: NextFunction) {
+    async function getGroup(req: Request, res: Response, next: NextFunction) {
         try {
-            const groups = prisma.groups.findMany({
-                where: { idSessionStudent: req.params.id_session }
+            const group = await prisma.groups.findFirstOrThrow({
+                where: {
+                    id: req.params.id_group
+                },
+                select: {
+                    id: true,
+                    idSessionStudent: true,
+                    sessionStudent: {
+                        select: {
+                            id: true,
+                            sessionEmissionCategories: {
+                                select: {
+                                    id: true,
+                                    idSessionStudent: true,
+                                    emissionCategorie: {
+                                        select: {
+                                            label: true,
+                                            detail: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
             })
-            return res.status(200).json(groups);
+
+            return res.status(200).json(group);
         } catch (error) {
             return handleErrors(next, error);
         }

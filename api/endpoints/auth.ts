@@ -87,7 +87,7 @@ module.exports = function (app: Application): void {
                 await prisma.schoolAdmins.create({
                     data: {
                         schoolId: schoolFromBdd.id,
-                        adminUsername: email
+                        adminUsername: email.toLowerCase()
                     }
                 })
             } catch (error) {
@@ -98,8 +98,8 @@ module.exports = function (app: Application): void {
         const body = {
             first_name: firstName,
             last_name: lastName,
-            email: email,
-            username: email,
+            email: email.toLowerCase(),
+            username: email.toLowerCase(),
             password: password,
             roles: role,
         }

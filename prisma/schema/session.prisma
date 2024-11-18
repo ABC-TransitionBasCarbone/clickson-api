@@ -1,19 +1,20 @@
 model Comments {
-  id                           Int                           @id
-  idEmissionSubCategorie       String?                       @map("id_emission_sub_categorie") @db.Uuid
-  comment                      String
-  createdAt                    DateTime                      @default(now()) @map("created_at")
-  idCreatedBy                  Int?                          @map("id_created_by")
-  sessionEmissionSubCategories SessionEmissionSubCategories? @relation(fields: [idEmissionSubCategorie], references: [id])
+  id                         Int                           @id
+  idEmissionSubCategorie     String?                       @map("id_emission_sub_categorie") @db.Uuid
+  comment                    String
+  createdAt                  DateTime                      @default(now()) @map("created_at")
+  idCreatedBy                Int?                          @map("id_created_by")
+  sessionEmissionSubCategory SessionEmissionSubCategories? @relation(fields: [idEmissionSubCategorie], references: [id])
 
   @@map("comments")
 }
 
 model SessionEmissionCategories {
-  id                           String                         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                           String                         @id @default(uuid()) @db.Uuid
   idSessionStudent             String?                        @map("id_session_student") @db.Uuid
-  idEmissionCategorie          Int?                           @map("id_emission_categorie")
-  emissionCategories           EmissionCategories?            @relation(fields: [idEmissionCategorie], references: [id])
+  idEmissionCategory           Int?                           @map("id_emission_category")
+  emissionCategorie            EmissionCategories?            @relation(fields: [idEmissionCategory], references: [id])
+  sessionStudent               SessionStudents?               @relation(fields: [idSessionStudent], references: [id])
   sessionEmissionSubCategories SessionEmissionSubCategories[]
   createdAt                    DateTime                       @default(now()) @map("created_at")
   updatedAt                    DateTime                       @default(now()) @map("updated_at")
@@ -22,46 +23,46 @@ model SessionEmissionCategories {
 }
 
 model SessionEmissionSubCategories {
-  id                         String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  idSessionEmissionCategorie String?                    @map("id_session_emission_categorie") @db.Uuid
-  idEmissionSubCategorie     Int?                       @map("id_emission_sub_categorie")
-  comments                   Comments[]
-  // TODO Pourquoi ce map de relation ?
-  sessionEmissionCategories  SessionEmissionCategories? @relation(fields: [idSessionEmissionCategorie], references: [id], map: "session_emission_sub_categori_id_session_emission_categori_fkey")
-  emissionSubCategories      EmissionSubCategories?     @relation(fields: [idEmissionSubCategorie], references: [id])
-  sessionEmissions           SessionEmissions[]
-  createdAt                  DateTime                   @default(now()) @map("created_at")
-  updatedAt                  DateTime                   @default(now()) @map("updated_at")
+  id                        String                     @id @default(uuid()) @db.Uuid
+  idSessionEmissionCategory String?                    @map("id_session_emission_category") @db.Uuid
+  idEmissionSubCategory     Int?                       @map("id_emission_sub_category")
+  comments                  Comments[]
+  sessionEmissionCategories SessionEmissionCategories? @relation(fields: [idSessionEmissionCategory], references: [id])
+  emissionSubCategories     EmissionSubCategories?     @relation(fields: [idEmissionSubCategory], references: [id])
+  sessionEmissions          SessionEmissions[]
+  createdAt                 DateTime                   @default(now()) @map("created_at")
+  updatedAt                 DateTime                   @default(now()) @map("updated_at")
 
   @@map("session_emission_sub_categories")
 }
 
 model SessionEmissions {
-  id                            String                        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  idSessionEmissionSubCategorie String?                       @map("id_session_emission_sub_categorie") @db.Uuid
-  idEmissionFactor              Int?                          @map("id_emission_factor")
-  value                         Decimal?                      @db.Decimal
-  createdAt                     DateTime                      @default(now()) @map("created_at")
-  updatedAt                     DateTime                      @default(now()) @map("updated_at")
-  emissionFactors               EmissionFactors?              @relation(fields: [idEmissionFactor], references: [id])
-  sessionEmissionSubCategories  SessionEmissionSubCategories? @relation(fields: [idSessionEmissionSubCategorie], references: [id])
+  id                           String                        @id @default(uuid()) @db.Uuid
+  idSessionEmissionSubCategory String?                       @map("id_session_emission_sub_category") @db.Uuid
+  idEmissionFactor             Int?                          @map("id_emission_factor")
+  value                        Decimal?                      @db.Decimal
+  createdAt                    DateTime                      @default(now()) @map("created_at")
+  updatedAt                    DateTime                      @default(now()) @map("updated_at")
+  emissionFactor               EmissionFactors?              @relation(fields: [idEmissionFactor], references: [id])
+  sessionEmissionSubCategory   SessionEmissionSubCategories? @relation(fields: [idSessionEmissionSubCategory], references: [id])
 
   @@map("session_emissions")
 }
 
 model SessionStudents {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  idSchool  String?  @map("id_school") @db.Uuid
-  name      String   @db.VarChar(255)
-  year      Int      @default(dbgenerated("date_part('year'::text, CURRENT_DATE)"))
-  progress  Int      @default(0)
-  archived  Boolean  @default(false)
-  deleted   Boolean  @default(false)
-  locked    Boolean  @default(false)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @map("updated_at")
-  schools   Schools? @relation(fields: [idSchool], references: [id])
-  groups    Groups[]
+  id                        String                      @id @default(uuid()) @db.Uuid
+  idSchool                  String?                     @map("id_school") @db.Uuid
+  name                      String                      @db.VarChar(255)
+  year                      Int                         @default(dbgenerated("date_part('year'::text, CURRENT_DATE)"))
+  progress                  Int                         @default(0)
+  archived                  Boolean                     @default(false)
+  deleted                   Boolean                     @default(false)
+  locked                    Boolean                     @default(false)
+  createdAt                 DateTime                    @default(now()) @map("created_at")
+  updatedAt                 DateTime                    @default(now()) @map("updated_at")
+  school                    Schools?                    @relation(fields: [idSchool], references: [id])
+  groups                    Groups[]
+  sessionEmissionCategories SessionEmissionCategories[]
 
   @@map("session_students")
 }

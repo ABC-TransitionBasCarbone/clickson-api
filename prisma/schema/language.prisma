@@ -5,8 +5,6 @@ model Languages {
   emissionCategories    EmissionCategories[]
   emissionFactors       EmissionFactors[]
   emissionSubCategories EmissionSubCategories[]
-  emissionTypes         EmissionTypes[]
-  emissionUnits         EmissionUnits[]
 
   @@map("languages")
 }

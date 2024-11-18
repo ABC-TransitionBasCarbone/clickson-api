@@ -31,7 +31,7 @@ module.exports = function (app: Application): void {
                 where: {
                     schoolAdmins: {
                         some: {
-                            adminUsername: req.params.admin_username
+                            adminUsername:  req.params.admin_username
                         }
                     }
                 }

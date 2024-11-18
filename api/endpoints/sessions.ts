@@ -116,7 +116,6 @@ module.exports = function (app: Application): void {
                                 deleted: false
                             }
                         },
-
                     }
                 });
 
@@ -141,7 +140,46 @@ module.exports = function (app: Application): void {
     async function getSessionSubCategoriesByIdSessionEmissionCategorie(req: Request, res: Response, next: NextFunction) {
         try {
             const sessionSubCategories = await prisma.sessionEmissionSubCategories.findMany(
-                { where: { idSessionEmissionCategorie: req.params.id_session_emission_categorie } });
+                {
+                    where: {
+                        idSessionEmissionCategorie: req.params.id_session_emission_categorie
+                    },
+                    select: {
+                        id: true,
+                        idEmissionSubCategorie: true,
+                        comments: true,
+                        sessionEmissions: {
+                            include: {
+                                    emissionFactor: {
+                                    select: {
+                                        id: true,
+                                        label: true,
+                                        value: true,
+                                        uncertainty: true,
+                                        emissionType: { select: { label: true } },
+                                        emissionUnit: { select: { label: true } }
+                                    }
+                                },
+                            }
+                        },
+                        emissionSubCategories: {
+                            select: {
+                                label: true,
+                                detail: true,
+                                emissionFactors: {
+                                    select: {
+                                        id: true,
+                                        label: true,
+                                        value: true,
+                                        uncertainty: true,
+                                        emissionType: { select: { label: true } },
+                                        emissionUnit: { select: { label: true } }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
 
             return res.status(200).json(sessionSubCategories);
         } catch (error) {
