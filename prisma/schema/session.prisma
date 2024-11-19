@@ -13,7 +13,7 @@ model SessionEmissionCategories {
   id                           String                         @id @default(uuid()) @db.Uuid
   idSessionStudent             String?                        @map("id_session_student") @db.Uuid
   idEmissionCategory           Int?                           @map("id_emission_category")
-  emissionCategorie            EmissionCategories?            @relation(fields: [idEmissionCategory], references: [id])
+  emissionCategory             EmissionCategories?            @relation(fields: [idEmissionCategory], references: [id])
   sessionStudent               SessionStudents?               @relation(fields: [idSessionStudent], references: [id])
   sessionEmissionSubCategories SessionEmissionSubCategories[]
   createdAt                    DateTime                       @default(now()) @map("created_at")
@@ -28,7 +28,7 @@ model SessionEmissionSubCategories {
   idEmissionSubCategory     Int?                       @map("id_emission_sub_category")
   comments                  Comments[]
   sessionEmissionCategories SessionEmissionCategories? @relation(fields: [idSessionEmissionCategory], references: [id])
-  emissionSubCategories     EmissionSubCategories?     @relation(fields: [idEmissionSubCategory], references: [id])
+  emissionSubCategory       EmissionSubCategories?     @relation(fields: [idEmissionSubCategory], references: [id])
   sessionEmissions          SessionEmissions[]
   createdAt                 DateTime                   @default(now()) @map("created_at")
   updatedAt                 DateTime                   @default(now()) @map("updated_at")

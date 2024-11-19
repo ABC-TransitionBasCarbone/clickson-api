@@ -12,6 +12,7 @@ module.exports = function (app: Application): void {
     app.get('/session-categories/:id_session_student', getSessionCategoriesByIdSessionStudent)
     app.get('/session-sub-categories/:id_session_emission_category', getSessionSubCategoriesByIdSessionEmissionCategorie)
     app.post('/session-emission', createSessionEmission)
+    app.delete('/session-emission', deleteSessionEmission)
     app.get('/session-emission/:id_session_emission_sub_category', getSessionEmissionByIdSubCategorie)
 
     async function updateSessionsById(req: Request, res: Response, next: NextFunction) {
@@ -82,7 +83,11 @@ module.exports = function (app: Application): void {
             const session = await prisma.sessionStudents.update({
                 where: { id },
                 data: {
-                    idSchool, name, year, archived, deleted,
+                    idSchool,
+                    name,
+                    year,
+                    archived,
+                    deleted,
                     updatedAt: new Date()
                 }
             })
@@ -148,7 +153,7 @@ module.exports = function (app: Application): void {
                         id: true,
                         idEmissionSubCategory: true,
                         comments: true,
-                        emissionSubCategories: {
+                        emissionSubCategory: {
                             select: {
                                 label: true,
                                 detail: true,
@@ -171,7 +176,6 @@ module.exports = function (app: Application): void {
 
     async function createSessionEmission(req: Request, res: Response, next: NextFunction) {
         const { idSessionEmissionSubCategory, idEmissionFactor, value } = req.body
-
         try {
             const sessionEmission = await prisma.sessionEmissions.create(
                 {
@@ -182,6 +186,17 @@ module.exports = function (app: Application): void {
                         value
                     }
                 })
+
+            return res.status(200).json(sessionEmission);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    }
+
+    async function deleteSessionEmission(req: Request, res: Response, next: NextFunction) {
+        const { id } = req.body
+        try {
+            const sessionEmission = await prisma.sessionEmissions.delete({ where: { id } })
 
             return res.status(200).json(sessionEmission);
         } catch (error) {
