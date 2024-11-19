@@ -9,7 +9,7 @@ model Groups {
   rights           Int[]            @default([])
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @default(now()) @map("updated_at")
-  school          Schools?         @relation(fields: [idSchool], references: [id])
+  school           Schools?         @relation(fields: [idSchool], references: [id])
   sessionStudent   SessionStudents? @relation(fields: [idSessionStudent], references: [id])
 
   @@map("groups")

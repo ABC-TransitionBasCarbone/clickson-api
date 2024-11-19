@@ -1,10 +1,6 @@
 
 import { PrismaClient } from '@prisma/client'
 import { EMISSIONCATEGORIES } from './fixed_data/emission-categories'
-import { EMISSIONFACTORS } from './fixed_data/emission-factors'
-import { EMISSIONSUBCATEGORIES } from './fixed_data/emission-sub-categories'
-import { EMISSIONTYPES } from './fixed_data/emission-types'
-import { EMISSIONUNITS } from './fixed_data/emission-units'
 import { LANGUAGES } from './fixed_data/languages'
 
 const prisma = new PrismaClient()
@@ -46,14 +42,6 @@ const languages = async () => {
         ))
     })
 
-
-
-    // Create all the fixed data one by one
-    // await prisma.emissionCategories.createManyAndReturn({ data: EMISSIONCATEGORIES })
-    // await prisma.emissionSubCategories.createMany({ data: EMISSIONSUBCATEGORIES })
-    // await prisma.emissionTypes.createMany({ data: EMISSIONTYPES })
-    // await prisma.emissionUnits.createMany({ data: EMISSIONUNITS })
-    // await prisma.emissionFactors.createMany({ data: EMISSIONFACTORS })
 }
 
 const main = async () => {

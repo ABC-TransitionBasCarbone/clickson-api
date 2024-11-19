@@ -53,11 +53,22 @@ module.exports = function (app: Application): void {
                     sessionStudent: {
                         select: {
                             id: true,
+                            name: true,
                             sessionEmissionCategories: {
                                 select: {
                                     id: true,
                                     idSessionStudent: true,
-                                    emissionCategorie: {
+                                    idEmissionCategory: true,
+                                    sessionEmissionSubCategories: {
+                                        select: {
+                                            sessionEmissions: {
+                                                select: {
+                                                    value: true,
+                                                }
+                                            }
+                                        }
+                                    },
+                                    emissionCategory: {
                                         select: {
                                             label: true,
                                             detail: true
@@ -70,7 +81,7 @@ module.exports = function (app: Application): void {
                     }
                 }
             })
-
+            
             return res.status(200).json(group);
         } catch (error) {
             return handleErrors(next, error);
