@@ -26,7 +26,6 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 2,
-
         label: 'Energy - Electricity',
         detail:
           'Your school is connected to the power grid in your country. Electricity is produced in different ways (nuclear power plants, renewable energies, fossil fuel power plants, etc.). Each mode of production emits greenhouse gases (GHGs) in different quantities.',

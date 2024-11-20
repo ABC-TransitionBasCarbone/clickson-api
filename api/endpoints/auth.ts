@@ -63,6 +63,17 @@ module.exports = function (app: Application): void {
             return handleErrors(next, "Can you enter the name of the school ?");
         }
 
+        // Check if user already admin of a school
+        const schoolAdmin = await prisma.schoolAdmins.findFirst({
+            where: {
+                adminUsername: email.toLowerCase()
+            }
+        })
+
+        if (schoolAdmin) {
+            return handleErrors(next, "You are already an administrator of a school");
+        }
+
         // Check if school already exist
         let schoolFromBdd = await prisma.schools.findFirst({
             where: {
@@ -85,18 +96,18 @@ module.exports = function (app: Application): void {
             } catch (error) {
                 return handleErrors(next, error);
             }
+        }
 
-            // Add user to admin school table
-            try {
-                await prisma.schoolAdmins.create({
-                    data: {
-                        schoolId: schoolFromBdd.id,
-                        adminUsername: email.toLowerCase()
-                    }
-                })
-            } catch (error) {
-                return handleErrors(next, error);
-            }
+        // Add user to admin school table
+        try {
+            await prisma.schoolAdmins.create({
+                data: {
+                    schoolId: schoolFromBdd.id,
+                    adminUsername: email.toLowerCase()
+                }
+            })
+        } catch (error) {
+            return handleErrors(next, error);
         }
 
         const body = {
