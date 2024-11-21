@@ -78,7 +78,7 @@ module.exports = function (app: Application): void {
     }
 
     async function updateSession(req: Request, res: Response, next: NextFunction) {
-        const { id, idSchool, name, year, archived, deleted } = req.body
+        const { id, idSchool, name, year, archived, deleted, locked } = req.body
         try {
             const session = await prisma.sessionStudents.update({
                 where: { id },
@@ -88,6 +88,7 @@ module.exports = function (app: Application): void {
                     year,
                     archived,
                     deleted,
+                    locked,
                     updatedAt: new Date()
                 }
             })

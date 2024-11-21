@@ -19,7 +19,6 @@ model Schools {
   staffCount        Int?              @map("staff_count")
   establishmentYear Int?              @map("establishment_year")
   adress            String?
-  adminUsername     String?           @map("admin_username")
   createdAt         DateTime          @default(now()) @map("created_at")
   updatedAt         DateTime          @default(now()) @map("updated_at")
   groups            Groups[]

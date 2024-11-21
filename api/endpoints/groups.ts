@@ -54,6 +54,8 @@ module.exports = function (app: Application): void {
                         select: {
                             id: true,
                             name: true,
+                            locked: true,
+                            school: true,
                             sessionEmissionCategories: {
                                 select: {
                                     id: true,
@@ -81,7 +83,7 @@ module.exports = function (app: Application): void {
                     }
                 }
             })
-            
+
             return res.status(200).json(group);
         } catch (error) {
             return handleErrors(next, error);

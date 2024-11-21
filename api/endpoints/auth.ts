@@ -30,13 +30,14 @@ module.exports = function (app: Application): void {
                     "rememberMe": rememberMe
                 })
             } as RequestInit;
-            const user = await handleFetch(requestInit, res, next)
-            if (user) {
-                return res.status(200).send({
-                    token: user.token,
-                    name: user.user_display_name,
-                    email: user.user_email,
-                });
+            const wordpressUser = await handleFetch(requestInit, res, next)
+            if (wordpressUser) {
+                const user = {
+                    token: wordpressUser.token,
+                    name: wordpressUser.user_display_name,
+                    email: wordpressUser.user_email,
+                }
+                return res.status(200).send(user);
             }
             return res.status(403).send({ "error": "user not found" });
 
