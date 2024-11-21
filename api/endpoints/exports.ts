@@ -8,7 +8,6 @@ module.exports = function (app: Application): void {
   app.put('/report/file', getFiles);
 
   async function getFiles(req: Request, res: Response, next: NextFunction) {
-
     const filePath = join(process.cwd(), '/api/public/files/clickson.xlsx');
     try {
       const fileContents = readFileSync(filePath);
