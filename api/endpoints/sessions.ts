@@ -11,6 +11,7 @@ module.exports = function (app: Application): void {
     app.get('/sessions/school/:id_school', getSessionByIdSchool)
     app.get('/session-categories/:id_session_student', getSessionCategoriesByIdSessionStudent)
     app.get('/session-sub-categories/:id_session_emission_category', getSessionSubCategoriesByIdSessionEmissionCategorie)
+    app.put('/session-categories', lockSessionCategories)
     app.post('/session-emission', createSessionEmission)
     app.delete('/session-emission', deleteSessionEmission)
     app.get('/session-emission/:id_session_emission_sub_category', getSessionEmissionByIdSubCategorie)
@@ -90,6 +91,22 @@ module.exports = function (app: Application): void {
                     deleted,
                     locked,
                     updatedAt: new Date()
+                }
+            })
+
+            return res.status(200).json(session);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    }
+
+    async function lockSessionCategories(req: Request, res: Response, next: NextFunction) {
+        const { id, locked } = req.body
+        try {
+            const session = await prisma.sessionEmissionCategories.update({
+                where: { id },
+                data: {
+                    locked,
                 }
             })
 

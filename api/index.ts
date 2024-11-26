@@ -6,7 +6,6 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('../swagger-output.json');
 
-
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors({ origin: ["http://localhost:3000", "http://localhost:8080", "https://clickson-tau.vercel.app", "https://clickson-api-git-develop-abc-transitionbascarbones-projects.vercel.app"] }));
@@ -20,5 +19,6 @@ require('./endpoints/schools')(app)
 require('./endpoints/sessions')(app)
 require('./endpoints/exports')(app)
 require('./endpoints/languages')(app)
+require('./endpoints/comments')(app)
 
 export default app;

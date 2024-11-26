@@ -1,9 +1,9 @@
 model Comments {
-  id                         Int                           @id
+  id                         String                        @id @default(uuid()) @db.Uuid
   idEmissionSubCategory      String?                       @map("id_emission_sub_category") @db.Uuid
   comment                    String
   createdAt                  DateTime                      @default(now()) @map("created_at")
-  idCreatedBy                Int?                          @map("id_created_by")
+  emailCreatedBy             String?                       @map("email_created_by")
   sessionEmissionSubCategory SessionEmissionSubCategories? @relation(fields: [idEmissionSubCategory], references: [id])
 
   @@map("comments")
@@ -13,6 +13,7 @@ model SessionEmissionCategories {
   id                           String                         @id @default(uuid()) @db.Uuid
   idSessionStudent             String?                        @map("id_session_student") @db.Uuid
   idEmissionCategory           Int?                           @map("id_emission_category")
+  locked                       Boolean                        @default(false)
   emissionCategory             EmissionCategories?            @relation(fields: [idEmissionCategory], references: [id])
   sessionStudent               SessionStudents?               @relation(fields: [idSessionStudent], references: [id])
   sessionEmissionSubCategories SessionEmissionSubCategories[]

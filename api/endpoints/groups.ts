@@ -50,7 +50,11 @@ module.exports = function (app: Application): void {
                 select: {
                     id: true,
                     idSessionStudent: true,
+                    rights: true,
                     sessionStudent: {
+                        where: {
+                            deleted: false
+                        },
                         select: {
                             id: true,
                             name: true,
@@ -61,8 +65,10 @@ module.exports = function (app: Application): void {
                                     id: true,
                                     idSessionStudent: true,
                                     idEmissionCategory: true,
+                                    locked: true,
                                     sessionEmissionSubCategories: {
                                         select: {
+                                            comments: true,
                                             sessionEmissions: {
                                                 select: {
                                                     value: true,
