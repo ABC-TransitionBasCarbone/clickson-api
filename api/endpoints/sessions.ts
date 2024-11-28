@@ -1,6 +1,21 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
 import { PrismaClient } from '@prisma/client'
+
+const rights = [
+    { key: 0, label: 'energy', advanced: false },
+    { key: 1, label: 'travel', advanced: false },
+    { key: 2, label: 'foodService', advanced: false },
+    { key: 3, label: 'supplies', advanced: false },
+    { key: 4, label: 'fixedAssets', advanced: false },
+    { key: 5, label: 'travel', advanced: false },
+    { key: 6, label: 'energy', advanced: true },
+    { key: 7, label: 'travel', advanced: true },
+    { key: 8, label: 'foodService', advanced: true },
+    { key: 9, label: 'supplies', advanced: true },
+    { key: 10, label: 'fixedAssets', advanced: true },
+    { key: 11, label: 'travel', advanced: true },
+]
 const prisma = new PrismaClient()
 
 module.exports = function (app: Application): void {
@@ -10,7 +25,7 @@ module.exports = function (app: Application): void {
     app.get('/sessions/:id', getSessionById)
     app.get('/sessions/school/:id_school', getSessionByIdSchool)
     app.get('/session-categories/:id_session_student', getSessionCategoriesByIdSessionStudent)
-    app.get('/session-sub-categories/:id_session_emission_category', getSessionSubCategoriesByIdSessionEmissionCategorie)
+    app.get('/session-sub-categories/:id_session_emission_category', getSessionCategoryById)
     app.put('/session-categories', lockSessionCategories)
     app.post('/session-emission', createSessionEmission)
     app.delete('/session-emission', deleteSessionEmission)
@@ -56,9 +71,7 @@ module.exports = function (app: Application): void {
             })
 
             const sessionEmissionCategories = await prisma.sessionEmissionCategories.findMany(
-                {
-                    where: { idSessionStudent: session.id }
-                })
+                { where: { idSessionStudent: session.id } })
 
             // Creation of Sessions Emissions Sub Categories for each sub categories
             const emissionSubCategories = await prisma.emissionSubCategories.findMany({ where: { idLanguage: 1 } })
@@ -71,6 +84,16 @@ module.exports = function (app: Application): void {
                 }))
 
             await prisma.sessionEmissionSubCategories.createMany({ data: sessionEmissionSubCategoriesMap })
+
+            // Create admin group
+            await prisma.groups.create({
+                data: {
+                    idSchool,
+                    idSessionStudent: session.id,
+                    name: "Admin " + name, year,
+                    rights: rights.filter(r => r.advanced).map(r => r.key)
+                }
+            })
 
             return res.status(200).json(session);
         } catch (error) {
@@ -160,33 +183,39 @@ module.exports = function (app: Application): void {
         }
     }
 
-    async function getSessionSubCategoriesByIdSessionEmissionCategorie(req: Request, res: Response, next: NextFunction) {
+    async function getSessionCategoryById(req: Request, res: Response, next: NextFunction) {
         try {
-            const sessionSubCategories = await prisma.sessionEmissionSubCategories.findMany(
+            const sessionSubCategory = await prisma.sessionEmissionCategories.findUnique(
                 {
                     where: {
-                        idSessionEmissionCategory: req.params.id_session_emission_category
+                        id: req.params.id_session_emission_category
                     },
                     select: {
-                        id: true,
-                        idEmissionSubCategory: true,
-                        comments: true,
-                        emissionSubCategory: {
+                        locked: true,
+                        sessionEmissionSubCategories: {
                             select: {
-                                label: true,
-                                detail: true,
-                                emissionFactors: true
+                                id: true,
+                                idEmissionSubCategory: true,
+                                comments: true,
+                                emissionSubCategory: {
+                                    select: {
+                                        label: true,
+                                        detail: true,
+                                        emissionFactors: true
+                                    }
+                                },
+                                sessionEmissions: {
+                                    include: {
+                                        emissionFactor: true
+                                    },
+                                }
                             }
                         },
-                        sessionEmissions: {
-                            include: {
-                                emissionFactor: true
-                            },
-                        }
+
                     },
                 })
 
-            return res.status(200).json(sessionSubCategories);
+            return res.status(200).json(sessionSubCategory);
         } catch (error) {
             return handleErrors(next, error);
         }

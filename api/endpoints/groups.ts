@@ -76,12 +76,7 @@ module.exports = function (app: Application): void {
                                             }
                                         }
                                     },
-                                    emissionCategory: {
-                                        select: {
-                                            label: true,
-                                            detail: true
-                                        }
-                                    }
+                                    emissionCategory: true
                                 }
                             }
                         }
