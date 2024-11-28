@@ -1,0 +1,69 @@
+model Comments {
+  id                         String                        @id @default(uuid()) @db.Uuid
+  idEmissionSubCategory      String?                       @map("id_emission_sub_category") @db.Uuid
+  comment                    String
+  createdAt                  DateTime                      @default(now()) @map("created_at")
+  emailCreatedBy             String?                       @map("email_created_by")
+  sessionEmissionSubCategory SessionEmissionSubCategories? @relation(fields: [idEmissionSubCategory], references: [id])
+
+  @@map("comments")
+}
+
+model SessionEmissionCategories {
+  id                           String                         @id @default(uuid()) @db.Uuid
+  idSessionStudent             String?                        @map("id_session_student") @db.Uuid
+  idEmissionCategory           Int?                           @map("id_emission_category")
+  locked                       Boolean                        @default(false)
+  emissionCategory             EmissionCategories?            @relation(fields: [idEmissionCategory], references: [id])
+  sessionStudent               SessionStudents?               @relation(fields: [idSessionStudent], references: [id])
+  sessionEmissionSubCategories SessionEmissionSubCategories[]
+  createdAt                    DateTime                       @default(now()) @map("created_at")
+  updatedAt                    DateTime                       @default(now()) @map("updated_at")
+
+  @@map("session_emission_categories")
+}
+
+model SessionEmissionSubCategories {
+  id                        String                     @id @default(uuid()) @db.Uuid
+  idSessionEmissionCategory String?                    @map("id_session_emission_category") @db.Uuid
+  idEmissionSubCategory     Int?                       @map("id_emission_sub_category")
+  comments                  Comments[]
+  sessionEmissionCategories SessionEmissionCategories? @relation(fields: [idSessionEmissionCategory], references: [id])
+  emissionSubCategory       EmissionSubCategories?     @relation(fields: [idEmissionSubCategory], references: [id])
+  sessionEmissions          SessionEmissions[]
+  createdAt                 DateTime                   @default(now()) @map("created_at")
+  updatedAt                 DateTime                   @default(now()) @map("updated_at")
+
+  @@map("session_emission_sub_categories")
+}
+
+model SessionEmissions {
+  id                           String                        @id @default(uuid()) @db.Uuid
+  idSessionEmissionSubCategory String?                       @map("id_session_emission_sub_category") @db.Uuid
+  idEmissionFactor             Int?                          @map("id_emission_factor")
+  value                        Decimal?                      @db.Decimal
+  createdAt                    DateTime                      @default(now()) @map("created_at")
+  updatedAt                    DateTime                      @default(now()) @map("updated_at")
+  emissionFactor               EmissionFactors?              @relation(fields: [idEmissionFactor], references: [id])
+  sessionEmissionSubCategory   SessionEmissionSubCategories? @relation(fields: [idSessionEmissionSubCategory], references: [id])
+
+  @@map("session_emissions")
+}
+
+model SessionStudents {
+  id                        String                      @id @default(uuid()) @db.Uuid
+  idSchool                  String?                     @map("id_school") @db.Uuid
+  name                      String                      @db.VarChar(255)
+  year                      Int                         @default(dbgenerated("date_part('year'::text, CURRENT_DATE)"))
+  progress                  Int                         @default(0)
+  archived                  Boolean                     @default(false)
+  deleted                   Boolean                     @default(false)
+  locked                    Boolean                     @default(false)
+  createdAt                 DateTime                    @default(now()) @map("created_at")
+  updatedAt                 DateTime                    @default(now()) @map("updated_at")
+  school                    Schools?                    @relation(fields: [idSchool], references: [id])
+  groups                    Groups[]
+  sessionEmissionCategories SessionEmissionCategories[]
+
+  @@map("session_students")
+}
