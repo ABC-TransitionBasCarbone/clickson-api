@@ -19,7 +19,6 @@ const rights = [
 const prisma = new PrismaClient()
 
 module.exports = function (app: Application): void {
-    app.put('/sessions/:id', updateSessionsById);
     app.post('/sessions', createSession)
     app.put('/sessions', updateSession)
     app.get('/sessions/:id', getSessionById)
@@ -30,22 +29,6 @@ module.exports = function (app: Application): void {
     app.post('/session-emission', createSessionEmission)
     app.delete('/session-emission', deleteSessionEmission)
     app.get('/session-emission/:id_session_emission_sub_category', getSessionEmissionByIdSubCategorie)
-
-    async function updateSessionsById(req: Request, res: Response, next: NextFunction) {
-        try {
-            const id = await prisma.sessionStudents.update({
-                where: {
-                    id: req.params.id,
-                    updatedAt: new Date()
-                },
-                data: { deleted: true }
-            })
-
-            return res.status(200).json(id);
-        } catch (error) {
-            return handleErrors(next, error);
-        }
-    }
 
     /**
      * API: create student session
@@ -86,16 +69,17 @@ module.exports = function (app: Application): void {
             await prisma.sessionEmissionSubCategories.createMany({ data: sessionEmissionSubCategoriesMap })
 
             // Create admin group
-            await prisma.groups.create({
+            const adminGroup = await prisma.groups.create({
                 data: {
                     idSchool,
                     idSessionStudent: session.id,
-                    name: "Admin " + name, year,
+                    name: `Admin ${name}`,
+                    year,
                     rights: rights.filter(r => r.advanced).map(r => r.key)
                 }
             })
 
-            return res.status(200).json(session);
+            return res.status(200).json({ ...session, groups: [adminGroup] });
         } catch (error) {
             return handleErrors(next, error);
         }
