@@ -278,7 +278,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 9,
-        label: 'Voyage - Personnel',
+        label: 'Déplacements - Personnel',
         detail:
           'Pour aller un peu plus loin, il serait intéressant d\'enregistrer les déplacements du personnel scolaire également. Comme pour les élèves, un questionnaire est un bon moyen de commencer à collecter des données pour chaque type de déplacement. Travaillez avec les enquêtes pour estimer : le nombre total de km (aller-retour) et dans quelle proportion les différents moyens de transport sont utilisés par le personnel.',
         emissionFactors: [
@@ -332,7 +332,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 10,
-        label: 'Voyage - Voyages scolaires',
+        label: 'Déplacements - Voyages scolaires',
         detail:
           'Si votre école organise des sorties scolaires, ces déplacements doivent également être comptabilisés. Additionnez la distance parcourue et multipliez par le nombre de personnes qui font le voyage. Travaillez avec les enquêtes pour estimer : le ratio entre le nombre de passagers et le nombre total de km (aller-retour) utilisés par les voyages scolaires.',
         emissionFactors: [

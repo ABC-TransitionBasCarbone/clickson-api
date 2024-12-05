@@ -69,16 +69,17 @@ module.exports = function (app: Application): void {
             await prisma.sessionEmissionSubCategories.createMany({ data: sessionEmissionSubCategoriesMap })
 
             // Create admin group
-            await prisma.groups.create({
+            const adminGroup = await prisma.groups.create({
                 data: {
                     idSchool,
                     idSessionStudent: session.id,
-                    name: "Admin " + name, year,
+                    name: `Admin ${name}`,
+                    year,
                     rights: rights.filter(r => r.advanced).map(r => r.key)
                 }
             })
 
-            return res.status(200).json(session);
+            return res.status(200).json({ ...session, groups: [adminGroup] });
         } catch (error) {
             return handleErrors(next, error);
         }
