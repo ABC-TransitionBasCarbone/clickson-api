@@ -29,8 +29,8 @@ model EmissionFactors {
   idEmissionSubCategory Int                   @map("id_emission_sub_category")
   idLanguage            Int                   @map("id_language")
   label                 String                @db.VarChar(255)
-  type                  String                @map("type")
-  unit                  String                @map("unit")
+  type                  String
+  unit                  String
   value                 Decimal               @db.Decimal
   uncertainty           Decimal               @db.Decimal
   emissionSubCategory   EmissionSubCategories @relation(fields: [idEmissionSubCategory], references: [id])
