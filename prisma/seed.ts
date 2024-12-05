@@ -7,41 +7,40 @@ const prisma = new PrismaClient()
 
 const languages = async () => {
     await prisma.emissionFactors.deleteMany()
-    await prisma.emissionSubCategories.deleteMany()
-    await prisma.emissionCategories.deleteMany()
-    await prisma.languages.deleteMany()
 
-    await prisma.languages.createMany({ data: LANGUAGES })
+    LANGUAGES.forEach(async (language) => {
+        await prisma.languages.upsert({
+            where: { id: language.id },
+            update: language,
+            create: language
+        })
 
-    // One big file with all the fixed data
-    await prisma.emissionCategories.createMany({
-        data: EMISSIONCATEGORIES.map(({ emissionSubCategories, ...ecRest }) => ecRest)
-    })
-    const emissionSubCategoriesReturned = await prisma.emissionSubCategories.createManyAndReturn({
-        data: EMISSIONCATEGORIES.flatMap(({ emissionSubCategories, ...ecRest }) =>
-        (emissionSubCategories.map(({ emissionFactors, ...escRest }) => (
-            {
-                ...escRest,
-                idLanguage: ecRest.idLanguage,
-                idEmissionCategory: ecRest.id
-            }
-        ))))
-    })
-
-    await prisma.emissionFactors.createMany({
-        data: EMISSIONCATEGORIES.flatMap(({ emissionSubCategories, ...ecRest }) => (
-            (emissionSubCategories.flatMap(({ emissionFactors, ...esc }) => (
-                emissionFactors.map((ef) => (
-                    {
-                        ...ef,
-                        idLanguage: ecRest.idLanguage,
-                        idEmissionSubCategory: emissionSubCategoriesReturned.find(escr => escr.label === esc.label && escr.detail === esc.detail)?.id
+        EMISSIONCATEGORIES.filter(ec => ec.idLanguage === language.id).forEach(async ({ emissionSubCategories, ...ecRest }) => {
+            await prisma.emissionCategories.upsert({
+                where: { id: ecRest.id },
+                update: ecRest,
+                create: ecRest
+            })
+            emissionSubCategories.forEach(async ({ emissionFactors, ...esc }) => {
+                await prisma.emissionSubCategories.upsert({
+                    where: { id: esc.id },
+                    update: esc,
+                    create: {
+                        ...esc,
+                        idEmissionCategory: ecRest.id,
+                        idLanguage: language.id
                     }
-                ))
-            )))
-        ))
+                })
+                await prisma.emissionFactors.createMany({
+                    data: emissionFactors.map(ef => ({
+                        ...ef,
+                        idLanguage: language.id,
+                        idEmissionSubCategory: esc.id
+                    }))
+                })
+            })
+        })
     })
-
 }
 
 const main = async () => {

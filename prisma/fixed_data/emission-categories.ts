@@ -8,7 +8,7 @@ export const EMISSIONCATEGORIES = [
     emissionSubCategories: [
       {
         id: 1,
-        label: 'Énergie - Combustible',
+        label: 'Combustible',
         detail:
           "Votre école possède probablement une ou plusieurs chaudières ou fournaises pour le chauffage. Pour fonctionner, ces appareils peuvent utiliser différents types de combustibles fossiles (fioul, gaz naturel, etc.). Les émissions de gaz à effet de serre (GES) générées par cet équipement correspondent à la consommation d'énergie du combustible brûlé.",
         emissionFactors: [
@@ -26,7 +26,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 2,
-        label: 'Énergie - Électricité',
+        label: 'Électricité',
         detail:
           'Votre école est connectée au réseau électrique de votre pays. L\'électricité est produite de différentes manières (centrales nucléaires, énergies renouvelables, centrales à combustibles fossiles, etc.). Chaque mode de production émet des gaz à effet de serre (GES) en quantités différentes.',
         emissionFactors: [
@@ -46,7 +46,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 3,
-        label: 'Énergie - Avancée',
+        label: 'Avancée',
         detail:
           'Votre école dispose sans doute de laboratoires scientifiques équipés de becs Bunsen ou d\'autres équipements qui consomment de l\'énergie. Il peut également y avoir des serveurs informatiques qui consomment de l\'électricité pour le stockage ou d\'autres services. Ceux-ci consomment de l\'énergie, contribuant aux émissions de gaz à effet de serre.',
         emissionFactors: [
@@ -90,7 +90,7 @@ export const EMISSIONCATEGORIES = [
     emissionSubCategories: [
       {
         id: 4,
-        label: 'Alimentation - Basique 1',
+        label: 'Basique 1',
         detail:
           'Ici, vous calculerez les émissions liées aux repas servis dans votre cantine scolaire, cafétéria ou self-service. Assurez-vous de calculer le nombre total de repas pour toute l\'année ! Nous vous suggérons d\'utiliser la période de janvier à décembre. Nombre de repas fournis par l\'école divisés en options. Si votre école ne fournit pas de service de restauration, vous pouvez toujours compter les déjeuners que vous consommez pendant l\'année scolaire. De cette façon, vous pourrez comparer vos données au niveau européen !',
         emissionFactors: [
@@ -102,7 +102,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 5,
-        label: 'Alimentation - Basique 2',
+        label: 'Basique 2',
         detail:
           'Ici, vous calculerez les émissions liées aux aliments disponibles dans les distributeurs automatiques. Assurez-vous de calculer le nombre total d\'aliments achetés pour toute l\'année ! Nous vous suggérons d\'utiliser la période de janvier à décembre. Si votre école n\'a pas de distributeurs automatiques, remplissez cette partie avec 0.',
         emissionFactors: [
@@ -114,7 +114,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 6,
-        label: 'Alimentation - Livraison',
+        label: 'Livraison',
         detail:
           'Votre école dispose probablement d\'une cantine, cafétéria ou self-service. Tous les aliments que vous y consommez sont apportés par divers moyens de transport, qui ont émis des gaz à effet de serre. Enregistrez ici les véhicules utilisés pour livrer les fournitures alimentaires à la cantine ou à la cafétéria. Couvrez toute l\'année si vous le pouvez ! Faites attention aux unités demandées). Fournisseurs de nourriture dans votre école, comment livrent-ils la nourriture aux écoles et pour combien de km parcourent-ils.',
         emissionFactors: [
@@ -195,7 +195,7 @@ export const EMISSIONCATEGORIES = [
     emissionSubCategories: [
       {
         id: 7,
-        label: 'Transport - Bus scolaires',
+        label: 'Bus scolaires',
         detail:
           'L\'utilisation des bus scolaires pour le transport des élèves contribue aux émissions de gaz à effet de serre. Une planification efficace des itinéraires, l\'entretien des véhicules et l\'utilisation de véhicules à faibles émissions peuvent aider à réduire ces émissions.',
         emissionFactors: [
@@ -224,7 +224,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 8,
-        label: 'Transport - Véhicules du personnel',
+        label: 'Véhicules du personnel',
         detail:
           'Les véhicules utilisés par le personnel scolaire pour les trajets domicile-travail ou autres activités liées à l\'école contribuent également aux émissions de gaz à effet de serre. Le covoiturage, l\'utilisation des transports en commun ou la transition vers des véhicules électriques peuvent atténuer ces émissions.',
         emissionFactors: [
@@ -278,7 +278,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 9,
-        label: 'Déplacements - Personnel',
+        label: 'Personnel',
         detail:
           'Pour aller un peu plus loin, il serait intéressant d\'enregistrer les déplacements du personnel scolaire également. Comme pour les élèves, un questionnaire est un bon moyen de commencer à collecter des données pour chaque type de déplacement. Travaillez avec les enquêtes pour estimer : le nombre total de km (aller-retour) et dans quelle proportion les différents moyens de transport sont utilisés par le personnel.',
         emissionFactors: [
@@ -332,7 +332,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 10,
-        label: 'Déplacements - Voyages scolaires',
+        label: 'Voyages scolaires',
         detail:
           'Si votre école organise des sorties scolaires, ces déplacements doivent également être comptabilisés. Additionnez la distance parcourue et multipliez par le nombre de personnes qui font le voyage. Travaillez avec les enquêtes pour estimer : le ratio entre le nombre de passagers et le nombre total de km (aller-retour) utilisés par les voyages scolaires.',
         emissionFactors: [
@@ -395,7 +395,7 @@ export const EMISSIONCATEGORIES = [
     emissionSubCategories: [
       {
         id: 11,
-        label: 'Fournitures - Mobilier et fournitures',
+        label: 'Mobilier et fournitures',
         detail:
           'Votre collège ou lycée achète du matériel et du mobilier pour que les cours puissent se dérouler et que les élèves puissent apprendre dans de bonnes conditions. Ici, vous estimerez les émissions de GES liées à l\'achat de fournitures autres que les denrées alimentaires (les achats alimentaires sont reportés dans l\'onglet Service de restauration). Comptez la totalité des articles achetés par l\'école pendant l\'année scolaire et insérez les données.',
         emissionFactors: [
@@ -420,7 +420,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 12,
-        label: 'Fournitures - Fournitures chimiques pour électronique',
+        label: 'Fournitures chimiques pour électronique',
         detail:
           'Pensez aux matériaux que vous utilisez dans les cours de sciences et de technologie et dans les laboratoires. Ces produits émettent des gaz à effet de serre qui doivent être comptabilisés. Vous pouvez trouver les quantités de matériaux achetés chaque année en consultant les factures payées par l\'école. Comptez la totalité des articles dans l\'école et insérez les données.',
         emissionFactors: [
@@ -456,7 +456,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 13,
-        label: 'Fournitures - Équipement sportif',
+        label: 'Équipement sportif',
         detail:
           'L\'équipement est également utilisé en éducation physique et doit parfois être remplacé. Ici, vous pouvez déclarer les achats de nouveaux équipements achetés pendant l\'année de votre inventaire. Comptez la totalité des articles dans l\'école et insérez les données.',
         emissionFactors: [
@@ -477,7 +477,7 @@ export const EMISSIONCATEGORIES = [
     emissionSubCategories: [
       {
         id: 14,
-        label: 'Actifs Fixes - Bâtiment',
+        label: 'Bâtiment',
         detail:
           "Toute construction implique des émissions de gaz à effet de serre. Quelles sont les émissions de votre bâtiment scolaire ou de vos bâtiments ? Même si l'école a été construite il y a longtemps, c'est ce qu'on appelle un 'actif fixe'. Pour tenir compte de la durée de vie du bâtiment, les émissions de construction sont réparties sur les années (amortissement). Insérez le nombre de m² du bâtiment de votre école et de ses parkings (ils peuvent être de différents types !).",
         emissionFactors: [
@@ -501,7 +501,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 15,
-        label: 'Actifs Fixes - Équipement Informatique',
+        label: 'Équipement Informatique',
         detail:
           'Vous vous souvenez de notre discussion sur l\'impact environnemental des smartphones ? De même, des matières premières sont utilisées pour fabriquer des ordinateurs et des équipements informatiques. Ce sont également des actifs fixes. La même méthode comptable est utilisée pour répartir les émissions sur la durée de vie de l\'équipement (amortissement). Comptez la totalité des articles dans l\'école et insérez les données.',
         emissionFactors: [
@@ -523,7 +523,7 @@ export const EMISSIONCATEGORIES = [
     emissionSubCategories: [
       {
         id: 16,
-        label: 'Energy - Fuel',
+        label: 'Fuel',
         detail:
           'Your school probably has one or several boilers or furnaces for heating. To operate, these devices may use different types of fossil fuels (fuel oil, natural gas, etc.). The greenhouse gas (GHG) emissions generated by this equipment correspond to the energy consumption of the fuel burned.',
         emissionFactors: [
@@ -541,7 +541,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 17,
-        label: 'Energy - Electricity',
+        label: 'Electricity',
         detail:
           'Your school is connected to the power grid in your country. Electricity is produced in different ways (nuclear power plants, renewable energies, fossil fuel power plants, etc.). Each mode of production emits greenhouse gases (GHGs) in different quantities.',
         emissionFactors: [
@@ -561,7 +561,7 @@ export const EMISSIONCATEGORIES = [
       {
         id: 18,
 
-        label: 'Energy - Advanced',
+        label: 'Advanced',
         detail:
           'Your school undoubtedly has science labs equipped with bunsen burners or other equipment that consume energy. There may also be computer servers that consume electricity for storage or other services. These consume energy, contributing to greenhouse gas emissions.',
         emissionFactors: [
@@ -605,7 +605,7 @@ export const EMISSIONCATEGORIES = [
     emissionSubCategories: [
       {
         id: 19,
-        label: 'Food - Basic 1',
+        label: 'Basic 1',
         detail:
           'Here you will calculate emissions related to meals served in your school lunchroom, canteen or self-service cafeteria. Be sure you calculate the total number of meals for the entire year! We suggest you use the period January through December.Number of meals provided by the school divided into options. If your schools is not providing a food service you can still count the lunches you consume during the school year. In this way you’ll be able to compare your data at European level!',
         emissionFactors: [
@@ -617,7 +617,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 20,
-        label: 'Food - Basic 2',
+        label: 'Basic 2',
         detail:
           'Here you will calculate emissions related to the food available in food dispensers. Be sure you calculate the total number of food purchased for the entire year! We suggest you use the period January through December.If your school does not have food dispensers, fill this part with 0.',
         emissionFactors: [
@@ -629,7 +629,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 21,
-        label: 'Food - Delivery',
+        label: 'Delivery',
         detail:
           'Your school probably has a lunchroom, canteen or self-service cafeteria. All the food that you eat there is brought in by various means of transport, which have emitted greenhouse gases. Record here the vehicles used to deliver food supplies to the canteen or cafeteria. Cover the whole year if you can! Pay attention to the units requested). Suppliers of food in your school, how do they deliver the food to the schools and for how many km do they travel.',
         emissionFactors: [
@@ -710,7 +710,7 @@ export const EMISSIONCATEGORIES = [
     emissionSubCategories: [
       {
         id: 22,
-        label: 'Transport - School Buses',
+        label: 'School Buses',
         detail:
           'The use of school buses for student transportation contributes to greenhouse gas emissions. Efficient route planning, vehicle maintenance, and the use of low-emission vehicles can help reduce these emissions.',
         emissionFactors: [
@@ -739,7 +739,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 23,
-        label: 'Transport - Staff Vehicles',
+        label: 'Staff Vehicles',
         detail:
           'The vehicles used by school staff for commuting or other school-related activities also contribute to greenhouse gas emissions. Carpooling, use of public transport, or transitioning to electric vehicles can mitigate these emissions.',
         emissionFactors: [
@@ -793,7 +793,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 24,
-        label: 'Travel - Personnel',
+        label: 'Personnel',
         detail:
           'To go a bit farther, it would be interesting to record travel by school staff as well. As for students, a questionnaire is a good way to start collecting data for each type of travel. Work with the surveys to estimate: total amount of km (round trip) and in which percentage the different means of transportation are used by the personnel.',
         emissionFactors: [
@@ -847,7 +847,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 25,
-        label: 'Travel - School Trips',
+        label: 'School Trips',
         detail:
           'If your school organizes field trips this travel should be counted as well. Add up the distance travelled and multiply by the number of persons who take the trip. Work with the surveys to estimate: the ratio between the number of passengers and the total amount of km (round trip) used by school trips.',
         emissionFactors: [
@@ -910,7 +910,7 @@ export const EMISSIONCATEGORIES = [
     emissionSubCategories: [
       {
         id: 26,
-        label: 'Supplies - Furnitures And Supplies',
+        label: 'Furnitures And Supplies',
         detail:
           'Your middle school or high school buys equipment and furniture so that classes can be held and students can learn in good conditions. Here you will estimate the GHG emissions linked to the purchase of supplies other than foodstuffs (food purchases are reported in the Food service tab). Count the totality of the items purchased by the school during the school year and insert the data.',
         emissionFactors: [
@@ -935,7 +935,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 27,
-        label: 'Supplies - Chemical Supplies For Electronic',
+        label: 'Chemical Supplies For Electronic',
         detail:
           'Think about the materials you use in science and technology classes and labs. These products emit greenhouse gases which should be counted. You can find the quantities of materials purchased each year by consulting the invoices paid by the school. Count the totality of the items in the school and insert the data.',
         emissionFactors: [
@@ -971,7 +971,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 28,
-        label: 'Supplies - Sports Equipment',
+        label: 'Sports Equipment',
         detail:
           'Equipment is also used in physical education, and has to be replaced sometimes. Here you can report purchases of new equipment bought during the year of your inventory. Count the totality of the items in the school and insert the data.',
         emissionFactors: [
@@ -992,7 +992,7 @@ export const EMISSIONCATEGORIES = [
     emissionSubCategories: [
       {
         id: 29,
-        label: 'Fixed Assets - Building',
+        label: 'Building',
         detail:
           "All construction involves greenhouse gas emissions. What are the emissions of your school building or buildings? Even if the school was built long ago, it is what is known as a 'fixed asset'. To account for the building's life span, the construction emissions are spread out over the years (depreciation). Insert the number of m2 of the building of your school and of its parking lots (they can be of different kinds!).",
         emissionFactors: [
@@ -1016,7 +1016,7 @@ export const EMISSIONCATEGORIES = [
       },
       {
         id: 30,
-        label: 'Fixed Assets - IT Equipment',
+        label: 'IT Equipment',
         detail:
           'Do you remember our discussion of the environmental impact of smartphones? Likewise, raw materials are used to make computers and IT equipment. These are also fixed assets. The same accounting method is used to spread out the emissions over the life of the equipment (depreciation). Count the totality of the items in the school and insert the data.',
         emissionFactors: [
