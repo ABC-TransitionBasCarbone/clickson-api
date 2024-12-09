@@ -52,9 +52,6 @@ module.exports = function (app: Application): void {
                     idSessionStudent: true,
                     rights: true,
                     sessionStudent: {
-                        where: {
-                            deleted: false
-                        },
                         select: {
                             id: true,
                             name: true,
