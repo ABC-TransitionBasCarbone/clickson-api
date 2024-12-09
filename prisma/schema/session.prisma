@@ -43,6 +43,9 @@ model SessionEmissions {
   idEmissionFactor             Int                           @map("id_emission_factor")
   value                        Decimal                       @db.Decimal
   total                        Decimal                       @db.Decimal
+  label                        String
+  type                         String
+  unit                         String
   createdAt                    DateTime                      @default(now()) @map("created_at")
   updatedAt                    DateTime                      @default(now()) @map("updated_at")
   emissionFactor               EmissionFactors?              @relation(fields: [idEmissionFactor], references: [id])
