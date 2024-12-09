@@ -68,7 +68,7 @@ module.exports = function (app: Application): void {
                                             comments: true,
                                             sessionEmissions: {
                                                 select: {
-                                                    value: true,
+                                                    total: true
                                                 }
                                             }
                                         }
