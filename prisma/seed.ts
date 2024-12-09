@@ -22,33 +22,32 @@ const categories = async () => {
     let countIdSubCat = 0
     let countIdFE = 0
 
-    languages.forEach(language => {
-        language.categories.forEach(async ({ subCategories, ...category }) => {
+    for (const language of languages) {
+        for (const { subCategories, ...category } of language.categories) {
             countIdCat++
             await prisma.emissionCategories.upsert({
                 where: { id: countIdCat },
                 update: category,
                 create: { ...category, idLanguage: language.id, id: countIdCat }
             })
-            subCategories.forEach(async ({ emissionFactors, ...subCategory }) => {
+            for (const { emissionFactors, ...subCategory } of subCategories) {
                 countIdSubCat++
                 await prisma.emissionSubCategories.upsert({
                     where: { id: countIdSubCat },
                     update: subCategory,
                     create: { ...subCategory, idLanguage: language.id, idEmissionCategory: countIdCat, id: countIdSubCat }
                 })
-                emissionFactors.forEach(async (emissionFactor) => {
+                for (const emissionFactor of emissionFactors) {
                     countIdFE++
                     await prisma.emissionFactors.upsert({
                         where: { id: countIdFE },
                         update: emissionFactor,
                         create: { ...emissionFactor, id: countIdFE, idLanguage: language.id, idEmissionSubCategory: countIdSubCat }
                     })
-                })
-            })
-
-        })
-    })
+                }
+            }
+        }
+    }
 }
 
 const main = async () => {
