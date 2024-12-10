@@ -71,44 +71,42 @@ module.exports = function (app: Application): void {
             }
         })
 
-        if (schoolAdmin) {
-            return handleErrors(next, "You are already an administrator of a school");
-        }
+        if (!schoolAdmin) {
+            // Check if school already exist
+            let schoolFromBdd = await prisma.schools.findFirst({
+                where: {
+                    postalCode,
+                    name: schoolName
+                }
+            })
 
-        // Check if school already exist
-        let schoolFromBdd = await prisma.schools.findFirst({
-            where: {
-                postalCode,
-                name: schoolName
+            // The school doesn't exist so we will create it
+            if (!schoolFromBdd) {
+                try {
+                    schoolFromBdd = await prisma.schools.create({
+                        data: {
+                            state,
+                            name: schoolName,
+                            townName,
+                            postalCode
+                        }
+                    })
+                } catch (error) {
+                    return handleErrors(next, error);
+                }
             }
-        })
 
-        // The school doesn't exist so we will create it
-        if (!schoolFromBdd) {
+            // Add user to admin school table
             try {
-                schoolFromBdd = await prisma.schools.create({
+                await prisma.schoolAdmins.create({
                     data: {
-                        state,
-                        name: schoolName,
-                        townName,
-                        postalCode
+                        schoolId: schoolFromBdd.id,
+                        adminUsername: email.toLowerCase()
                     }
                 })
             } catch (error) {
                 return handleErrors(next, error);
             }
-        }
-
-        // Add user to admin school table
-        try {
-            await prisma.schoolAdmins.create({
-                data: {
-                    schoolId: schoolFromBdd.id,
-                    adminUsername: email.toLowerCase()
-                }
-            })
-        } catch (error) {
-            return handleErrors(next, error);
         }
 
         const body = {

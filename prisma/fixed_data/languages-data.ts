@@ -461,7 +461,7 @@ export const LANGUAGES: Language[] = [
           {
             label: 'Bâtiment',
             detail:
-              "Toute construction implique des émissions de gaz à effet de serre. Quelles sont les émissions de votre bâtiment scolaire ou de vos bâtiments ? Même si l'école a été construite il y a longtemps, c'est ce qu'on appelle un 'actif fixe'. Pour tenir compte de la durée de vie du bâtiment, les émissions de construction sont réparties sur les années (amortissement). Insérez le nombre de m² du bâtiment de votre école et de ses parkings (ils peuvent être de différents types !).",
+              "Toute construction implique des émissions de gaz à effet de serre. Quelles sont les émissions de votre bâtiment scolaire ou de vos bâtiments ? Même si l'école a été construite il y a longtemps, c'est ce qu'on appelle un 'ammortissement'. Pour tenir compte de la durée de vie du bâtiment, les émissions de construction sont réparties sur les années (amortissement). Insérez le nombre de m² du bâtiment de votre école et de ses parkings (ils peuvent être de différents types !).",
             emissionFactors: [
               {
                 label: 'Bâtiment scolaire (béton)',
