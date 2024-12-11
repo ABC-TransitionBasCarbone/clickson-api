@@ -32,6 +32,7 @@ model EmissionFactors {
   type                  String
   unit                  String
   value                 Decimal               @db.Decimal
+  depreciationPeriod    Decimal?              @db.Decimal
   uncertainty           Decimal               @db.Decimal
   emissionSubCategory   EmissionSubCategories @relation(fields: [idEmissionSubCategory], references: [id])
   language              Languages             @relation(fields: [idLanguage], references: [id])

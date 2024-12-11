@@ -15,7 +15,7 @@ export const LANGUAGES: Language[] = [
             detail:
               "Votre école possède probablement une ou plusieurs chaudières ou fournaises pour le chauffage. Pour fonctionner, ces appareils peuvent utiliser différents types de combustibles fossiles (fioul, gaz naturel, etc.). Les émissions de gaz à effet de serre (GES) générées par cet équipement correspondent à la consommation d'énergie du combustible brûlé.",
             emissionFactors: [
-              { label: 'Fioul de chauffage', type: 'Combustible', unit: 'kWh chauffage net', value: 0.324, uncertainty: 0 },
+              { label: 'Fioul domestique', type: 'Combustible', unit: 'kWh chauffage net', value: 0.324, uncertainty: 0 },
               { label: 'Fioul lourd', type: 'Combustible', unit: 'kWh chauffage net', value: 0.324, uncertainty: 0 },
               { label: 'Gaz naturel', type: 'Combustible', unit: 'kWh chauffage brut', value: 0.214, uncertainty: 0 },
               {
@@ -83,25 +83,14 @@ export const LANGUAGES: Language[] = [
         ],
       },
       {
-        label: 'Service de Restauration',
+        label: 'Restauration',
         detail:
-          'Dans la catégorie Service de Restauration, les élèves doivent calculer les émissions liées aux repas servis. Dans certaines écoles, des données sur les aliments vendus dans les cantines et les distributeurs automatiques seront également collectées.',
+          'Dans la catégorie Restauration, les élèves doivent calculer les émissions liées aux repas servis. Dans certaines écoles, des données sur les aliments vendus dans les cantines et les distributeurs automatiques seront également collectées.',
         subCategories: [
           {
-            label: 'Basique 1',
+            label: 'Repas',
             detail:
-              'Ici, vous calculerez les émissions liées aux repas servis dans votre cantine scolaire, cafétéria ou self-service. Assurez-vous de calculer le nombre total de repas pour toute l\'année ! Nous vous suggérons d\'utiliser la période de janvier à décembre. Nombre de repas fournis par l\'école divisés en options. Si votre école ne fournit pas de service de restauration, vous pouvez toujours compter les déjeuners que vous consommez pendant l\'année scolaire. De cette façon, vous pourrez comparer vos données au niveau européen !',
-            emissionFactors: [
-              { label: 'Repas typique', type: 'Repas', unit: 'repas', value: 2.25, uncertainty: 4 },
-              { label: 'Repas végétarien', type: 'Repas', unit: 'repas', value: 0.45, uncertainty: 4 },
-              { label: 'Plat principal de viande rouge', type: 'Repas', unit: 'repas', value: 7.26, uncertainty: 4 },
-              { label: 'Plat principal de viande blanche', type: 'Repas', unit: 'repas', value: 1.58, uncertainty: 4 },
-            ],
-          },
-          {
-            label: 'Basique 2',
-            detail:
-              'Ici, vous calculerez les émissions liées aux aliments disponibles dans les distributeurs automatiques. Assurez-vous de calculer le nombre total d\'aliments achetés pour toute l\'année ! Nous vous suggérons d\'utiliser la période de janvier à décembre. Si votre école n\'a pas de distributeurs automatiques, remplissez cette partie avec 0.',
+              'Ici, vous calculerez les émissions liées aux repas servis dans votre cantine scolaire, cafétéria ou self-service. Assurez-vous de calculer le nombre total de repas pour toute l\'année ! Nous vous suggérons d\'utiliser la période de janvier à décembre. Nombre de repas fournis par l\'école divisés en options. Si votre école ne fournit pas de restauration, vous pouvez toujours compter les déjeuners que vous consommez pendant l\'année scolaire. De cette façon, vous pourrez comparer vos données au niveau européen !',
             emissionFactors: [
               { label: 'Repas typique', type: 'Repas', unit: 'repas', value: 2.25, uncertainty: 4 },
               { label: 'Repas végétarien', type: 'Repas', unit: 'repas', value: 0.45, uncertainty: 4 },
@@ -185,7 +174,7 @@ export const LANGUAGES: Language[] = [
       {
         label: 'Déplacements',
         detail:
-          'La catégorie Voyage se concentre sur les émissions liées aux déplacements domicile-établissement des élèves, des enseignants et du personnel non enseignant, ainsi que sur les voyages scolaires s\'ils ont lieu.',
+          'La catégorie Déplacements se concentre sur les émissions liées aux déplacements domicile-établissement des élèves, des enseignants et du personnel non enseignant, ainsi que sur les voyages scolaires s\'ils ont lieu.',
         subCategories: [
           {
             label: 'Bus scolaires',
@@ -377,23 +366,15 @@ export const LANGUAGES: Language[] = [
         ],
       },
       {
-        label: 'Fournitures',
+        label: 'Achats',
         detail:
           'Dans la catégorie Fournitures, tout le matériel acheté pour l\'année scolaire est enregistré. Il s\'agit principalement de consommables ou de produits de courte durée qui seront utilisés pendant l\'année et devront être rachetés l\'année suivante.',
         subCategories: [
           {
-            label: 'Mobilier et fournitures',
+            label: 'Fournitures',
             detail:
-              'Votre collège ou lycée achète du matériel et du mobilier pour que les cours puissent se dérouler et que les élèves puissent apprendre dans de bonnes conditions. Ici, vous estimerez les émissions de GES liées à l\'achat de fournitures autres que les denrées alimentaires (les achats alimentaires sont reportés dans l\'onglet Service de restauration). Comptez la totalité des articles achetés par l\'école pendant l\'année scolaire et insérez les données.',
+              'Votre collège ou lycée achète du matériel et du mobilier pour que les cours puissent se dérouler et que les élèves puissent apprendre dans de bonnes conditions. Ici, vous estimerez les émissions de GES liées à l\'achat de fournitures autres que les denrées alimentaires (les achats alimentaires sont reportés dans l\'onglet restauration). Comptez la totalité des articles achetés par l\'école pendant l\'année scolaire et insérez les données.',
             emissionFactors: [
-              {
-                label: 'Table standard (mobilier)',
-                type: 'Équipement de bureau',
-                unit: 'unité',
-                value: 60.1,
-                uncertainty: 2,
-              },
-              { label: 'Chaise (bois)', type: 'Équipement de bureau', unit: 'unité', value: 18.6, uncertainty: 1 },
               { label: 'Livre', type: 'Équipement de bureau', unit: 'unité', value: 1.1, uncertainty: 4 },
               {
                 label: 'Fournitures de bureau et consommables (€)',
@@ -454,9 +435,9 @@ export const LANGUAGES: Language[] = [
         ],
       },
       {
-        label: 'Actifs Fixes',
+        label: 'Immobilisations',
         detail:
-          'La catégorie des actifs fixes couvre les bâtiments/rénovations et les biens classés comme "long terme" tels que les équipements informatiques, les machines de production, etc. Les émissions générées par la fabrication de ces biens sont réparties sur une période conventionnellement choisie (20 ans pour les bâtiments, 5 ans pour les équipements informatiques).',
+          'La catégorie des immobilisations couvre les bâtiments/rénovations et les biens classés comme "long terme" tels que les équipements informatiques, les machines de production, etc. Les émissions générées par la fabrication de ces biens sont réparties sur une période conventionnellement choisie (20 ans pour les bâtiments, 5 ans pour les équipements informatiques).',
         subCategories: [
           {
             label: 'Bâtiment',
@@ -469,28 +450,47 @@ export const LANGUAGES: Language[] = [
                 unit: 'm²',
                 value: 440000,
                 uncertainty: 4,
+                depreciationPeriod: 20,
               },
-              { label: 'Parking (béton)', type: 'Construction', unit: 'm²', value: 319000, uncertainty: 2 },
-              { label: 'Parking (asphalte)', type: 'Construction', unit: 'm²', value: 73000, uncertainty: 2 },
+              {
+                label: 'Parking (béton)', type: 'Construction', unit: 'm²', value: 319000, uncertainty: 2, depreciationPeriod: 20
+              },
+              { label: 'Parking (asphalte)', type: 'Construction', unit: 'm²', value: 73000, uncertainty: 2, depreciationPeriod: 20 },
               {
                 label: 'Parking (surface semi-dure)',
                 type: 'Construction',
                 unit: 'm²',
                 value: 165000,
                 uncertainty: 2,
+                depreciationPeriod: 20
               },
+            ],
+          },
+          {
+            label: 'Mobilier',
+            detail:
+              'Votre collège ou lycée achète du mobilier pour que les cours puissent se dérouler et que les élèves puissent apprendre dans de bonnes conditions. Ici, vous estimerez les émissions de GES liées à l\'achat de fournitures autres que les denrées alimentaires (les achats alimentaires sont reportés dans l\'onglet restauration). Comptez la totalité des articles achetés par l\'école pendant l\'année scolaire et insérez les données.',
+            emissionFactors: [
+              {
+                label: 'Table standard (mobilier)',
+                type: 'Équipement de bureau',
+                unit: 'unité',
+                value: 60.1,
+                uncertainty: 2, depreciationPeriod: 5
+              },
+              { label: 'Chaise (bois)', type: 'Équipement de bureau', unit: 'unité', value: 18.6, uncertainty: 1, depreciationPeriod: 5 }
             ],
           },
           {
             label: 'Équipement Informatique',
             detail:
-              'Vous vous souvenez de notre discussion sur l\'impact environnemental des smartphones ? De même, des matières premières sont utilisées pour fabriquer des ordinateurs et des équipements informatiques. Ce sont également des actifs fixes. La même méthode comptable est utilisée pour répartir les émissions sur la durée de vie de l\'équipement (amortissement). Comptez la totalité des articles dans l\'école et insérez les données.',
+              'Vous vous souvenez de notre discussion sur l\'impact environnemental des smartphones ? De même, des matières premières sont utilisées pour fabriquer des ordinateurs et des équipements informatiques. Ce sont également des immobilisations. La même méthode comptable est utilisée pour répartir les émissions sur la durée de vie de l\'équipement (amortissement). Comptez la totalité des articles dans l\'école et insérez les données.',
             emissionFactors: [
-              { label: 'Ordinateur de bureau', type: 'Équipement', unit: 'unité', value: 169000, uncertainty: 4 },
-              { label: 'Tablettes', type: 'Équipement', unit: 'unité', value: 63200, uncertainty: 4 },
-              { label: 'Photocopieurs', type: 'Équipement', unit: 'unité', value: 2935000, uncertainty: 4 },
-              { label: 'Vidéoprojecteur', type: 'Équipement', unit: 'unité', value: 94000, uncertainty: 5 },
-              { label: 'Imprimante', type: 'Équipement', unit: 'unité', value: 87900, uncertainty: 4 },
+              { label: 'Ordinateur de bureau', type: 'Équipement', unit: 'unité', value: 169000, uncertainty: 4, depreciationPeriod: 5 },
+              { label: 'Tablettes', type: 'Équipement', unit: 'unité', value: 63200, uncertainty: 4, depreciationPeriod: 5 },
+              { label: 'Photocopieurs', type: 'Équipement', unit: 'unité', value: 2935000, uncertainty: 4, depreciationPeriod: 5 },
+              { label: 'Vidéoprojecteur', type: 'Équipement', unit: 'unité', value: 94000, uncertainty: 5, depreciationPeriod: 5 },
+              { label: 'Imprimante', type: 'Équipement', unit: 'unité', value: 87900, uncertainty: 4, depreciationPeriod: 5 },
             ],
           },
         ],
@@ -586,17 +586,6 @@ export const LANGUAGES: Language[] = [
             label: 'Basic 1',
             detail:
               'Here you will calculate emissions related to meals served in your school lunchroom, canteen or self-service cafeteria. Be sure you calculate the total number of meals for the entire year! We suggest you use the period January through December.Number of meals provided by the school divided into options. If your schools is not providing a food service you can still count the lunches you consume during the school year. In this way you’ll be able to compare your data at European level!',
-            emissionFactors: [
-              { label: 'Typical meal', type: 'Meal', unit: 'meal', value: 2.25, uncertainty: 4 },
-              { label: 'Vegetarian meal', type: 'Meal', unit: 'meal', value: 0.45, uncertainty: 4 },
-              { label: 'Main course of red meat', type: 'Meal', unit: 'meal', value: 7.26, uncertainty: 4 },
-              { label: 'Main course of white meat', type: 'Meal', unit: 'meal', value: 1.58, uncertainty: 4 },
-            ],
-          },
-          {
-            label: 'Basic 2',
-            detail:
-              'Here you will calculate emissions related to the food available in food dispensers. Be sure you calculate the total number of food purchased for the entire year! We suggest you use the period January through December.If your school does not have food dispensers, fill this part with 0.',
             emissionFactors: [
               { label: 'Typical meal', type: 'Meal', unit: 'meal', value: 2.25, uncertainty: 4 },
               { label: 'Vegetarian meal', type: 'Meal', unit: 'meal', value: 0.45, uncertainty: 4 },

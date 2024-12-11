@@ -13,6 +13,7 @@ export interface Language {
                 unit: string;
                 value: number;
                 uncertainty: number;
+                depreciationPeriod?: number;
             }[]
         }[]
     }[]

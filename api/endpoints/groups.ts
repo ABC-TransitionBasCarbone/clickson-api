@@ -58,6 +58,11 @@ module.exports = function (app: Application): void {
                             locked: true,
                             school: true,
                             sessionEmissionCategories: {
+                                orderBy: [
+                                    {
+                                        idEmissionCategory: 'asc',
+                                    }
+                                ],
                                 select: {
                                     id: true,
                                     idSessionStudent: true,
