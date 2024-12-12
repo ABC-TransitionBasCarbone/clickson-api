@@ -43,6 +43,7 @@ model SessionEmissions {
   idEmissionFactor             Int                           @map("id_emission_factor")
   value                        Decimal                       @db.Decimal
   total                        Decimal                       @db.Decimal
+  uncertainty                  Decimal                       @default(0) @db.Decimal
   label                        String
   type                         String
   unit                         String

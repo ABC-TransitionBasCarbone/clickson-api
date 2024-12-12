@@ -1,12 +1,10 @@
 
 import { PrismaClient } from '@prisma/client'
 import { LANGUAGES } from './fixed_data/languages-data'
-import { create } from 'domain'
 
 const prisma = new PrismaClient()
 
 const languages = async () => {
-    await prisma.emissionFactors.deleteMany()
     LANGUAGES.forEach(async ({ categories, ...language }, idLang) => {
         await prisma.languages.upsert({
             where: { id: idLang + 1 },

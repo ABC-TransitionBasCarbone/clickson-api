@@ -47,10 +47,7 @@ module.exports = function (app: Application): void {
                 where: {
                     id: req.params.id_group
                 },
-                select: {
-                    id: true,
-                    idSessionStudent: true,
-                    rights: true,
+                include: {
                     sessionStudent: {
                         select: {
                             id: true,

@@ -206,7 +206,7 @@ module.exports = function (app: Application): void {
     }
 
     async function createSessionEmission(req: Request, res: Response, next: NextFunction) {
-        const { idSessionEmissionSubCategory, idEmissionFactor, value, total, label, unit, type } = req.body
+        const { idSessionEmissionSubCategory, idEmissionFactor, value, total, uncertainty, label, unit, type } = req.body
         try {
             const sessionEmission = await prisma.sessionEmissions.create(
                 {
@@ -218,7 +218,8 @@ module.exports = function (app: Application): void {
                         total,
                         label,
                         unit,
-                        type
+                        type,
+                        uncertainty
                     }
                 })
 
