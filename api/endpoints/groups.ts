@@ -47,20 +47,19 @@ module.exports = function (app: Application): void {
                 where: {
                     id: req.params.id_group
                 },
-                select: {
-                    id: true,
-                    idSessionStudent: true,
-                    rights: true,
+                include: {
                     sessionStudent: {
-                        where: {
-                            deleted: false
-                        },
                         select: {
                             id: true,
                             name: true,
                             locked: true,
                             school: true,
                             sessionEmissionCategories: {
+                                orderBy: [
+                                    {
+                                        idEmissionCategory: 'asc',
+                                    }
+                                ],
                                 select: {
                                     id: true,
                                     idSessionStudent: true,
@@ -71,7 +70,7 @@ module.exports = function (app: Application): void {
                                             comments: true,
                                             sessionEmissions: {
                                                 select: {
-                                                    value: true,
+                                                    total: true
                                                 }
                                             }
                                         }

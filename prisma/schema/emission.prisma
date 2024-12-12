@@ -3,7 +3,7 @@ model EmissionCategories {
   idLanguage                Int                         @map("id_language")
   label                     String                      @db.VarChar(255)
   detail                    String                      @db.VarChar(2550)
-  language                  Languages?                  @relation(fields: [idLanguage], references: [id])
+  language                  Languages                   @relation(fields: [idLanguage], references: [id])
   emissionSubCategories     EmissionSubCategories[]
   sessionEmissionCategories SessionEmissionCategories[]
 
@@ -25,16 +25,17 @@ model EmissionSubCategories {
 }
 
 model EmissionFactors {
-  id                    Int                    @id @default(autoincrement())
-  idEmissionSubCategory Int?                   @map("id_emission_sub_category")
-  idLanguage            Int?                   @map("id_language")
-  label                 String                 @db.VarChar(255)
-  type                  String?                @map("type")
-  unit                  String?                @map("unit")
-  value                 Decimal?               @db.Decimal
-  uncertainty           Decimal?               @db.Decimal
-  emissionSubCategory   EmissionSubCategories? @relation(fields: [idEmissionSubCategory], references: [id])
-  language              Languages?             @relation(fields: [idLanguage], references: [id])
+  id                    Int                   @id @default(autoincrement())
+  idEmissionSubCategory Int                   @map("id_emission_sub_category")
+  idLanguage            Int                   @map("id_language")
+  label                 String                @db.VarChar(255)
+  type                  String
+  unit                  String
+  value                 Decimal               @db.Decimal
+  depreciationPeriod    Decimal?              @db.Decimal
+  uncertainty           Decimal               @db.Decimal
+  emissionSubCategory   EmissionSubCategories @relation(fields: [idEmissionSubCategory], references: [id])
+  language              Languages             @relation(fields: [idLanguage], references: [id])
   sessionEmissions      SessionEmissions[]
 
   @@map("emission_factors")
