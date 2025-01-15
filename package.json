@@ -15,12 +15,14 @@
     "prisma:seed": "npx prisma db seed",
     "format": "prettier --write .",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "match:languages": "npx ts-node ./prisma/fixed_data/match-languages-data.ts"
   },
   "dependencies": {
     "@vercel/postgres": "^0.8.0",
     "cors": "^2.8.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "xlsx": "^0.18.5"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -42,6 +44,6 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "^5.4.5",
-    "vercel": "^39.2.0"
+    "vercel": "^39.3.0"
   }
 }
