@@ -7,12 +7,75 @@ module.exports = function (app: Application): void {
     app.get('/emission/categories/:id_language', getEmissionCategories);
     app.put('/emission/categories', updateEmissionCategories);
     app.put('/emission/sub-categories', updateEmissionSubCategories);
+    app.post('/emission/categories', createEmissionCategories);
+    app.post('/emission/sub-categories', createEmissionSubCategories);
     app.get('/emission/sub-categories/:id_category', getEmissionSubCategoriesById);
     app.get('/emission-factors/:id_emission_sub_category', getEmissionFactors);
     app.put('/emission-factors', updateEmissionFactor);
     app.post('/emission-factors', createEmissionFactor);
     app.delete('/emission-factors', deleteEmissionFactor);
     app.get('/emission-factors', getAllEmissionFactors);
+
+    async function createEmissionSubCategories(req: Request, res: Response, next: NextFunction) {
+        const alreadyCreated = await prisma.emissionSubCategories.findFirst({
+            where: {
+                label: req.body.label,
+                idLanguage: req.body.idLanguage
+            }
+        })
+
+        if (alreadyCreated) {
+            return res.status(400).json({ message: "Category already exists" });
+        }
+
+        try {
+            const category = await prisma.emissionSubCategories.create({
+                data: {
+                    label: req.body.label,
+                    detail: "",
+                    emissionCategory: {
+                        connect: {
+                            id: req.body.idEmissionCategorie
+                        }
+                    },
+                    language: {
+                        connect: {
+                            id: req.body.idLanguage
+                        }
+                    }
+                }
+            })
+            return res.status(200).json(category);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    }
+
+    async function createEmissionCategories(req: Request, res: Response, next: NextFunction) {
+        const alreadyCreated = await prisma.emissionCategories.findFirst({
+            where: {
+                label: req.body.label,
+                idLanguage: req.body.idLanguage
+            }
+        })
+
+        if (alreadyCreated) {
+            return res.status(400).json({ message: "Category already exists" });
+        }
+        try {
+            const category = await prisma.emissionCategories.create({
+                data: {
+                    id: (await prisma.emissionCategories.count()) + 1,
+                    label: req.body.label,
+                    detail: "",
+                    idLanguage: req.body.idLanguage
+                }
+            })
+            return res.status(200).json(category);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    }
 
     async function updateEmissionSubCategories(req: Request, res: Response, next: NextFunction) {
         try {
@@ -88,14 +151,15 @@ module.exports = function (app: Application): void {
                         include: {
                             emissionFactors: true
                         },
-                        orderBy: {
-                            id: 'asc'
-                        }
+                        orderBy: [
+                            { id: 'asc' }
+                        ]
                     }
                 },
-                orderBy: {
-                    id: 'asc'
-                }
+                orderBy: [
+                    { idLanguage: 'asc' },
+                    { id: 'asc' }
+                ]
             })
 
             return res.status(200).json(emissions);
