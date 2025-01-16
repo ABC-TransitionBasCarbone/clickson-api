@@ -4,20 +4,51 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 module.exports = function (app: Application): void {
-
     app.get('/emission/categories/:id_language', getEmissionCategories);
+    app.put('/emission/categories', updateEmissionCategories);
+    app.put('/emission/sub-categories', updateEmissionSubCategories);
     app.get('/emission/sub-categories/:id_category', getEmissionSubCategoriesById);
     app.get('/emission-factors/:id_emission_sub_category', getEmissionFactors);
     app.put('/emission-factors', updateEmissionFactor);
     app.post('/emission-factors', createEmissionFactor);
+    app.delete('/emission-factors', deleteEmissionFactor);
     app.get('/emission-factors', getAllEmissionFactors);
+
+    async function updateEmissionSubCategories(req: Request, res: Response, next: NextFunction) {
+        try {
+            const category = await prisma.emissionSubCategories.update({
+                where: { id: req.body.id },
+                data: {
+                    label: req.body.label,
+                    detail: req.body.detail,
+                }
+            })
+            return res.status(200).json(category);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    }
+
+    async function updateEmissionCategories(req: Request, res: Response, next: NextFunction) {
+        try {
+            const category = await prisma.emissionCategories.update({
+                where: { id: req.body.id },
+                data: {
+                    label: req.body.label,
+                    detail: req.body.detail,
+                }
+            })
+            return res.status(200).json(category);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    }
 
     async function getEmissionCategories(req: Request, res: Response, next: NextFunction) {
         try {
             const emissionCategories = await prisma.emissionCategories.findMany({
                 where: { idLanguage: Number(req.params.id_language) }
             })
-
             return res.status(200).json(emissionCategories);
         } catch (error) {
             return handleErrors(next, error);
@@ -29,7 +60,6 @@ module.exports = function (app: Application): void {
             const subCategories = await prisma.emissionSubCategories.findMany({
                 where: { idEmissionCategory: Number(req.params.id_category) }
             })
-
             return res.status(200).json(subCategories);
         } catch (error) {
             return handleErrors(next, error);
@@ -53,14 +83,18 @@ module.exports = function (app: Application): void {
     async function getAllEmissionFactors(req: Request, res: Response, next: NextFunction) {
         try {
             const emissions = await prisma.emissionCategories.findMany({
-                select: {
-                    id: true,
-                    label: true,
+                include: {
                     emissionSubCategories: {
                         include: {
                             emissionFactors: true
+                        },
+                        orderBy: {
+                            id: 'asc'
                         }
                     }
+                },
+                orderBy: {
+                    id: 'asc'
                 }
             })
 
@@ -70,10 +104,20 @@ module.exports = function (app: Application): void {
         }
     }
 
+    async function deleteEmissionFactor(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.body;
+            const emission = await prisma.emissionFactors.delete({ where: { id: id }, })
+
+            return res.status(200).json(emission);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    }
+
     async function updateEmissionFactor(req: Request, res: Response, next: NextFunction) {
         try {
             const { id, value, uncertainty, depreciationPeriod, label } = req.body;
-            console.log("🚀 ~ updateEmissionFactor ~ req.body:", req.body)
             const emission = await prisma.emissionFactors.update({
                 where: { id: id },
                 data: {
