@@ -202,25 +202,18 @@ module.exports = function (app: Application): void {
 
     async function createEmissionFactor(req: Request, res: Response, next: NextFunction) {
         try {
-            const { value, uncertainty, depreciationPeriod, label } = req.body;
+            const id = (await prisma.emissionFactors.count()) + 1;
             const emission = await prisma.emissionFactors.create({
                 data: {
-                    value: value,
-                    uncertainty: uncertainty,
-                    depreciationPeriod: depreciationPeriod,
-                    label: label,
+                    id: id,
+                    value: req.body.value,
+                    uncertainty: req.body.uncertainty,
+                    depreciationPeriod: req.body.depreciationPeriod,
+                    label: req.body.label,
                     unit: req.body.unit,
                     type: req.body.type,
-                    emissionSubCategory: {
-                        connect: {
-                            id: req.body.idEmissionSubCategory
-                        }
-                    },
-                    language: {
-                        connect: {
-                            id: req.body.idLanguage
-                        }
-                    }
+                    idEmissionSubCategory: req.body.idEmissionSubCategory,
+                    idLanguage: req.body.idLanguage
                 }
             })
 
