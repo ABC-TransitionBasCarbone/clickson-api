@@ -29,20 +29,15 @@ module.exports = function (app: Application): void {
         }
 
         try {
+            const id = (await prisma.emissionSubCategories.count()) + 1;
             const category = await prisma.emissionSubCategories.create({
                 data: {
+                    id: id,
                     label: req.body.label,
                     detail: "",
-                    emissionCategory: {
-                        connect: {
-                            id: req.body.idEmissionCategorie
-                        }
-                    },
-                    language: {
-                        connect: {
-                            id: req.body.idLanguage
-                        }
-                    }
+                    idEmissionCategory: req.body.idEmissionCategory,
+                    idLanguage: req.body.idLanguage,
+
                 }
             })
             return res.status(200).json(category);
