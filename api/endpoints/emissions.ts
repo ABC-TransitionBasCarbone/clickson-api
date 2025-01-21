@@ -29,7 +29,12 @@ module.exports = function (app: Application): void {
         }
 
         try {
-            const id = (await prisma.emissionSubCategories.count()) + 1;
+            const lastEmissionSubCategory = await prisma.emissionSubCategories.findFirst({
+                orderBy: { id: 'desc' }
+            });
+            const id = lastEmissionSubCategory ? lastEmissionSubCategory.id + 1 : 1;
+
+
             const category = await prisma.emissionSubCategories.create({
                 data: {
                     id: id,
@@ -58,9 +63,14 @@ module.exports = function (app: Application): void {
             return res.status(400).json({ message: "Category already exists" });
         }
         try {
+            const lastEmissionCategory = await prisma.emissionCategories.findFirst({
+                orderBy: { id: 'desc' }
+            });
+            const id = lastEmissionCategory ? lastEmissionCategory.id + 1 : 1;
+
             const category = await prisma.emissionCategories.create({
                 data: {
-                    id: (await prisma.emissionCategories.count()) + 1,
+                    id: id,
                     label: req.body.label,
                     detail: "",
                     idLanguage: req.body.idLanguage
@@ -197,7 +207,11 @@ module.exports = function (app: Application): void {
 
     async function createEmissionFactor(req: Request, res: Response, next: NextFunction) {
         try {
-            const id = (await prisma.emissionFactors.count()) + 1;
+            const lastEmissionFactor = await prisma.emissionFactors.findFirst({
+                orderBy: { id: 'desc' }
+            });
+            const id = lastEmissionFactor ? lastEmissionFactor.id + 1 : 1;
+
             const emission = await prisma.emissionFactors.create({
                 data: {
                     id: id,
