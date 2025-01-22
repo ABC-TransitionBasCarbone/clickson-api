@@ -9,7 +9,7 @@ module.exports = function (app: Application): void {
     app.put('/emission/sub-categories', updateEmissionSubCategories);
     app.post('/emission/categories', createEmissionCategories);
     app.post('/emission/sub-categories', createEmissionSubCategories);
-    app.get('/emission/sub-categories/:id_category', getEmissionSubCategoriesById);
+    app.get('/emission/sub-categories/:id_language', getEmissionSubCategoriesByLangId);
     app.get('/emission-factors/:id_emission_sub_category', getEmissionFactors);
     app.put('/emission-factors', updateEmissionFactor);
     app.post('/emission-factors', createEmissionFactor);
@@ -123,10 +123,13 @@ module.exports = function (app: Application): void {
         }
     }
 
-    async function getEmissionSubCategoriesById(req: Request, res: Response, next: NextFunction) {
+    async function getEmissionSubCategoriesByLangId(req: Request, res: Response, next: NextFunction) {
         try {
             const subCategories = await prisma.emissionSubCategories.findMany({
-                where: { idEmissionCategory: Number(req.params.id_category) }
+                where: { idLanguage: Number(req.params.id_language) },
+                include: {
+                    emissionFactors: true
+                }
             })
             return res.status(200).json(subCategories);
         } catch (error) {
