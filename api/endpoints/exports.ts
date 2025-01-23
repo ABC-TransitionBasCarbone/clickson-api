@@ -11,7 +11,6 @@ module.exports = function (app: Application): void {
     const filePath = join(process.cwd(), '/api/public/files/clickson.xlsx');
     try {
       const fileContents = readFileSync(filePath);
-      console.log("🚀 ~ getFiles ~ fileContents:", fileContents)
 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', 'attachment; filename=clickson.xlsx');

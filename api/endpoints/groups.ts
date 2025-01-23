@@ -66,20 +66,14 @@ module.exports = function (app: Application): void {
                                     idEmissionCategory: true,
                                     locked: true,
                                     sessionEmissionSubCategories: {
-                                        select: {
-                                            comments: true,
-                                            sessionEmissions: {
-                                                select: {
-                                                    total: true
-                                                }
-                                            }
+                                        include: {
+                                            sessionEmissions: true
                                         }
                                     },
                                     emissionCategory: true
                                 }
                             }
                         }
-
                     }
                 }
             })
