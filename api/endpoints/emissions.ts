@@ -71,6 +71,7 @@ module.exports = function (app: Application): void {
             const category = await prisma.emissionCategories.create({
                 data: {
                     id: id,
+                    idEmissionCategory: req.body.idEmissionCategory,
                     label: req.body.label,
                     detail: "",
                     idLanguage: req.body.idLanguage

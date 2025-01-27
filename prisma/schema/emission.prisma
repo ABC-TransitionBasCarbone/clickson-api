@@ -1,5 +1,6 @@
 model EmissionCategories {
   id                        Int                         @id @default(autoincrement())
+  idEmissionCategory        Int                         @default(autoincrement()) @map("id_emission_category")
   idLanguage                Int                         @map("id_language")
   label                     String                      @db.VarChar(255)
   detail                    String                      @db.VarChar(2550)
@@ -13,6 +14,7 @@ model EmissionCategories {
 model EmissionSubCategories {
   id                           Int                            @id @default(autoincrement())
   idEmissionCategory           Int                            @map("id_emission_category")
+  idEmissionSubCategory        Int                            @default(autoincrement()) @map("id_emission_sub_category")
   idLanguage                   Int                            @map("id_language")
   label                        String                         @db.VarChar(255)
   detail                       String                         @db.VarChar(2550)

@@ -16,7 +16,7 @@ export async function handleFetch(requestOptions: RequestInit, res: Response, ne
         return response.json();
     }
     catch (errors) {
-        return handleErrors(next, errors);
+        return next(errors);
 
     }
 }
