@@ -7,6 +7,7 @@ module.exports = function (app: Application): void {
     app.get('/emission/categories/:id_language', getEmissionCategories);
     app.put('/emission/categories', updateEmissionCategories);
     app.put('/emission/sub-categories', updateEmissionSubCategories);
+    app.delete('/emission/sub-categories/:id_emission_sub_category', deleteEmissionSubCategories);
     app.post('/emission/categories', createEmissionCategories);
     app.post('/emission/sub-categories', createEmissionSubCategories);
     app.get('/emission/sub-categories/:id_language', getEmissionSubCategoriesByLangId);
@@ -91,6 +92,17 @@ module.exports = function (app: Application): void {
                     label: req.body.label,
                     detail: req.body.detail,
                 }
+            })
+            return res.status(200).json(category);
+        } catch (error) {
+            return handleErrors(next, error);
+        }
+    }
+
+    async function deleteEmissionSubCategories(req: Request, res: Response, next: NextFunction) {
+        try {
+            const category = await prisma.emissionSubCategories.delete({
+                where: { id: Number(req.params.id_emission_sub_category) }
             })
             return res.status(200).json(category);
         } catch (error) {
