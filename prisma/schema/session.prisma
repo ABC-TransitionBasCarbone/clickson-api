@@ -49,7 +49,7 @@ model SessionEmissions {
   unit                         String
   createdAt                    DateTime                      @default(now()) @map("created_at")
   updatedAt                    DateTime                      @default(now()) @map("updated_at")
-  emissionFactor               EmissionFactors?              @relation(fields: [idEmissionFactor], references: [id])
+  emissionFactor               EmissionFactors?              @relation(fields: [idEmissionFactor], references: [id], onDelete: Cascade)
   sessionEmissionSubCategory   SessionEmissionSubCategories? @relation(fields: [idSessionEmissionSubCategory], references: [id], onDelete: Cascade)
 
   @@map("session_emissions")
