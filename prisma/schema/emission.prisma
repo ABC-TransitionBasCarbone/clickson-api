@@ -36,7 +36,7 @@ model EmissionFactors {
   value                 Decimal               @db.Decimal
   depreciationPeriod    Decimal?              @db.Decimal
   uncertainty           Decimal               @db.Decimal
-  emissionSubCategory   EmissionSubCategories @relation(fields: [idEmissionSubCategory], references: [id])
+  emissionSubCategory   EmissionSubCategories @relation(fields: [idEmissionSubCategory], references: [id], onDelete: Cascade)
   language              Languages             @relation(fields: [idLanguage], references: [id])
   sessionEmissions      SessionEmissions[]
 
