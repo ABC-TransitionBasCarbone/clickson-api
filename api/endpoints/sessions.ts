@@ -63,7 +63,7 @@ module.exports = function (app: Application): void {
                 emissionSubCategories.map(subCategorie => ({
                     idSessionEmissionCategory: sessionEmissionCategories.find(categorie =>
                         categorie.idEmissionCategory === subCategorie.idEmissionCategory)?.id || "",
-                    idEmissionSubCategory: subCategorie.id
+                    idEmissionSubCategory: subCategorie.idEmissionSubCategory
                 }))
 
             await prisma.sessionEmissionSubCategories.createMany({ data: sessionEmissionSubCategoriesMap })
