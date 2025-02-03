@@ -18,7 +18,6 @@ module.exports = function (app: Application): void {
 
     async function login(req: Request, res: Response, next: NextFunction) {
         const { username, password, rememberMe } = req.body;
-
         try {
             res.req.url = wordpressApiUrl + "/wp-json/jwt-auth/v1/token";
             const requestInit = {
@@ -40,9 +39,8 @@ module.exports = function (app: Application): void {
                 return res.status(200).send(user);
             }
             return res.status(403).send({ "error": "user not found" });
-
         } catch (error) {
-            return handleErrors(next, error);
+            next(error)
         }
     }
 
@@ -61,7 +59,7 @@ module.exports = function (app: Application): void {
         } = req.body;
 
         if (!schoolName) {
-            return handleErrors(next, "Can you enter the name of the school ?");
+            return next("Can you enter the name of the school ?");
         }
 
         // Check if user already admin of a school
@@ -92,7 +90,7 @@ module.exports = function (app: Application): void {
                         }
                     })
                 } catch (error) {
-                    return handleErrors(next, error);
+                    return next(error);
                 }
             }
 
@@ -105,7 +103,7 @@ module.exports = function (app: Application): void {
                     }
                 })
             } catch (error) {
-                return handleErrors(next, error);
+                return next(error);
             }
         }
 
@@ -128,7 +126,7 @@ module.exports = function (app: Application): void {
             const json = await handleFetch(requestInit, res, next)
             return res.status(200).send(json);
         } catch (error) {
-            return handleErrors(next, error);
+            return next(error);
         }
     }
 }

@@ -24,7 +24,7 @@ module.exports = function (app: Application): void {
     app.get('/sessions/:id', getSessionById)
     app.get('/sessions/school/:id_school', getSessionByIdSchool)
     app.get('/session-categories/:id_session_student', getSessionCategoriesByIdSessionStudent)
-    app.get('/session-sub-categories/:id_session_emission_category', getSessionCategoryById)
+    app.get('/session-sub-categories/:id_session_emission_category/:id_lang', getSessionCategoryById)
     app.put('/session-categories', lockSessionCategories)
     app.post('/session-emission', createSessionEmission)
     app.delete('/session-emission', deleteSessionEmission)
@@ -63,7 +63,7 @@ module.exports = function (app: Application): void {
                 emissionSubCategories.map(subCategorie => ({
                     idSessionEmissionCategory: sessionEmissionCategories.find(categorie =>
                         categorie.idEmissionCategory === subCategorie.idEmissionCategory)?.id || "",
-                    idEmissionSubCategory: subCategorie.id
+                    idEmissionSubCategory: subCategorie.idEmissionSubCategory
                 }))
 
             await prisma.sessionEmissionSubCategories.createMany({ data: sessionEmissionSubCategoriesMap })
@@ -168,26 +168,27 @@ module.exports = function (app: Application): void {
     }
 
     async function getSessionCategoryById(req: Request, res: Response, next: NextFunction) {
+        const idSessionEmissionCategory = req.params.id_session_emission_category
+        const idLang = Number(req.params.id_lang)
+
         try {
-            const sessionSubCategory = await prisma.sessionEmissionCategories.findUnique(
+            let sessionSubCategory = await prisma.sessionEmissionCategories.findUnique(
                 {
                     where: {
-                        id: req.params.id_session_emission_category
+                        id: idSessionEmissionCategory
                     },
-                    select: {
-                        locked: true,
+                    include: {
+                        emissionCategory: {
+                            include: {
+                                emissionSubCategories: true
+                            }
+                        },
                         sessionEmissionSubCategories: {
                             select: {
                                 id: true,
                                 idEmissionSubCategory: true,
                                 comments: true,
-                                emissionSubCategory: {
-                                    select: {
-                                        label: true,
-                                        detail: true,
-                                        emissionFactors: true
-                                    }
-                                },
+                                emissionSubCategory: true,
                                 sessionEmissions: {
                                     include: {
                                         emissionFactor: true
@@ -197,7 +198,25 @@ module.exports = function (app: Application): void {
                         },
 
                     },
+                }
+            )
+
+            if (idLang !== sessionSubCategory?.emissionCategory?.idLanguage && sessionSubCategory) {
+                const emissionCategory = await prisma.emissionCategories.findFirst({
+                    where: {
+                        idEmissionCategory: sessionSubCategory.idEmissionCategory,
+                        idLanguage: idLang,
+                    },
+                    include: {
+                        emissionSubCategories: true
+                    }
                 })
+
+                if (!emissionCategory) {
+                    return res.status(404).json({ message: "No data found" });
+                }
+                sessionSubCategory.emissionCategory = emissionCategory
+            }
 
             return res.status(200).json(sessionSubCategory);
         } catch (error) {
