@@ -4,9 +4,7 @@
         {
             "source": "/(.*)",
             "destination": "/api/index.ts"
-        }
-    ],
-    "routes": [
+        },
         {
             "source": "/swagger",
             "destination": "/api/swagger.ts"
