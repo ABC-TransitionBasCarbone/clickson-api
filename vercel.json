@@ -4,10 +4,6 @@
         {
             "source": "/(.*)",
             "destination": "/api/index.ts"
-        },
-        {
-            "source": "/swagger",
-            "destination": "/api/swagger.ts"
         }
     ]
 }
