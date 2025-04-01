@@ -6,9 +6,25 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerFile = require('../swagger-output.json');
 
+var options = {
+    swaggerOptions: {
+        url: "/api-docs/swagger.json",
+    },
+}
+app.get("/api-docs/swagger.json", (req, res) => res.json(swaggerFile));
+app.use('/api-docs', swaggerUi.serveFiles(null, options), swaggerUi.setup(null, options));
+
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(cors({ origin: ["http://localhost:3000", "http://localhost:8080", "https://clickson-tau.vercel.app", "https://clickson-api-git-develop-abc-transitionbascarbones-projects.vercel.app"] }));
+app.use(cors({
+    origin: [
+        "http://localhost:3000",
+        "http://localhost:8080",
+        "https://clickson-tau.vercel.app",
+        "https://clickson-api-git-develop-abc-transitionbascarbones-projects.vercel.app"
+    ]
+}));
 
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 app.use("/countries", express.static(__dirname + "/public/countries/countries.json"));
