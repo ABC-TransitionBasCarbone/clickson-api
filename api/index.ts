@@ -27,14 +27,12 @@ app.use(cors({
 }));
 
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
-app.use("/countries", express.static(__dirname + "/public/countries/countries.json"));
 require('./endpoints/auth')(app)
 require('./endpoints/emissions')(app)
 require('./endpoints/groups')(app)
 require('./endpoints/schools')(app)
 require('./endpoints/sessions')(app)
 require('./endpoints/exports')(app)
-require('./endpoints/languages')(app)
 require('./endpoints/comments')(app)
 
 export default app;
