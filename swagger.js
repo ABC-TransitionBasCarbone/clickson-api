@@ -5,7 +5,11 @@ const doc = {
     title: 'My API',
     description: 'Description'
   },
-  host: 'localhost:4000'
+  host: 'localhost:4000',
+  servers: [
+    { url: 'http://localhost:4000' },
+    { url: 'https://calculator.clickson.eu/' }
+  ]
 };
 
 const outputFile = './swagger-output.json';
