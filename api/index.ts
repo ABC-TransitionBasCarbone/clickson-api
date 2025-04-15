@@ -22,7 +22,7 @@ app.use(cors({
         "http://localhost:3000",
         "http://localhost:8080",
         "https://clickson-tau.vercel.app",
-        "https://clickson-api-git-develop-abc-transitionbascarbones-projects.vercel.app",
+        "https://clickson-git-develop-abc-transitionbascarbones-projects.vercel.app",
         "https://calculator.clickson.eu"
     ]
 }));
