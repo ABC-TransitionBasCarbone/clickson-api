@@ -17,7 +17,7 @@ module.exports = function (app: Application): void {
     console.log('Request URL: ', req.url);
     console.log('Request IP: ', req.ip);
 
-    const filePath = join(process.cwd(), '/api/public/files/clickson.xlsx');
+    const filePath = join(process.cwd(), '../public/clickson.xlsx');
     try {
       if (!fs.existsSync(filePath)) {
         console.error('File not found: ', filePath);
