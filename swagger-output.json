@@ -110,12 +110,152 @@
         }
       }
     },
-    "/emission/sub-categories/{id_category}": {
+    "/emission/categories": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                },
+                "label": {
+                  "example": "any"
+                },
+                "detail": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "example": "any"
+                },
+                "idLanguage": {
+                  "example": "any"
+                },
+                "idEmissionCategory": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/emission/sub-categories": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                },
+                "label": {
+                  "example": "any"
+                },
+                "detail": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "example": "any"
+                },
+                "idLanguage": {
+                  "example": "any"
+                },
+                "idEmissionCategory": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/emission/sub-categories/{id_emission_sub_category}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id_emission_sub_category",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/emission/sub-categories/{id_language}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "id_category",
+            "name": "id_language",
             "in": "path",
             "required": true,
             "type": "string"
@@ -142,6 +282,141 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/emission-factors": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "unit": {
+                  "example": "any"
+                },
+                "type": {
+                  "example": "any"
+                },
+                "id": {
+                  "example": "any"
+                },
+                "value": {
+                  "example": "any"
+                },
+                "uncertainty": {
+                  "example": "any"
+                },
+                "depreciationPeriod": {
+                  "example": "any"
+                },
+                "label": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "example": "any"
+                },
+                "uncertainty": {
+                  "example": "any"
+                },
+                "depreciationPeriod": {
+                  "example": "any"
+                },
+                "label": {
+                  "example": "any"
+                },
+                "unit": {
+                  "example": "any"
+                },
+                "type": {
+                  "example": "any"
+                },
+                "idEmissionSubCategory": {
+                  "example": "any"
+                },
+                "idLanguage": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "{{where{id:Number(req.params.id_emission_sub_category)}})returnres.status(200).json(category);}catch(error){returnhandleErrors(next}": {
+      "delete": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "{{where{id:id}}": {
+      "delete": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
           }
         }
       }
@@ -283,6 +558,21 @@
             "description": "OK"
           }
         }
+      },
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
       }
     },
     "/school/{admin_username}": {
@@ -291,40 +581,6 @@
         "parameters": [
           {
             "name": "admin_username",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/sessions/{id}": {
-      "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
             "in": "path",
             "required": true,
             "type": "string"
@@ -392,9 +648,30 @@
                 },
                 "deleted": {
                   "example": "any"
+                },
+                "locked": {
+                  "example": "any"
                 }
               }
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/sessions/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
@@ -440,7 +717,7 @@
         }
       }
     },
-    "/session-sub-categories/{id_session_emission_category}": {
+    "/session-sub-categories/{id_session_emission_category}/{id_lang}": {
       "get": {
         "description": "",
         "parameters": [
@@ -449,6 +726,42 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "id_lang",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/session-categories": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                },
+                "locked": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -475,6 +788,43 @@
                   "example": "any"
                 },
                 "value": {
+                  "example": "any"
+                },
+                "total": {
+                  "example": "any"
+                },
+                "uncertainty": {
+                  "example": "any"
+                },
+                "label": {
+                  "example": "any"
+                },
+                "unit": {
+                  "example": "any"
+                },
+                "type": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
                   "example": "any"
                 }
               }
@@ -536,6 +886,55 @@
           },
           "404": {
             "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/comments": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idEmissionSubCategory": {
+                  "example": "any"
+                },
+                "comment": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
