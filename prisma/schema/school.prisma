@@ -2,8 +2,8 @@ model SchoolAdmins {
   schoolId      String   @map("school_id") @db.Uuid
   adminUsername String   @map("admin_username")
   createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @default(now()) @map("updated_at")
-  school       Schools  @relation(fields: [schoolId], references: [id])
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+  school        Schools  @relation(fields: [schoolId], references: [id])
 
   @@id([schoolId, adminUsername])
   @@map("school_admins")
@@ -20,7 +20,7 @@ model Schools {
   establishmentYear Int?              @map("establishment_year")
   adress            String?
   createdAt         DateTime          @default(now()) @map("created_at")
-  updatedAt         DateTime          @default(now()) @map("updated_at")
+  updatedAt         DateTime          @default(now()) @updatedAt @map("updated_at")
   groups            Groups[]
   schoolAdmins      SchoolAdmins[]
   sessionStudents   SessionStudents[]
