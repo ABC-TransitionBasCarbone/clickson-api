@@ -1,6 +1,6 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { handleErrors } from "../common";
-import { PrismaClient } from '@prisma/client'
+import { EmissionCategories, PrismaClient } from '@prisma/client'
 
 const rights = [
     { key: 0, label: 'energy', advanced: false },
@@ -40,46 +40,50 @@ module.exports = function (app: Application): void {
         try {
             const { idSchool, name, year } = req.body
 
-            const session = await prisma.sessionStudents.create({ data: { idSchool, name, year } })
+            const session = await prisma.$transaction(async (prisma) => {
+                const createdSession = await prisma.sessionStudents.create({ data: { idSchool, name, year } });
 
-            // Creation of student Sessions Emission Categories for each categories
-            const emissionCategories = await prisma.emissionCategories.findMany({ where: { idLanguage: 1 } })
+                // Creation of student Sessions Emission Categories for each category
+                const emissionCategories = await prisma.emissionCategories.findMany({ where: { idLanguage: 1 } });
 
-            await prisma.sessionEmissionCategories.createMany({
-                data: emissionCategories.map(categorie => (
-                    {
-                        idSessionStudent: session.id,
+                await prisma.sessionEmissionCategories.createMany({
+                    data: emissionCategories.map(categorie => ({
+                        idSessionStudent: createdSession.id,
                         idEmissionCategory: categorie.id
                     }))
-            })
+                });
 
-            const sessionEmissionCategories = await prisma.sessionEmissionCategories.findMany(
-                { where: { idSessionStudent: session.id } })
+                const sessionEmissionCategories = await prisma.sessionEmissionCategories.findMany(
+                    { where: { idSessionStudent: createdSession.id } }
+                );
 
-            // Creation of Sessions Emissions Sub Categories for each sub categories
-            const emissionSubCategories = await prisma.emissionSubCategories.findMany({ where: { idLanguage: 1 } })
+                // Creation of Sessions Emissions Sub Categories for each sub category
+                const emissionSubCategories = await prisma.emissionSubCategories.findMany({ where: { idLanguage: 1 } });
 
-            const sessionEmissionSubCategoriesMap =
-                emissionSubCategories.map(subCategorie => ({
+                const sessionEmissionSubCategoriesMap = emissionSubCategories.map(subCategorie => ({
                     idSessionEmissionCategory: sessionEmissionCategories.find(categorie =>
                         categorie.idEmissionCategory === subCategorie.idEmissionCategory)?.id || "",
                     idEmissionSubCategory: subCategorie.idEmissionSubCategory
-                }))
+                }));
 
-            await prisma.sessionEmissionSubCategories.createMany({ data: sessionEmissionSubCategoriesMap })
+                await prisma.sessionEmissionSubCategories.createMany({ data: sessionEmissionSubCategoriesMap });
 
-            // Create admin group
-            const adminGroup = await prisma.groups.create({
-                data: {
-                    idSchool,
-                    idSessionStudent: session.id,
-                    name: `Admin ${name}`,
-                    year,
-                    rights: rights.filter(r => r.advanced).map(r => r.key)
-                }
-            })
+                // Create admin group
+                const adminGroup = await prisma.groups.create({
+                    data: {
+                        idSchool,
+                        idSessionStudent: createdSession.id,
+                        name: `Admin ${name}`,
+                        year,
+                        rights: rights.filter(r => r.advanced).map(r => r.key)
+                    }
+                });
 
-            return res.status(200).json({ ...session, groups: [adminGroup] });
+                return { ...createdSession, groups: [adminGroup] };
+            });
+
+            // Return the created session with the associated groups
+            return res.status(200).json(session);
         } catch (error) {
             return handleErrors(next, error);
         }
@@ -178,17 +182,11 @@ module.exports = function (app: Application): void {
                         id: idSessionEmissionCategory
                     },
                     include: {
-                        emissionCategory: {
-                            include: {
-                                emissionSubCategories: true
-                            }
-                        },
                         sessionEmissionSubCategories: {
                             select: {
                                 id: true,
                                 idEmissionSubCategory: true,
                                 comments: true,
-                                emissionSubCategory: true,
                                 sessionEmissions: {
                                     include: {
                                         emissionFactor: true
@@ -201,24 +199,33 @@ module.exports = function (app: Application): void {
                 }
             )
 
-            if (idLang !== sessionSubCategory?.emissionCategory?.idLanguage && sessionSubCategory) {
-                const emissionCategory = await prisma.emissionCategories.findFirst({
-                    where: {
-                        idEmissionCategory: sessionSubCategory.idEmissionCategory,
-                        idLanguage: idLang,
-                    },
-                    include: {
-                        emissionSubCategories: true
-                    }
-                })
-
-                if (!emissionCategory) {
-                    return res.status(404).json({ message: "No data found" });
-                }
-                sessionSubCategory.emissionCategory = emissionCategory
+            if (!sessionSubCategory) {
+                return res.status(404).json({ message: "No sessionSubCategory found" });
             }
 
-            return res.status(200).json(sessionSubCategory);
+            console.log(" || sessionSubCategory.sessionEmissionSubCategories ", sessionSubCategory.sessionEmissionSubCategories)
+
+            let emissionSubCategories: EmissionCategories[] = [] as EmissionCategories[]
+            for (const subCategory of sessionSubCategory.sessionEmissionSubCategories) {
+                const emissionSubCategory = await prisma.emissionSubCategories.findFirst({
+                    where: { idEmissionSubCategory: subCategory.idEmissionSubCategory, idLanguage: idLang },
+                })
+                if (!emissionSubCategory) {
+                    return res.status(404).json({ message: "No emissionSubCategory found" });
+                }
+                emissionSubCategories.push(emissionSubCategory)
+            }
+
+            const sessionSubCat = {
+                ...sessionSubCategory,
+                sessionEmissionSubCategories: {
+                    ...sessionSubCategory.sessionEmissionSubCategories,
+                    emissionSubCategories: emissionSubCategories
+                }
+            }
+            console.log(" || sessionSubCat ", sessionSubCat)
+
+            return res.status(200).json(sessionSubCat);
         } catch (error) {
             return handleErrors(next, error);
         }

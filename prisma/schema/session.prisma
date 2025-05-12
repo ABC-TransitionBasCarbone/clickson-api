@@ -18,7 +18,7 @@ model SessionEmissionCategories {
   sessionStudent               SessionStudents                @relation(fields: [idSessionStudent], references: [id], onDelete: Cascade)
   sessionEmissionSubCategories SessionEmissionSubCategories[]
   createdAt                    DateTime                       @default(now()) @map("created_at")
-  updatedAt                    DateTime                       @default(now()) @updatedAt @map("updated_at")
+  updatedAt                    DateTime                       @updatedAt @map("updated_at")
 
   @@map("session_emission_categories")
 }
@@ -32,7 +32,7 @@ model SessionEmissionSubCategories {
   emissionSubCategory       EmissionSubCategories     @relation(fields: [idEmissionSubCategory], references: [id], onDelete: Cascade)
   sessionEmissions          SessionEmissions[]
   createdAt                 DateTime                  @default(now()) @map("created_at")
-  updatedAt                 DateTime                  @default(now()) @updatedAt @map("updated_at")
+  updatedAt                 DateTime                  @updatedAt @map("updated_at")
 
   @@map("session_emission_sub_categories")
 }
@@ -48,7 +48,7 @@ model SessionEmissions {
   type                         String
   unit                         String
   createdAt                    DateTime                      @default(now()) @map("created_at")
-  updatedAt                    DateTime                      @default(now()) @updatedAt @map("updated_at")
+  updatedAt                    DateTime                      @updatedAt @map("updated_at")
   emissionFactor               EmissionFactors?              @relation(fields: [idEmissionFactor], references: [id], onDelete: Cascade)
   sessionEmissionSubCategory   SessionEmissionSubCategories? @relation(fields: [idSessionEmissionSubCategory], references: [id], onDelete: Cascade)
 
@@ -65,7 +65,7 @@ model SessionStudents {
   deleted                   Boolean                     @default(false)
   locked                    Boolean                     @default(false)
   createdAt                 DateTime                    @default(now()) @map("created_at")
-  updatedAt                 DateTime                    @default(now()) @updatedAt @map("updated_at")
+  updatedAt                 DateTime                    @updatedAt @map("updated_at")
   school                    Schools?                    @relation(fields: [idSchool], references: [id])
   groups                    Groups[]
   sessionEmissionCategories SessionEmissionCategories[]

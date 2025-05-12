@@ -42,6 +42,7 @@ module.exports = function (app: Application): void {
                     label: req.body.label,
                     detail: "",
                     idEmissionCategory: req.body.idEmissionCategory,
+                    idEmissionSubCategory: id,
                     idLanguage: req.body.idLanguage,
 
                 }

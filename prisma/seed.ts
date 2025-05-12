@@ -26,14 +26,14 @@ const categories = async () => {
             await prisma.emissionCategories.upsert({
                 where: { id: countIdCat },
                 update: category,
-                create: { ...category, idLanguage: language.id, id: countIdCat }
+                create: { ...category, idEmissionCategory: countIdCat, idLanguage: language.id, id: countIdCat }
             })
             for (const { emissionFactors, ...subCategory } of subCategories) {
                 countIdSubCat++
                 await prisma.emissionSubCategories.upsert({
                     where: { id: countIdSubCat },
                     update: subCategory,
-                    create: { ...subCategory, idLanguage: language.id, idEmissionCategory: countIdCat, id: countIdSubCat }
+                    create: { ...subCategory, idEmissionSubCategory: countIdSubCat, idLanguage: language.id, idEmissionCategory: countIdCat, id: countIdSubCat }
                 })
                 for (const emissionFactor of emissionFactors) {
                     countIdFE++
